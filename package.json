@@ -62,5 +62,8 @@
 		"vite": "^6.2.6",
 		"vitest": "^3.2.3",
 		"zod": "^3.25.67"
+	},
+	"dependencies": {
+		"@vercel/analytics": "^1.5.0"
 	}
 }

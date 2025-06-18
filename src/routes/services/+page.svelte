@@ -3,6 +3,8 @@
 	import * as Tabs from '$lib/components/ui/tabs';
 	import { Badge } from '$lib/components/ui/badge';
 	import { Button } from '$lib/components/ui/button';
+	import LoadingStates from '$lib/components/custom/LoadingStates.svelte';
+	import ErrorBoundary from '$lib/components/custom/ErrorBoundary.svelte';
 	import type { PageData } from './$types';
 
 	let { data }: { data: PageData } = $props();
@@ -51,10 +53,11 @@
 </script>
 
 <svelte:head>
-	<title>Services - Picasso Hair Salon</title>
+	<title>{data.meta?.title || 'Services - Picasso Hair Salon'}</title>
 	<meta
 		name="description"
-		content="Explore our comprehensive range of professional hair services at Picasso Hair Salon. From cuts and color to styling and treatments."
+		content={data.meta?.description ||
+			'Explore our comprehensive range of professional hair services at Picasso Hair Salon. From cuts and color to styling and treatments.'}
 	/>
 </svelte:head>
 

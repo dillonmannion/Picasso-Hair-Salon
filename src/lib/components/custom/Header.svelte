@@ -8,10 +8,31 @@
 		NavigationMenuList
 		//NavigationMenuTrigger
 	} from '$lib/components/ui/navigation-menu';
+	import {
+		DropdownMenu,
+		DropdownMenuTrigger,
+		DropdownMenuContent,
+		DropdownMenuItem
+	} from '$lib/components/ui/dropdown-menu';
 	import UserNav from './UserNav.svelte';
 	import type { SupabaseClient, User } from '@supabase/supabase-js';
+	import { setLocale, getLocale } from '$lib/paraglide/runtime';
 
 	let { user, supabase }: { user: User | null; supabase: SupabaseClient } = $props();
+
+	const languages = [
+		{ code: 'en', name: 'English' },
+		{ code: 'es', name: 'Español' },
+		{ code: 'zh-cmn', name: '中文' }
+	];
+
+	function handleLocaleChange(newLocale: string) {
+		if (newLocale === 'en' || newLocale === 'es' || newLocale === 'zh-cmn') {
+			setLocale(newLocale);
+		}
+	}
+
+	let currentLocale = $derived(getLocale());
 </script>
 
 <header
@@ -45,30 +66,6 @@
 							class="group bg-background hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground data-[active]:bg-accent/50 data-[state=open]:bg-accent/50 inline-flex h-9 w-max items-center justify-center rounded-md px-4 py-2 text-sm font-medium transition-colors focus:outline-none disabled:pointer-events-none disabled:opacity-50"
 						>
 							Services
-						</NavigationMenuLink>
-					</NavigationMenuItem>
-					<NavigationMenuItem>
-						<NavigationMenuLink
-							href="/gallery"
-							class="group bg-background hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground data-[active]:bg-accent/50 data-[state=open]:bg-accent/50 inline-flex h-9 w-max items-center justify-center rounded-md px-4 py-2 text-sm font-medium transition-colors focus:outline-none disabled:pointer-events-none disabled:opacity-50"
-						>
-							Gallery
-						</NavigationMenuLink>
-					</NavigationMenuItem>
-					<NavigationMenuItem>
-						<NavigationMenuLink
-							href="/about"
-							class="group bg-background hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground data-[active]:bg-accent/50 data-[state=open]:bg-accent/50 inline-flex h-9 w-max items-center justify-center rounded-md px-4 py-2 text-sm font-medium transition-colors focus:outline-none disabled:pointer-events-none disabled:opacity-50"
-						>
-							About
-						</NavigationMenuLink>
-					</NavigationMenuItem>
-					<NavigationMenuItem>
-						<NavigationMenuLink
-							href="/contact"
-							class="group bg-background hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground data-[active]:bg-accent/50 data-[state=open]:bg-accent/50 inline-flex h-9 w-max items-center justify-center rounded-md px-4 py-2 text-sm font-medium transition-colors focus:outline-none disabled:pointer-events-none disabled:opacity-50"
-						>
-							Contact
 						</NavigationMenuLink>
 					</NavigationMenuItem>
 				</NavigationMenuList>
@@ -110,6 +107,42 @@
 
 			<!-- Right side navigation -->
 			<nav class="flex items-center space-x-2">
+				<!-- Language Switcher -->
+				<DropdownMenu>
+					<DropdownMenuTrigger>
+						<Button variant="outline" size="sm" class="gap-2">
+							<svg
+								class="h-4 w-4"
+								viewBox="0 0 24 24"
+								fill="none"
+								stroke="currentColor"
+								stroke-width="2"
+							>
+								<path
+									d="M12.87 15.07l-2.54-2.51.03-.03c1.74-1.94 2.01-4.65 1.73-6.53"
+									stroke-linecap="round"
+									stroke-linejoin="round"
+								/>
+								<path
+									d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+									stroke-linecap="round"
+									stroke-linejoin="round"
+								/>
+								<path d="M7.63 7.69l4.74 4.74" stroke-linecap="round" stroke-linejoin="round" />
+								<path d="M9 18l3-3 3 3" stroke-linecap="round" stroke-linejoin="round" />
+							</svg>
+							{languages.find((lang) => lang.code === currentLocale)?.name || 'Language'}
+						</Button>
+					</DropdownMenuTrigger>
+					<DropdownMenuContent>
+						{#each languages as lang (lang.code)}
+							<DropdownMenuItem onclick={() => handleLocaleChange(lang.code)}>
+								{lang.name}
+							</DropdownMenuItem>
+						{/each}
+					</DropdownMenuContent>
+				</DropdownMenu>
+
 				{#if user}
 					<UserNav {user} {supabase} />
 				{:else}

@@ -50,25 +50,16 @@
 		showReviewForm = false;
 	}
 
-	// Mock data for services and stylists (in real app, these would come from server)
-	const services = [
-		{ id: 'service-1', name: 'Haircut & Style' },
-		{ id: 'service-2', name: 'Color Treatment' },
-		{ id: 'service-3', name: 'Highlights' }
-	];
-
-	const stylists = [
-		{ id: 'stylist-1', name: 'Maria Garcia' },
-		{ id: 'stylist-2', name: 'John Smith' },
-		{ id: 'stylist-3', name: 'Sarah Johnson' }
-	];
+	// Get services and stylists from server data
+	const { services, stylists } = data;
 </script>
 
 <svelte:head>
-	<title>Reviews - Picasso Hair Salon</title>
+	<title>{data.meta?.title || 'Reviews - Picasso Hair Salon'}</title>
 	<meta
 		name="description"
-		content="Read what our clients say about their experience at Picasso Hair Salon. Real reviews from real customers."
+		content={data.meta?.description ||
+			'Read what our clients say about their experience at Picasso Hair Salon. Real reviews from real customers.'}
 	/>
 </svelte:head>
 
@@ -136,10 +127,15 @@
 									<Star class="h-3 w-3 fill-yellow-400 text-yellow-400" />
 								</div>
 								<div class="flex-1">
-									<Progress value={data.ratingPercentages[rating as keyof typeof data.ratingPercentages]} class="h-2" />
+									<Progress
+										value={data.ratingPercentages[rating as keyof typeof data.ratingPercentages]}
+										class="h-2"
+									/>
 								</div>
 								<span class="w-12 text-right text-xs text-gray-500">
-									{data.ratingBreakdown[rating as keyof typeof data.ratingBreakdown]} ({Math.round(data.ratingPercentages[rating as keyof typeof data.ratingPercentages])}%)
+									{data.ratingBreakdown[rating as keyof typeof data.ratingBreakdown]} ({Math.round(
+										data.ratingPercentages[rating as keyof typeof data.ratingPercentages]
+									)}%)
 								</span>
 							</div>
 						{/each}
@@ -164,8 +160,8 @@
 							<form method="POST" action="?/submitReview" use:enhance class="space-y-4">
 								<div>
 									<Label for="service">Service *</Label>
-									<select 
-										name="serviceId" 
+									<select
+										name="serviceId"
 										bind:value={newReview.serviceId}
 										class="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
 										required
@@ -179,8 +175,8 @@
 
 								<div>
 									<Label for="stylist">Stylist *</Label>
-									<select 
-										name="stylistId" 
+									<select
+										name="stylistId"
 										bind:value={newReview.stylistId}
 										class="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
 										required

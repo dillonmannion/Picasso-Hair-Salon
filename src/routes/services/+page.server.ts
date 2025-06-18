@@ -21,7 +21,12 @@ export const load: PageServerLoad = async () => {
 		}
 
 		return {
-			services: services || []
+			services: services || [],
+			meta: {
+				title: 'Hair Services - Picasso Hair Salon',
+				description:
+					'Discover our premium hair services including cuts, coloring, styling, and treatments. Expert stylists delivering exceptional results at Picasso Hair Salon.'
+			}
 		};
 	} catch (err) {
 		console.error('Unexpected error fetching services:', err);

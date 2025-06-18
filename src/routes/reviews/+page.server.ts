@@ -50,12 +50,31 @@ export const load: PageServerLoad = async ({ locals: { supabase } }) => {
 			{} as Record<number, number>
 		);
 
+		// Fetch services and stylists for the review form
+		const { data: services } = await supabase
+			.from('services')
+			.select('id, name')
+			.eq('is_active', true)
+			.order('name');
+
+		const { data: stylists } = await supabase
+			.from('stylists')
+			.select('id, name')
+			.eq('is_active', true)
+			.order('name');
+
 		return {
 			reviews: reviews || [],
 			totalReviews,
 			averageRating: Math.round(averageRating * 10) / 10, // Round to 1 decimal place
 			ratingBreakdown,
-			ratingPercentages
+			ratingPercentages,
+			services: services || [],
+			stylists: stylists || [],
+			meta: {
+				title: 'Customer Reviews - Picasso Hair Salon',
+				description: `Read ${totalReviews} customer reviews for Picasso Hair Salon. Average rating: ${Math.round(averageRating * 10) / 10}/5 stars. See what our clients say about our hair services and stylists.`
+			}
 		};
 	} catch (err) {
 		console.error('Unexpected error fetching reviews:', err);
