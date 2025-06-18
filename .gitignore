@@ -6,6 +6,7 @@ prompt.md
 .vscode
 !README.md
 *.md
+!GOOGLE-AUTH-SETUP.md
 
 # Node
 test-results
