@@ -1,6 +1,5 @@
 <script lang="ts">
 	import * as Card from '$lib/components/ui/card';
-	import { Badge } from '$lib/components/ui/badge';
 	import { Separator } from '$lib/components/ui/separator';
 	import { MapPin, Clock, Phone, Mail, Star, Users, Award, Heart } from 'lucide-svelte';
 	import type { PageData } from './$types';

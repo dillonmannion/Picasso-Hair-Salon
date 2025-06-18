@@ -1,6 +1,5 @@
 import { error, fail } from '@sveltejs/kit';
 import type { PageServerLoad, Actions } from './$types';
-import type { Database } from '$lib/types/database.types';
 
 export const load: PageServerLoad = async ({ locals: { supabase } }) => {
 	try {
@@ -99,7 +98,32 @@ export const actions: Actions = {
 
 		// Validate required fields
 		if (!serviceId || !stylistId || !rating || rating < 1 || rating > 5) {
-			return fail(400, { error: 'Please provide all required fields with valid values' });
+			return fail(400, {
+				error: 'Please provide all required fields with valid values',
+				serviceId: serviceId || '',
+				stylistId: stylistId || '',
+				rating: rating || 0,
+				comment: comment || ''
+			});
+		}
+
+		// Check for duplicate review (user can only review a service/stylist combo once)
+		const { data: existingReview } = await supabase
+			.from('reviews')
+			.select('id')
+			.eq('user_id', user.id)
+			.eq('service_id', serviceId)
+			.eq('stylist_id', stylistId)
+			.single();
+
+		if (existingReview) {
+			return fail(400, {
+				error: 'You have already reviewed this service with this stylist',
+				serviceId,
+				stylistId,
+				rating,
+				comment: comment || ''
+			});
 		}
 
 		try {
@@ -107,7 +131,7 @@ export const actions: Actions = {
 			const userId = user.id;
 
 			// Create review
-			const { data: review, error: reviewError } = await supabase
+			const { error: reviewError } = await supabase
 				.from('reviews')
 				.insert({
 					user_id: userId,

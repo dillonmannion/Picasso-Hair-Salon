@@ -4,7 +4,6 @@
 	import { Star } from 'lucide-svelte';
 
 	interface Review {
-		id: string;
 		rating: number;
 		comment: string | null;
 		created_at: string;
@@ -38,7 +37,7 @@
 		<div class="flex items-start justify-between">
 			<div class="flex-1">
 				<div class="mb-2 flex items-center gap-2">
-					{#each getStarArray(review.rating) as star}
+					{#each getStarArray(review.rating) as star, index (index)}
 						<Star
 							class="h-4 w-4 {star.filled ? 'fill-yellow-400 text-yellow-400' : 'text-gray-300'}"
 						/>

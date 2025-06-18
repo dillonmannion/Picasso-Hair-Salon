@@ -3,8 +3,6 @@
 	import * as Tabs from '$lib/components/ui/tabs';
 	import { Badge } from '$lib/components/ui/badge';
 	import { Button } from '$lib/components/ui/button';
-	import LoadingStates from '$lib/components/custom/LoadingStates.svelte';
-	import ErrorBoundary from '$lib/components/custom/ErrorBoundary.svelte';
 	import type { PageData } from './$types';
 
 	let { data }: { data: PageData } = $props();

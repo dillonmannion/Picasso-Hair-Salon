@@ -15,7 +15,7 @@
 <div class={`loading-states ${className}`}>
 	{#if type === 'card'}
 		<div class="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-			{#each Array(count) as _, i (i)}
+			{#each Array(count), i (i)}
 				<Card.Root>
 					<Card.Header>
 						<Skeleton class="h-6 w-3/4" />
@@ -42,7 +42,7 @@
 				<Skeleton class="h-4 w-1/4" />
 			</div>
 			<!-- Table Rows -->
-			{#each Array(count) as _, i (i)}
+			{#each Array(count), i (i)}
 				<div class="flex space-x-4">
 					<Skeleton class="h-4 w-1/4" />
 					<Skeleton class="h-4 w-1/4" />
@@ -53,7 +53,7 @@
 		</div>
 	{:else if type === 'list'}
 		<div class="space-y-4">
-			{#each Array(count) as _, i (i)}
+			{#each Array(count), i (i)}
 				<div class="flex items-center space-x-4">
 					<Skeleton class="h-12 w-12 rounded-full" />
 					<div class="flex-1 space-y-2">
@@ -65,7 +65,7 @@
 		</div>
 	{:else if type === 'gallery'}
 		<div class="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-			{#each Array(count) as _, i (i)}
+			{#each Array(count), i (i)}
 				<div class="space-y-2">
 					<Skeleton class="aspect-square w-full rounded-lg" />
 					<Skeleton class="h-4 w-3/4" />
@@ -79,7 +79,7 @@
 			{@render children()}
 		{:else}
 			<div class="space-y-4">
-				{#each Array(count) as _, i (i)}
+				{#each Array(count), i (i)}
 					<Skeleton class="h-4 w-full" />
 				{/each}
 			</div>

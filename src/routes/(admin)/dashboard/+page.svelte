@@ -1,6 +1,5 @@
 <script lang="ts">
 	import * as Card from '$lib/components/ui/card';
-	import * as Tabs from '$lib/components/ui/tabs';
 	import * as Table from '$lib/components/ui/table';
 	import { Badge } from '$lib/components/ui/badge';
 	import { Button } from '$lib/components/ui/button';
@@ -146,7 +145,7 @@
 			</Card.Header>
 			<Card.Content>
 				<div class="space-y-4">
-					{#each data.monthlyRevenue as month}
+					{#each data.monthlyRevenue as month (month.month)}
 						<div class="flex items-center justify-between">
 							<span class="text-sm font-medium">{month.month}</span>
 							<span class="text-muted-foreground text-sm">{formatCurrency(month.revenue)}</span>
@@ -165,7 +164,7 @@
 			</Card.Header>
 			<Card.Content>
 				<div class="space-y-4">
-					{#each Object.entries(data.appointmentsByStatus) as [status, count]}
+					{#each Object.entries(data.appointmentsByStatus) as [status, count] (status)}
 						{@const IconComponent = getStatusIcon(status)}
 						<div class="flex items-center justify-between">
 							<div class="flex items-center gap-2">
@@ -205,7 +204,7 @@
 						</Table.Row>
 					</Table.Header>
 					<Table.Body>
-						{#each data.recentAppointments as appointment}
+						{#each data.recentAppointments as appointment (appointment.id)}
 							<Table.Row>
 								<Table.Cell>
 									{formatDate(appointment.appointment_date)}

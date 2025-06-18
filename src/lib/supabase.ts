@@ -15,8 +15,8 @@ export const supabase = createClient<Database>(PUBLIC_SUPABASE_URL, PUBLIC_SUPAB
 // Server-side Supabase client factory
 export function createSupabaseServerClient(cookies: {
 	get: (key: string) => string | undefined;
-	set: (key: string, value: string, options?: any) => void;
-	delete: (key: string, options?: any) => void;
+	set: (key: string, value: string, options?: Record<string, unknown>) => void;
+	delete: (key: string, options?: Record<string, unknown>) => void;
 }) {
 	return createServerClient<Database>(PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY, {
 		cookies: {

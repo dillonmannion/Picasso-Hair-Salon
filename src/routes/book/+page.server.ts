@@ -1,6 +1,5 @@
 import { error, fail, redirect } from '@sveltejs/kit';
 import type { PageServerLoad, Actions } from './$types';
-import type { Database } from '$lib/types/database.types';
 
 export const load: PageServerLoad = async ({ locals: { supabase } }) => {
 	try {
@@ -57,7 +56,27 @@ export const actions: Actions = {
 
 		// Validate required fields
 		if (!serviceId || !stylistId || !appointmentDate || !appointmentTime) {
-			return fail(400, { error: 'All fields are required' });
+			return fail(400, {
+				error: 'All fields are required',
+				serviceId: serviceId || '',
+				stylistId: stylistId || '',
+				appointmentDate: appointmentDate || '',
+				appointmentTime: appointmentTime || '',
+				notes: notes || ''
+			});
+		}
+
+		// Validate date is not in the past
+		const appointmentDateTime = new Date(`${appointmentDate}T${appointmentTime}`);
+		if (appointmentDateTime <= new Date()) {
+			return fail(400, {
+				error: 'Appointment time must be in the future',
+				serviceId,
+				stylistId,
+				appointmentDate,
+				appointmentTime,
+				notes: notes || ''
+			});
 		}
 
 		try {

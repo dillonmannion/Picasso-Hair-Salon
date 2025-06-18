@@ -1,8 +1,6 @@
 <script lang="ts">
 	import { page } from '$app/stores';
-	import * as Card from '$lib/components/ui/card';
 	import { Button } from '$lib/components/ui/button';
-	import { Separator } from '$lib/components/ui/separator';
 	import { Badge } from '$lib/components/ui/badge';
 	import {
 		LayoutDashboard,
@@ -16,7 +14,7 @@
 	} from 'lucide-svelte';
 	import type { LayoutData } from './$types';
 
-	let { data, children }: { data: LayoutData; children: any } = $props();
+	let { data, children }: { data: LayoutData; children: import('svelte').Snippet } = $props();
 
 	// Navigation items
 	const navItems = [
@@ -75,7 +73,7 @@
 
 		<!-- Navigation -->
 		<nav class="flex-1 space-y-1 p-4">
-			{#each navItems as item}
+			{#each navItems as item (item.href)}
 				{@const IconComponent = item.icon}
 				<a
 					href={item.href}

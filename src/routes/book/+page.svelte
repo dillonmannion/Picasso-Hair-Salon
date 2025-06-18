@@ -1,8 +1,7 @@
 <script lang="ts">
 	import { page } from '$app/stores';
-	import { enhance } from '$app/forms';
+	import { enhance, applyAction } from '$app/forms';
 	import * as Card from '$lib/components/ui/card';
-	import * as Select from '$lib/components/ui/select';
 	import * as RadioGroup from '$lib/components/ui/radio-group';
 	import { Calendar } from '$lib/components/ui/calendar';
 	import { Button } from '$lib/components/ui/button';
@@ -15,7 +14,34 @@
 	import type { DateValue } from '@internationalized/date';
 	import { DateFormatter, getLocalTimeZone, today } from '@internationalized/date';
 
-	let { data, form }: { data: PageData; form: any } = $props();
+	let { data, form }: { data: PageData; form: import('./$types').ActionData } = $props();
+
+	// Restore form data if there was an error
+	$effect(() => {
+		if (form && typeof form === 'object' && 'serviceId' in form) {
+			// Type guard to ensure we have the right form shape
+			const formData = form as Record<string, unknown>;
+			selectedService = typeof formData.serviceId === 'string' ? formData.serviceId : null;
+			selectedStylist = typeof formData.stylistId === 'string' ? formData.stylistId : null;
+			selectedTime = typeof formData.appointmentTime === 'string' ? formData.appointmentTime : null;
+			notes = typeof formData.notes === 'string' ? formData.notes : '';
+
+			// Try to restore date if valid
+			if (typeof formData.appointmentDate === 'string') {
+				try {
+					const dateValue = new Date(formData.appointmentDate);
+					if (!isNaN(dateValue.getTime())) {
+						selectedDate = today(getLocalTimeZone()).add({
+							days: Math.ceil((dateValue.getTime() - Date.now()) / (1000 * 60 * 60 * 24))
+						});
+					}
+					// eslint-disable-next-line @typescript-eslint/no-unused-vars
+				} catch (_e) {
+					// Invalid date, ignore
+				}
+			}
+		}
+	});
 
 	// Booking state
 	let currentStep = $state(1);
@@ -24,6 +50,7 @@
 	let selectedTime = $state<string | null>(null);
 	let selectedStylist = $state<string | null>(null);
 	let notes = $state('');
+	let isSubmitting = $state(false);
 
 	// Form validation
 	let isStep1Valid = $derived(!!selectedService);
@@ -102,6 +129,42 @@
 		}
 	}
 
+	// Enhanced form submission with loading state
+	function handleBookingSubmit({
+		formElement: _formElement, // eslint-disable-line @typescript-eslint/no-unused-vars
+		formData: _formData, // eslint-disable-line @typescript-eslint/no-unused-vars
+		action: _action, // eslint-disable-line @typescript-eslint/no-unused-vars
+		cancel,
+		submitter: _submitter // eslint-disable-line @typescript-eslint/no-unused-vars
+	}: {
+		formElement: HTMLFormElement;
+		formData: FormData;
+		action: URL;
+		cancel: () => void;
+		submitter: HTMLElement | null;
+	}) {
+		// Validate required fields before submission
+		if (!selectedService || !selectedStylist || !selectedDate || !selectedTime) {
+			cancel();
+			return;
+		}
+
+		isSubmitting = true;
+
+		return async ({
+			result,
+			update: _update // eslint-disable-line @typescript-eslint/no-unused-vars
+		}: {
+			result: import('@sveltejs/kit').ActionResult;
+			update: () => Promise<void>;
+		}) => {
+			isSubmitting = false;
+
+			// Let SvelteKit handle the redirect for successful bookings
+			await applyAction(result);
+		};
+	}
+
 	// Step indicators
 	const steps = [
 		{ number: 1, title: 'Select Service', icon: CalendarDays },
@@ -130,7 +193,7 @@
 	<!-- Progress Indicator -->
 	<div class="mb-8">
 		<div class="flex items-center justify-center space-x-4">
-			{#each steps as step, index}
+			{#each steps as step, index (step.number)}
 				<div class="flex items-center">
 					<div class="flex flex-col items-center">
 						<div
@@ -248,7 +311,7 @@
 						<div>
 							<Label class="text-base font-medium">Select Time</Label>
 							<div class="mt-2 grid grid-cols-3 gap-2 sm:grid-cols-4">
-								{#each timeSlots as time}
+								{#each timeSlots as time (time)}
 									<Button
 										variant={selectedTime === time ? 'default' : 'outline'}
 										size="sm"
@@ -303,7 +366,7 @@
 									{/if}
 									{#if stylist.specialties && stylist.specialties.length > 0}
 										<div class="flex flex-wrap gap-1">
-											{#each stylist.specialties as specialty}
+											{#each stylist.specialties as specialty (specialty)}
 												<Badge variant="outline" class="text-xs">{specialty}</Badge>
 											{/each}
 										</div>
@@ -398,13 +461,15 @@
 				</Card.Content>
 				<Card.Footer class="flex gap-2">
 					<Button variant="outline" onclick={prevStep} class="flex-1">Back</Button>
-					<form method="POST" action="?/book" use:enhance class="flex-1">
+					<form method="POST" action="?/book" use:enhance={handleBookingSubmit} class="flex-1">
 						<input type="hidden" name="serviceId" value={selectedService} />
 						<input type="hidden" name="stylistId" value={selectedStylist} />
 						<input type="hidden" name="appointmentDate" value={selectedDate?.toString()} />
 						<input type="hidden" name="appointmentTime" value={selectedTime} />
 						<input type="hidden" name="notes" value={notes} />
-						<Button type="submit" class="w-full">Confirm Booking</Button>
+						<Button type="submit" class="w-full" disabled={isSubmitting}>
+							{isSubmitting ? 'Processing...' : 'Confirm Booking'}
+						</Button>
 					</form>
 				</Card.Footer>
 			</Card.Root>

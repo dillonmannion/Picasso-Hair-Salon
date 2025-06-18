@@ -1,21 +1,33 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
+	import { applyAction } from '$app/forms';
 	import * as Card from '$lib/components/ui/card';
-	import * as Select from '$lib/components/ui/select';
 	import { Button } from '$lib/components/ui/button';
 	import { Progress } from '$lib/components/ui/progress';
-	import { Badge } from '$lib/components/ui/badge';
 	import { Label } from '$lib/components/ui/label';
-	import { Input } from '$lib/components/ui/input';
 	import { Separator } from '$lib/components/ui/separator';
 	import { Star, PlusCircle, MessageCircle } from 'lucide-svelte';
 	import ReviewCard from '$lib/components/custom/ReviewCard.svelte';
 	import type { PageData } from './$types';
 
-	let { data, form }: { data: PageData; form: any } = $props();
+	let { data, form }: { data: PageData; form: import('./$types').ActionData } = $props();
+
+	// Restore form data if there was an error
+	$effect(() => {
+		if (form && typeof form === 'object' && 'serviceId' in form) {
+			// Type guard to ensure we have the right form shape
+			const formData = form as Record<string, unknown>;
+			newReview.serviceId = typeof formData.serviceId === 'string' ? formData.serviceId : '';
+			newReview.stylistId = typeof formData.stylistId === 'string' ? formData.stylistId : '';
+			newReview.rating = typeof formData.rating === 'number' ? formData.rating : 0;
+			newReview.comment = typeof formData.comment === 'string' ? formData.comment : '';
+			showReviewForm = true;
+		}
+	});
 
 	// Review submission form state
 	let showReviewForm = $state(false);
+	let isSubmitting = $state(false);
 	let newReview = $state({
 		serviceId: '',
 		stylistId: '',
@@ -48,6 +60,40 @@
 			comment: ''
 		};
 		showReviewForm = false;
+		isSubmitting = false;
+	}
+
+	// Enhanced form submission with loading state
+	function handleSubmit({
+		formElement: _formElement, // eslint-disable-line @typescript-eslint/no-unused-vars
+		formData: _formData, // eslint-disable-line @typescript-eslint/no-unused-vars
+		action: _action, // eslint-disable-line @typescript-eslint/no-unused-vars
+		cancel: _cancel, // eslint-disable-line @typescript-eslint/no-unused-vars
+		submitter: _submitter // eslint-disable-line @typescript-eslint/no-unused-vars
+	}: {
+		formElement: HTMLFormElement;
+		formData: FormData;
+		action: URL;
+		cancel: () => void;
+		submitter: HTMLElement | null;
+	}) {
+		isSubmitting = true;
+
+		return async ({
+			result,
+			update: _update // eslint-disable-line @typescript-eslint/no-unused-vars
+		}: {
+			result: import('@sveltejs/kit').ActionResult;
+			update: () => Promise<void>;
+		}) => {
+			isSubmitting = false;
+
+			if (result.type === 'success') {
+				resetForm();
+			}
+
+			await applyAction(result);
+		};
 	}
 
 	// Get services and stylists from server data
@@ -100,7 +146,7 @@
 							{data.averageRating}
 						</div>
 						<div class="mb-2 flex justify-center">
-							{#each getStarArray(data.averageRating) as star}
+							{#each getStarArray(data.averageRating) as star, index (index)}
 								<Star
 									class="h-5 w-5 {star.filled
 										? 'fill-yellow-400 text-yellow-400'
@@ -120,7 +166,7 @@
 					<!-- Rating Breakdown -->
 					<div class="space-y-3">
 						<h3 class="font-semibold text-gray-900">Rating Breakdown</h3>
-						{#each [5, 4, 3, 2, 1] as rating}
+						{#each [5, 4, 3, 2, 1] as rating (rating)}
 							<div class="flex items-center gap-3">
 								<div class="flex items-center gap-1">
 									<span class="text-sm font-medium">{rating}</span>
@@ -157,7 +203,12 @@
 					{#if showReviewForm}
 						<div class="space-y-4">
 							<Separator />
-							<form method="POST" action="?/submitReview" use:enhance class="space-y-4">
+							<form
+								method="POST"
+								action="?/submitReview"
+								use:enhance={handleSubmit}
+								class="space-y-4"
+							>
 								<div>
 									<Label for="service">Service *</Label>
 									<select
@@ -167,7 +218,7 @@
 										required
 									>
 										<option value="">Select service</option>
-										{#each services as service}
+										{#each services as service (service.id)}
 											<option value={service.id}>{service.name}</option>
 										{/each}
 									</select>
@@ -182,7 +233,7 @@
 										required
 									>
 										<option value="">Select stylist</option>
-										{#each stylists as stylist}
+										{#each stylists as stylist (stylist.id)}
 											<option value={stylist.id}>{stylist.name}</option>
 										{/each}
 									</select>
@@ -191,7 +242,7 @@
 								<div>
 									<Label>Rating *</Label>
 									<div class="mt-2 flex gap-1">
-										{#each Array.from({ length: 5 }, (_, i) => i + 1) as rating}
+										{#each Array.from({ length: 5 }, (_, i) => i + 1) as rating (rating)}
 											<button
 												type="button"
 												onclick={() => selectRating(rating)}
@@ -220,8 +271,15 @@
 								</div>
 
 								<div class="flex gap-2">
-									<Button type="submit" class="flex-1">Submit Review</Button>
-									<Button type="button" variant="outline" onclick={resetForm}>Cancel</Button>
+									<Button type="submit" class="flex-1" disabled={isSubmitting}>
+										{isSubmitting ? 'Submitting...' : 'Submit Review'}
+									</Button>
+									<Button
+										type="button"
+										variant="outline"
+										onclick={resetForm}
+										disabled={isSubmitting}>Cancel</Button
+									>
 								</div>
 							</form>
 						</div>

@@ -17,7 +17,6 @@
 		XCircle,
 		Lightbulb,
 		BarChart3,
-		Globe,
 		Share2
 	} from 'lucide-svelte';
 	import type { PageData } from './$types';
@@ -148,7 +147,7 @@
 				</Card.Title>
 			</Card.Header>
 			<Card.Content class="space-y-2">
-				{#each Object.entries(seoMetrics.seoHealth) as [key, value]}
+				{#each Object.entries(seoMetrics.seoHealth) as [key, value] (key)}
 					<div class="flex items-center justify-between text-sm">
 						<span class="capitalize">{key.replace(/([A-Z])/g, ' $1').trim()}</span>
 						<Badge variant={getScoreBadge(value)}>
@@ -192,7 +191,7 @@
 				</Card.Title>
 			</Card.Header>
 			<Card.Content class="space-y-2">
-				{#each Object.entries(seoMetrics.socialMedia) as [key, value]}
+				{#each Object.entries(seoMetrics.socialMedia) as [key, value] (key)}
 					<div class="flex items-center justify-between text-sm">
 						<span class="capitalize">{key.replace(/([A-Z])/g, ' $1').trim()}</span>
 						<Badge variant={getScoreBadge(value)}>

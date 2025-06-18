@@ -11,7 +11,7 @@
 	// Example 1: Simple loading state for client-side data fetching
 	let isLoading = $state(false);
 	let error = $state<Error | null>(null);
-	let data = $state<any[]>([]);
+	let data = $state<Array<{ id: string; title: string; description: string }>>([]);
 
 	async function fetchData() {
 		isLoading = true;
@@ -31,7 +31,9 @@
 	}
 
 	// Example 2: Promise-based loading with SvelteKit's await blocks
-	let dataPromise = $state<Promise<any> | null>(null);
+	let dataPromise = $state<Promise<Array<{ id: string; name: string; status: string }>> | null>(
+		null
+	);
 
 	function refreshData() {
 		dataPromise = fetch('/api/refresh-data').then((r) => r.json());
