@@ -4,6 +4,8 @@ CLAUDE.md
 PicassoDevPlan.md
 prompt.md
 .vscode
+!README.md
+*.md
 
 # Node
 test-results

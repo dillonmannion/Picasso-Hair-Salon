@@ -39,15 +39,15 @@
 			<div class="flex-1">
 				<div class="mb-2 flex items-center gap-2">
 					{#each getStarArray(review.rating) as star}
-						<Star 
-							class="h-4 w-4 {star.filled ? 'fill-yellow-400 text-yellow-400' : 'text-gray-300'}" 
+						<Star
+							class="h-4 w-4 {star.filled ? 'fill-yellow-400 text-yellow-400' : 'text-gray-300'}"
 						/>
 					{/each}
 					<span class="text-sm font-medium text-gray-600">
 						{review.rating}/5
 					</span>
 				</div>
-				
+
 				<div class="flex items-center gap-2 text-sm text-gray-500">
 					{#if review.users?.full_name}
 						<span class="font-medium">{review.users.full_name}</span>
@@ -61,7 +61,7 @@
 
 	{#if review.comment}
 		<Card.Content>
-			<p class="text-gray-700 leading-relaxed">
+			<p class="leading-relaxed text-gray-700">
 				"{review.comment}"
 			</p>
 		</Card.Content>

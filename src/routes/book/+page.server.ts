@@ -1,12 +1,8 @@
-import { createClient } from '@supabase/supabase-js';
-import { PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY } from '$env/static/public';
 import { error, fail, redirect } from '@sveltejs/kit';
 import type { PageServerLoad, Actions } from './$types';
 import type { Database } from '$lib/types/database.types';
 
-export const load: PageServerLoad = async ({ cookies }) => {
-	const supabase = createClient<Database>(PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY);
-
+export const load: PageServerLoad = async ({ locals: { supabase } }) => {
 	try {
 		// Fetch services
 		const { data: services, error: servicesError } = await supabase
@@ -44,9 +40,9 @@ export const load: PageServerLoad = async ({ cookies }) => {
 };
 
 export const actions: Actions = {
-	book: async ({ request, cookies }) => {
-		const supabase = createClient<Database>(PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY);
+	book: async ({ request, locals: { supabase, safeGetSession } }) => {
 		const data = await request.formData();
+		const { session, user } = await safeGetSession();
 
 		const serviceId = data.get('serviceId') as string;
 		const stylistId = data.get('stylistId') as string;
@@ -55,8 +51,7 @@ export const actions: Actions = {
 		const notes = data.get('notes') as string;
 
 		// Check if user is authenticated
-		const session = cookies.get('sb-access-token');
-		if (!session) {
+		if (!session || !user) {
 			return fail(401, { error: 'You must be logged in to book an appointment' });
 		}
 
@@ -77,9 +72,8 @@ export const actions: Actions = {
 				return fail(400, { error: 'Invalid service selected' });
 			}
 
-			// For now, we'll use a placeholder user ID since we need proper auth integration
-			// TODO: Get actual user ID from session
-			const userId = 'placeholder-user-id';
+			// Use authenticated user ID
+			const userId = user.id;
 
 			// Create appointment
 			const { data: appointment, error: appointmentError } = await supabase

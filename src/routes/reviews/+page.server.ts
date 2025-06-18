@@ -1,22 +1,20 @@
-import { createClient } from '@supabase/supabase-js';
-import { PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY } from '$env/static/public';
 import { error, fail } from '@sveltejs/kit';
 import type { PageServerLoad, Actions } from './$types';
 import type { Database } from '$lib/types/database.types';
 
-export const load: PageServerLoad = async () => {
-	const supabase = createClient<Database>(PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY);
-
+export const load: PageServerLoad = async ({ locals: { supabase } }) => {
 	try {
 		// Fetch reviews with related data
 		const { data: reviews, error: reviewsError } = await supabase
 			.from('reviews')
-			.select(`
+			.select(
+				`
 				*,
 				users:user_id (full_name),
 				services:service_id (name),
 				stylists:stylist_id (name)
-			`)
+			`
+			)
 			.eq('is_visible', true)
 			.order('created_at', { ascending: false });
 
@@ -28,14 +26,14 @@ export const load: PageServerLoad = async () => {
 		// Calculate review statistics
 		const totalReviews = reviews?.length || 0;
 		let averageRating = 0;
-		let ratingBreakdown = { 5: 0, 4: 0, 3: 0, 2: 0, 1: 0 };
+		const ratingBreakdown = { 5: 0, 4: 0, 3: 0, 2: 0, 1: 0 };
 
 		if (reviews && reviews.length > 0) {
 			const totalRating = reviews.reduce((sum, review) => sum + (review.rating || 0), 0);
 			averageRating = totalRating / reviews.length;
 
 			// Calculate rating breakdown
-			reviews.forEach(review => {
+			reviews.forEach((review) => {
 				if (review.rating) {
 					ratingBreakdown[review.rating as keyof typeof ratingBreakdown]++;
 				}
@@ -43,10 +41,14 @@ export const load: PageServerLoad = async () => {
 		}
 
 		// Calculate percentages for rating breakdown
-		const ratingPercentages = Object.entries(ratingBreakdown).reduce((acc, [rating, count]) => {
-			acc[rating as keyof typeof ratingBreakdown] = totalReviews > 0 ? (count / totalReviews) * 100 : 0;
-			return acc;
-		}, {} as Record<number, number>);
+		const ratingPercentages = Object.entries(ratingBreakdown).reduce(
+			(acc, [rating, count]) => {
+				acc[rating as unknown as keyof typeof ratingBreakdown] =
+					totalReviews > 0 ? (count / totalReviews) * 100 : 0;
+				return acc;
+			},
+			{} as Record<number, number>
+		);
 
 		return {
 			reviews: reviews || [],
@@ -62,9 +64,9 @@ export const load: PageServerLoad = async () => {
 };
 
 export const actions: Actions = {
-	submitReview: async ({ request, cookies }) => {
-		const supabase = createClient<Database>(PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY);
+	submitReview: async ({ request, locals: { supabase, safeGetSession } }) => {
 		const data = await request.formData();
+		const { session, user } = await safeGetSession();
 
 		const serviceId = data.get('serviceId') as string;
 		const stylistId = data.get('stylistId') as string;
@@ -72,8 +74,7 @@ export const actions: Actions = {
 		const comment = data.get('comment') as string;
 
 		// Check if user is authenticated
-		const session = cookies.get('sb-access-token');
-		if (!session) {
+		if (!session || !user) {
 			return fail(401, { error: 'You must be logged in to submit a review' });
 		}
 
@@ -83,9 +84,8 @@ export const actions: Actions = {
 		}
 
 		try {
-			// For now, we'll use a placeholder user ID since we need proper auth integration
-			// TODO: Get actual user ID from session
-			const userId = 'placeholder-user-id';
+			// Use authenticated user ID
+			const userId = user.id;
 
 			// Create review
 			const { data: review, error: reviewError } = await supabase

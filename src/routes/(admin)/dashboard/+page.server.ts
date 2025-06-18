@@ -9,35 +9,18 @@ export const load: PageServerLoad = async () => {
 
 	try {
 		// Fetch dashboard analytics data
-		const [
-			appointmentsResult,
-			servicesResult,
-			stylistsResult,
-			reviewsResult
-		] = await Promise.all([
+		const [appointmentsResult, servicesResult, stylistsResult, reviewsResult] = await Promise.all([
 			// Appointments data
-			supabase
-				.from('appointments')
-				.select('*')
-				.order('created_at', { ascending: false }),
-			
+			supabase.from('appointments').select('*').order('created_at', { ascending: false }),
+
 			// Services data
-			supabase
-				.from('services')
-				.select('*')
-				.eq('is_active', true),
-			
+			supabase.from('services').select('*').eq('is_active', true),
+
 			// Stylists data
-			supabase
-				.from('stylists')
-				.select('*')
-				.eq('is_active', true),
-			
+			supabase.from('stylists').select('*').eq('is_active', true),
+
 			// Reviews data
-			supabase
-				.from('reviews')
-				.select('*')
-				.eq('is_visible', true)
+			supabase.from('reviews').select('*').eq('is_visible', true)
 		]);
 
 		if (appointmentsResult.error) {
@@ -66,22 +49,26 @@ export const load: PageServerLoad = async () => {
 
 		// Calculate revenue (sum of all completed appointment prices)
 		const totalRevenue = appointments
-			.filter(apt => apt.status === 'completed')
+			.filter((apt) => apt.status === 'completed')
 			.reduce((sum, apt) => sum + parseFloat(apt.total_price || '0'), 0);
 
 		// Calculate average rating
-		const averageRating = reviews.length > 0
-			? reviews.reduce((sum, review) => sum + (review.rating || 0), 0) / reviews.length
-			: 0;
+		const averageRating =
+			reviews.length > 0
+				? reviews.reduce((sum, review) => sum + (review.rating || 0), 0) / reviews.length
+				: 0;
 
 		// Get recent appointments (last 10)
 		const recentAppointments = appointments.slice(0, 10);
 
 		// Calculate appointment status breakdown
-		const appointmentsByStatus = appointments.reduce((acc, apt) => {
-			acc[apt.status || 'pending'] = (acc[apt.status || 'pending'] || 0) + 1;
-			return acc;
-		}, {} as Record<string, number>);
+		const appointmentsByStatus = appointments.reduce(
+			(acc, apt) => {
+				acc[apt.status || 'pending'] = (acc[apt.status || 'pending'] || 0) + 1;
+				return acc;
+			},
+			{} as Record<string, number>
+		);
 
 		// Calculate monthly revenue (mock data for chart)
 		const currentDate = new Date();

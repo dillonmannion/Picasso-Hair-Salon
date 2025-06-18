@@ -66,7 +66,10 @@
 
 <svelte:head>
 	<title>Reviews - Picasso Hair Salon</title>
-	<meta name="description" content="Read what our clients say about their experience at Picasso Hair Salon. Real reviews from real customers." />
+	<meta
+		name="description"
+		content="Read what our clients say about their experience at Picasso Hair Salon. Real reviews from real customers."
+	/>
 </svelte:head>
 
 <div class="container mx-auto px-4 py-8">
@@ -102,13 +105,17 @@
 				<Card.Content class="space-y-6">
 					<!-- Average Rating -->
 					<div class="text-center">
-						<div class="mb-2 text-4xl font-bold text-primary">
+						<div class="text-primary mb-2 text-4xl font-bold">
 							{data.averageRating}
 						</div>
 						<div class="mb-2 flex justify-center">
 							{#each getStarArray(data.averageRating) as star}
-								<Star 
-									class="h-5 w-5 {star.filled ? 'fill-yellow-400 text-yellow-400' : star.half ? 'fill-yellow-200 text-yellow-400' : 'text-gray-300'}" 
+								<Star
+									class="h-5 w-5 {star.filled
+										? 'fill-yellow-400 text-yellow-400'
+										: star.half
+											? 'fill-yellow-200 text-yellow-400'
+											: 'text-gray-300'}"
 								/>
 							{/each}
 						</div>
@@ -129,10 +136,10 @@
 									<Star class="h-3 w-3 fill-yellow-400 text-yellow-400" />
 								</div>
 								<div class="flex-1">
-									<Progress value={data.ratingPercentages[rating]} class="h-2" />
+									<Progress value={data.ratingPercentages[rating as keyof typeof data.ratingPercentages]} class="h-2" />
 								</div>
-								<span class="text-xs text-gray-500 w-12 text-right">
-									{data.ratingBreakdown[rating]} ({Math.round(data.ratingPercentages[rating])}%)
+								<span class="w-12 text-right text-xs text-gray-500">
+									{data.ratingBreakdown[rating as keyof typeof data.ratingBreakdown]} ({Math.round(data.ratingPercentages[rating as keyof typeof data.ratingPercentages])}%)
 								</span>
 							</div>
 						{/each}
@@ -141,8 +148,8 @@
 					<Separator />
 
 					<!-- Add Review Button -->
-					<Button 
-						onclick={() => showReviewForm = !showReviewForm}
+					<Button
+						onclick={() => (showReviewForm = !showReviewForm)}
 						class="w-full"
 						variant={showReviewForm ? 'outline' : 'default'}
 					>
@@ -157,32 +164,32 @@
 							<form method="POST" action="?/submitReview" use:enhance class="space-y-4">
 								<div>
 									<Label for="service">Service *</Label>
-									<Select.Root>
-										<Select.Trigger class="w-full">
-											<Select.Value placeholder="Select service" />
-										</Select.Trigger>
-										<Select.Content>
-											{#each services as service}
-												<Select.Item value={service.id}>{service.name}</Select.Item>
-											{/each}
-										</Select.Content>
-									</Select.Root>
-									<input type="hidden" name="serviceId" bind:value={newReview.serviceId} />
+									<select 
+										name="serviceId" 
+										bind:value={newReview.serviceId}
+										class="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
+										required
+									>
+										<option value="">Select service</option>
+										{#each services as service}
+											<option value={service.id}>{service.name}</option>
+										{/each}
+									</select>
 								</div>
 
 								<div>
 									<Label for="stylist">Stylist *</Label>
-									<Select.Root>
-										<Select.Trigger class="w-full">
-											<Select.Value placeholder="Select stylist" />
-										</Select.Trigger>
-										<Select.Content>
-											{#each stylists as stylist}
-												<Select.Item value={stylist.id}>{stylist.name}</Select.Item>
-											{/each}
-										</Select.Content>
-									</Select.Root>
-									<input type="hidden" name="stylistId" bind:value={newReview.stylistId} />
+									<select 
+										name="stylistId" 
+										bind:value={newReview.stylistId}
+										class="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-sm"
+										required
+									>
+										<option value="">Select stylist</option>
+										{#each stylists as stylist}
+											<option value={stylist.id}>{stylist.name}</option>
+										{/each}
+									</select>
 								</div>
 
 								<div>
@@ -194,8 +201,10 @@
 												onclick={() => selectRating(rating)}
 												class="rounded p-1 hover:bg-gray-100"
 											>
-												<Star 
-													class="h-6 w-6 {newReview.rating >= rating ? 'fill-yellow-400 text-yellow-400' : 'text-gray-300'}" 
+												<Star
+													class="h-6 w-6 {newReview.rating >= rating
+														? 'fill-yellow-400 text-yellow-400'
+														: 'text-gray-300'}"
 												/>
 											</button>
 										{/each}
@@ -216,9 +225,7 @@
 
 								<div class="flex gap-2">
 									<Button type="submit" class="flex-1">Submit Review</Button>
-									<Button type="button" variant="outline" onclick={resetForm}>
-										Cancel
-									</Button>
+									<Button type="button" variant="outline" onclick={resetForm}>Cancel</Button>
 								</div>
 							</form>
 						</div>
@@ -247,10 +254,7 @@
 						<MessageCircle class="mx-auto mb-4 h-12 w-12 text-gray-400" />
 						<h3 class="mb-2 text-lg font-semibold text-gray-900">No reviews yet</h3>
 						<p class="text-gray-500">Be the first to share your experience!</p>
-						<Button 
-							onclick={() => showReviewForm = true}
-							class="mt-4"
-						>
+						<Button onclick={() => (showReviewForm = true)} class="mt-4">
 							Write the First Review
 						</Button>
 					</Card.Content>

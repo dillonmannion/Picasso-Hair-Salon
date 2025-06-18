@@ -1,5 +1,6 @@
 import type { Handle } from '@sveltejs/kit';
 import { sequence } from '@sveltejs/kit/hooks';
+import { redirect } from '@sveltejs/kit';
 import { createServerClient } from '@supabase/ssr';
 import { PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY } from '$env/static/public';
 import { paraglideMiddleware } from '$lib/paraglide/server';
@@ -42,6 +43,24 @@ const handleSupabase: Handle = async ({ event, resolve }) => {
 	});
 };
 
+const authGuard: Handle = async ({ event, resolve }) => {
+	const { session, user } = await event.locals.safeGetSession();
+	event.locals.session = session;
+	event.locals.user = user;
+
+	// Protect admin routes
+	if (!event.locals.session && event.url.pathname.startsWith('/(admin)')) {
+		throw redirect(303, `/auth/login?redirectTo=${encodeURIComponent(event.url.pathname)}`);
+	}
+
+	// Redirect authenticated users away from auth pages
+	if (event.locals.session && event.url.pathname.startsWith('/auth')) {
+		throw redirect(303, '/');
+	}
+
+	return resolve(event);
+};
+
 const handleParaglide: Handle = ({ event, resolve }) =>
 	paraglideMiddleware(event.request, ({ request, locale }) => {
 		event.request = request;
@@ -51,4 +70,4 @@ const handleParaglide: Handle = ({ event, resolve }) =>
 		});
 	});
 
-export const handle: Handle = sequence(handleSupabase, handleParaglide);
+export const handle: Handle = sequence(handleSupabase, authGuard, handleParaglide);

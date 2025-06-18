@@ -4,11 +4,11 @@
 	import { Button } from '$lib/components/ui/button';
 	import { Separator } from '$lib/components/ui/separator';
 	import { Badge } from '$lib/components/ui/badge';
-	import { 
-		LayoutDashboard, 
-		Calendar, 
-		Users, 
-		Scissors, 
+	import {
+		LayoutDashboard,
+		Calendar,
+		Users,
+		Scissors,
 		MessageSquare,
 		Settings,
 		LogOut,
@@ -47,24 +47,24 @@
 
 <div class="flex h-screen bg-gray-100">
 	<!-- Sidebar -->
-	<div class="w-64 bg-white shadow-lg flex flex-col">
+	<div class="flex w-64 flex-col bg-white shadow-lg">
 		<!-- Logo/Brand -->
-		<div class="p-6 border-b">
+		<div class="border-b p-6">
 			<h1 class="text-xl font-bold text-gray-900">Picasso Admin</h1>
 			<p class="text-sm text-gray-500">Hair Salon Management</p>
 		</div>
 
 		<!-- User Info -->
-		<div class="p-4 border-b">
+		<div class="border-b p-4">
 			<div class="flex items-center gap-3">
-				<div class="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center">
-					<span class="text-sm font-medium text-primary">
-						{data.user.email.charAt(0).toUpperCase()}
+				<div class="bg-primary/10 flex h-10 w-10 items-center justify-center rounded-full">
+					<span class="text-primary text-sm font-medium">
+						{data.user.email?.charAt(0).toUpperCase() || 'U'}
 					</span>
 				</div>
-				<div class="flex-1 min-w-0">
-					<p class="text-sm font-medium text-gray-900 truncate">
-						{data.user.email}
+				<div class="min-w-0 flex-1">
+					<p class="truncate text-sm font-medium text-gray-900">
+						{data.user.email || 'User'}
 					</p>
 					<Badge variant="secondary" class="text-xs">
 						{data.user.role}
@@ -74,29 +74,35 @@
 		</div>
 
 		<!-- Navigation -->
-		<nav class="flex-1 p-4 space-y-1">
+		<nav class="flex-1 space-y-1 p-4">
 			{#each navItems as item}
+				{@const IconComponent = item.icon}
 				<a
 					href={item.href}
-					class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors {
-						isActive(item.href)
-							? 'bg-primary text-primary-foreground'
-							: 'text-gray-700 hover:bg-gray-100'
-					}"
+					class="flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors {isActive(
+						item.href
+					)
+						? 'bg-primary text-primary-foreground'
+						: 'text-gray-700 hover:bg-gray-100'}"
 				>
-					<svelte:component this={item.icon} class="h-4 w-4" />
+					<IconComponent class="h-4 w-4" />
 					{item.label}
 				</a>
 			{/each}
 		</nav>
 
 		<!-- Footer Actions -->
-		<div class="p-4 border-t space-y-2">
+		<div class="space-y-2 border-t p-4">
 			<Button href="/" variant="outline" size="sm" class="w-full justify-start">
 				<Home class="mr-2 h-4 w-4" />
 				Back to Website
 			</Button>
-			<Button onclick={handleLogout} variant="ghost" size="sm" class="w-full justify-start text-red-600 hover:text-red-700 hover:bg-red-50">
+			<Button
+				onclick={handleLogout}
+				variant="ghost"
+				size="sm"
+				class="w-full justify-start text-red-600 hover:bg-red-50 hover:text-red-700"
+			>
 				<LogOut class="mr-2 h-4 w-4" />
 				Logout
 			</Button>
@@ -104,17 +110,15 @@
 	</div>
 
 	<!-- Main Content -->
-	<div class="flex-1 flex flex-col overflow-hidden">
+	<div class="flex flex-1 flex-col overflow-hidden">
 		<!-- Header -->
-		<header class="bg-white shadow-sm border-b px-6 py-4">
+		<header class="border-b bg-white px-6 py-4 shadow-sm">
 			<div class="flex items-center justify-between">
 				<div>
 					<h2 class="text-2xl font-semibold text-gray-900">
-						{navItems.find(item => isActive(item.href))?.label || 'Admin Dashboard'}
+						{navItems.find((item) => isActive(item.href))?.label || 'Admin Dashboard'}
 					</h2>
-					<p class="text-sm text-gray-500">
-						Manage your salon operations
-					</p>
+					<p class="text-sm text-gray-500">Manage your salon operations</p>
 				</div>
 				<div class="flex items-center gap-4">
 					<Badge variant="outline" class="text-xs">
