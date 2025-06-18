@@ -39,7 +39,7 @@ psql "postgresql://[username]:[password]@db.arrqhipfaejlodashfou.supabase.co:543
 
 ## Generating Types (Optional - Already Created)
 
-The TypeScript types have already been generated and saved to `src/lib/types/database.types.ts`. 
+The TypeScript types have already been generated and saved to `src/lib/types/database.types.ts`.
 
 If you need to regenerate them later:
 
@@ -59,6 +59,7 @@ The database includes the following tables:
 - **gallery_images**: Gallery images for showcasing work
 
 All tables include:
+
 - Row Level Security (RLS) policies for data protection
 - Automatic timestamp triggers for `updated_at` fields
 - Appropriate indexes for performance

@@ -1,6 +1,12 @@
 <script lang="ts">
 	import { Button } from '$lib/components/ui/button';
-	import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '$lib/components/ui/card';
+	import {
+		Card,
+		CardContent,
+		CardDescription,
+		CardHeader,
+		CardTitle
+	} from '$lib/components/ui/card';
 
 	let { data } = $props();
 	let { supabase } = data;
@@ -19,10 +25,10 @@
 	}
 </script>
 
-<div class="container flex items-center justify-center min-h-screen py-12">
+<div class="container flex min-h-screen items-center justify-center py-12">
 	<Card class="w-full max-w-md">
 		<CardHeader class="space-y-1">
-			<CardTitle class="text-2xl text-center">Create Your Account</CardTitle>
+			<CardTitle class="text-center text-2xl">Create Your Account</CardTitle>
 			<CardDescription class="text-center">
 				Join Picasso Hair Salon to book appointments and enjoy exclusive benefits
 			</CardDescription>
@@ -30,7 +36,7 @@
 		<CardContent class="space-y-6">
 			<div class="text-center">
 				<Button onclick={signUpWithGoogle} class="w-full" variant="default">
-					<svg class="w-5 h-5 mr-2" viewBox="0 0 24 24" fill="currentColor">
+					<svg class="mr-2 h-5 w-5" viewBox="0 0 24 24" fill="currentColor">
 						<path
 							d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
 							fill="#4285F4"
@@ -52,19 +58,20 @@
 				</Button>
 			</div>
 
-			<div class="bg-muted/30 p-4 rounded-lg border border-dashed">
-				<h3 class="font-medium text-center mb-2">Registration is currently available via Google OAuth</h3>
-				<p class="text-sm text-center text-muted-foreground">
-					Click the button above to create your account using your Google credentials. Additional registration methods coming soon.
+			<div class="bg-muted/30 rounded-lg border border-dashed p-4">
+				<h3 class="mb-2 text-center font-medium">
+					Registration is currently available via Google OAuth
+				</h3>
+				<p class="text-muted-foreground text-center text-sm">
+					Click the button above to create your account using your Google credentials. Additional
+					registration methods coming soon.
 				</p>
 			</div>
 
 			<div class="text-center">
-				<p class="text-sm text-muted-foreground">
-					Already have an account?{' '}
-					<a href="/auth/login" class="font-medium text-primary hover:underline">
-						Sign in
-					</a>
+				<p class="text-muted-foreground text-sm">
+					Already have an account?
+					<a href="/auth/login" class="text-primary font-medium hover:underline"> Sign in </a>
 				</p>
 			</div>
 		</CardContent>

@@ -19,7 +19,7 @@
 </script>
 
 <div class="relative flex min-h-screen flex-col">
-	<Header user={user} supabase={supabase} />
+	<Header {user} {supabase} />
 	<main class="flex-1">
 		{@render children?.()}
 	</main>

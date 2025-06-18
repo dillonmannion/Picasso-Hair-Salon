@@ -1,6 +1,12 @@
 <script lang="ts">
 	import { Button } from '$lib/components/ui/button';
-	import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '$lib/components/ui/card';
+	import {
+		Card,
+		CardContent,
+		CardDescription,
+		CardHeader,
+		CardTitle
+	} from '$lib/components/ui/card';
 	import { Input } from '$lib/components/ui/input';
 	import { Label } from '$lib/components/ui/label';
 	import { Separator } from '$lib/components/ui/separator';
@@ -22,17 +28,17 @@
 	}
 </script>
 
-<div class="container flex items-center justify-center min-h-screen py-12">
+<div class="container flex min-h-screen items-center justify-center py-12">
 	<Card class="w-full max-w-md">
 		<CardHeader class="space-y-1">
-			<CardTitle class="text-2xl text-center">Welcome to Picasso Hair Salon</CardTitle>
+			<CardTitle class="text-center text-2xl">Welcome to Picasso Hair Salon</CardTitle>
 			<CardDescription class="text-center">
 				Sign in to book appointments and manage your profile
 			</CardDescription>
 		</CardHeader>
 		<CardContent class="space-y-4">
 			<Button onclick={signInWithGoogle} class="w-full" variant="default">
-				<svg class="w-5 h-5 mr-2" viewBox="0 0 24 24" fill="currentColor">
+				<svg class="mr-2 h-5 w-5" viewBox="0 0 24 24" fill="currentColor">
 					<path
 						d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
 						fill="#4285F4"
@@ -58,7 +64,7 @@
 					<Separator class="w-full" />
 				</div>
 				<div class="relative flex justify-center text-xs uppercase">
-					<span class="bg-background px-2 text-muted-foreground">Or continue with</span>
+					<span class="bg-background text-muted-foreground px-2">Or continue with</span>
 				</div>
 			</div>
 
@@ -71,20 +77,16 @@
 					<Label for="password">Password</Label>
 					<Input id="password" type="password" placeholder="Enter your password" disabled />
 				</div>
-				<Button class="w-full" variant="outline" disabled>
-					Sign in with Email
-				</Button>
-				<p class="text-xs text-center text-muted-foreground">
+				<Button class="w-full" variant="outline" disabled>Sign in with Email</Button>
+				<p class="text-muted-foreground text-center text-xs">
 					Email/password authentication coming soon
 				</p>
 			</div>
 
 			<div class="text-center">
-				<p class="text-sm text-muted-foreground">
-					Don't have an account?{' '}
-					<a href="/auth/register" class="font-medium text-primary hover:underline">
-						Sign up
-					</a>
+				<p class="text-muted-foreground text-sm">
+					Don't have an account?
+					<a href="/auth/register" class="text-primary font-medium hover:underline"> Sign up </a>
 				</p>
 			</div>
 		</CardContent>
