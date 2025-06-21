@@ -3,18 +3,23 @@
 	import { invalidate } from '$app/navigation';
 	import Header from '$lib/components/custom/Header.svelte';
 	import '../app.css';
+	import type { LayoutData } from './$types';
+	import type { Snippet } from 'svelte';
 
-	let { children, data } = $props();
-	let { supabase, session, user } = $derived(data);
+	let { children, data }: { children: Snippet; data: LayoutData } = $props();
+	let { supabase, user } = $derived(data);
 
 	$effect(() => {
-		const { data } = supabase.auth.onAuthStateChange((event, newSession) => {
-			if (newSession?.expires_at !== session?.expires_at) {
-				invalidate('supabase:auth');
-			}
+		const { data: authData } = supabase.auth.onAuthStateChange(() => {
+			/**
+			 * Handle auth state changes by invalidating all auth-related data.
+			 * This triggers a fresh server-side session validation via safeGetSession.
+			 * We invalidate on any auth change to ensure secure server-side validation.
+			 */
+			void invalidate('supabase:auth');
 		});
 
-		return () => data.subscription.unsubscribe();
+		return () => authData.subscription.unsubscribe();
 	});
 </script>
 

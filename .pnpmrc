@@ -1,0 +1,52 @@
+# pnpm Configuration for Picasso Hair Salon
+# Optimized for SvelteKit, Tailwind CSS, and TypeScript
+
+# Engine and Compatibility
+engine-strict=true
+auto-install-peers=true
+dedupe-peer-dependents=true
+
+# Performance Optimizations
+prefer-workspace-packages=true
+workspace-concurrency=4
+shamefully-hoist=false
+
+# Public hoisting for common dependencies that need to be accessible
+public-hoist-pattern[]=*eslint*
+public-hoist-pattern[]=*prettier*
+public-hoist-pattern[]=*postcss*
+public-hoist-pattern[]=*tailwindcss*
+public-hoist-pattern[]=*typescript*
+public-hoist-pattern[]=*svelte*
+public-hoist-pattern[]=@types/*
+
+# Workspace and dependency resolution
+resolve-peers-from-workspace-root=true
+save-workspace-protocol=rolling
+
+# Development optimizations
+verify-store-integrity=false
+prefer-symlinked-executables=true
+
+# Build optimizations for SvelteKit
+side-effects-cache=true
+child-concurrency=5
+
+# Store configuration
+store-dir=~/.pnpm-store
+modules-cache-max-age=604800
+
+# Package resolution
+resolution-mode=highest
+save-exact=false
+
+# Audit and security
+audit-level=moderate
+fund=false
+
+# Lifecycle scripts optimization
+enable-pre-post-scripts=true
+scripts-prepend-node-path=true
+
+# Registry configuration (use default npm registry)
+registry=https://registry.npmjs.org/

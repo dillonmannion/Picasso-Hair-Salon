@@ -4,3 +4,33 @@ pnpm-lock.yaml
 yarn.lock
 bun.lock
 bun.lockb
+
+# Build outputs and dependencies
+build/
+.svelte-kit/
+dist/
+coverage/
+node_modules/
+*.d.ts
+
+# Auto-generated files from libraries/plugins
+src/lib/paraglide/
+src/lib/components/ui/
+src/lib/types/database.types.ts
+src/app.d.ts
+
+# Testing files
+**/*.{test,spec}.{js,ts,svelte}
+tests/
+vitest-setup-client.ts
+
+# Configuration files (auto-managed)
+.svelte-kit/
+.vscode/settings.json
+
+# Common auto-generated patterns
+**/.generated/
+**/generated/
+**/__generated__/
+**/*.generated.{js,ts,svelte,css,html}
+**/*.gen.{js,ts,svelte,css,html}

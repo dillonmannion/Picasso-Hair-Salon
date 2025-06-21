@@ -11,45 +11,36 @@
 		DropdownMenuTrigger
 	} from '$lib/components/ui/dropdown-menu';
 	import { goto } from '$app/navigation';
+	import { getUserDisplayName, getUserInitials, getUserAvatarUrl } from '$lib/utils/user';
 	import type { SupabaseClient, User } from '@supabase/supabase-js';
 
 	let { user, supabase }: { user: User; supabase: SupabaseClient } = $props();
 
-	async function signOut() {
-		const { error } = await supabase.auth.signOut();
-		if (!error) {
-			goto('/');
+	async function handleSignOut() {
+		try {
+			const { error } = await supabase.auth.signOut();
+			if (error) {
+				console.error('Error signing out:', error);
+				// You could show a toast notification here
+			} else {
+				await goto('/', { replaceState: true });
+			}
+		} catch (err) {
+			console.error('Unexpected error during sign out:', err);
 		}
-	}
-
-	function getUserInitials(user: User): string {
-		if (user.user_metadata?.full_name) {
-			return user.user_metadata.full_name
-				.split(' ')
-				.map((name: string) => name[0])
-				.join('')
-				.toUpperCase()
-				.slice(0, 2);
-		}
-		if (user.email) {
-			return user.email.slice(0, 2).toUpperCase();
-		}
-		return 'U';
-	}
-
-	function getUserDisplayName(user: User): string {
-		return user.user_metadata?.full_name || user.email || 'User';
 	}
 </script>
 
 <DropdownMenu>
 	<DropdownMenuTrigger>
-		<Button variant="ghost" class="relative h-8 w-8 rounded-full">
-			<Avatar class="h-8 w-8">
-				<AvatarImage src={user.user_metadata?.avatar_url} alt={getUserDisplayName(user)} />
-				<AvatarFallback>{getUserInitials(user)}</AvatarFallback>
-			</Avatar>
-		</Button>
+		{#snippet child({ props })}
+			<Button variant="ghost" class="relative h-8 w-8 rounded-full" {...props}>
+				<Avatar class="h-8 w-8">
+					<AvatarImage src={getUserAvatarUrl(user)} alt={getUserDisplayName(user)} />
+					<AvatarFallback>{getUserInitials(user)}</AvatarFallback>
+				</Avatar>
+			</Button>
+		{/snippet}
 	</DropdownMenuTrigger>
 	<DropdownMenuContent class="w-56" align="end">
 		<DropdownMenuLabel class="font-normal">
@@ -117,7 +108,7 @@
 			</DropdownMenuItem>
 		</DropdownMenuGroup>
 		<DropdownMenuSeparator />
-		<DropdownMenuItem onclick={signOut}>
+		<DropdownMenuItem onclick={handleSignOut}>
 			<svg
 				class="mr-2 h-4 w-4"
 				fill="none"

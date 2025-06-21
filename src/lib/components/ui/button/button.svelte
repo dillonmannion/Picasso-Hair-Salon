@@ -40,6 +40,8 @@
 </script>
 
 <script lang="ts">
+	import { goto } from '$app/navigation';
+	
 	let {
 		class: className,
 		variant = 'default',
@@ -49,11 +51,26 @@
 		type = 'button',
 		disabled,
 		children,
+		onclick,
 		...restProps
 	}: ButtonProps = $props();
+
+	// Handle navigation for button elements with href
+	async function handleClick(event: MouseEvent) {
+		// If there's a custom onclick handler, call it first
+		if (onclick) {
+			onclick(event);
+		}
+		
+		// If the button has an href and isn't disabled, navigate
+		if (href && !disabled && !event.defaultPrevented && event.currentTarget instanceof HTMLButtonElement) {
+			event.preventDefault();
+			await goto(href);
+		}
+	}
 </script>
 
-{#if href}
+{#if href && !onclick}
 	<a
 		bind:this={ref}
 		data-slot="button"
@@ -73,6 +90,7 @@
 		class={cn(buttonVariants({ variant, size }), className)}
 		{type}
 		{disabled}
+		onclick={handleClick}
 		{...restProps}
 	>
 		{@render children?.()}

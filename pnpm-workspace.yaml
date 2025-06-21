@@ -1,0 +1,21 @@
+# pnpm Workspace Configuration for Picasso Hair Salon
+# Simplified for 2024-2025 best practices
+
+packages:
+  - '.'
+
+# Essential settings only
+resolution-mode: 'highest'
+prefer-workspace-packages: true
+shared-workspace-lockfile: true
+save-workspace-protocol: 'rolling'
+
+# Performance optimizations
+side-effects-cache: true
+side-effects-cache-readonly: false
+virtual-store-dir: 'node_modules/.pnpm'
+package-manager-strict: true
+
+# Dependency overrides for consistency
+overrides:
+  'typescript': '^5.8.0'

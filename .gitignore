@@ -4,10 +4,17 @@ CLAUDE.md
 PicassoDevPlan.md
 prompt.md
 .vscode
+DevPlan.md
+CODEBASE_DOCUMENTATION.md
+STAGE1_DAY3_IMPLEMENTATION_PLAN.md
+STAGE1_DAY4-5_SUMMARY.md
 
 # Node
 test-results
 node_modules
+
+# pnpm
+.pnpm-debug.log*
 
 # Output
 .output
@@ -31,5 +38,10 @@ Thumbs.db
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
 
-# Paraglide
+# Auto-generated files from libraries/plugins
 src/lib/paraglide
+**/.generated
+**/generated
+**/__generated__
+**/*.generated.*
+**/*.gen.*

@@ -113,8 +113,9 @@
 				{#if user}
 					<UserNav {user} {supabase} />
 				{:else}
-					<Button href="/auth/login" variant="ghost" size="sm">Sign In</Button>
-					<Button href="/auth/register" size="sm">Sign Up</Button>
+					<a href="/auth/login">
+						<Button size="sm">Sign In with Google</Button>
+					</a>
 				{/if}
 			</nav>
 		</div>
