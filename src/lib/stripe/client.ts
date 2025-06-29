@@ -16,7 +16,7 @@ export const stripe = new Stripe(env.STRIPE_SECRET_KEY, {
 	}
 });
 
-export type CreateCheckoutSessionParams = {
+export interface CreateCheckoutSessionParams {
 	appointmentId: string;
 	serviceId: string;
 	serviceName: string;
@@ -29,12 +29,14 @@ export type CreateCheckoutSessionParams = {
 	appointmentTime: string;
 	successUrl: string;
 	cancelUrl: string;
-};
+	mode?: 'embedded';
+}
 
 export async function createCheckoutSession(
 	params: CreateCheckoutSessionParams
 ): Promise<Stripe.Checkout.Session> {
-	const session = await stripe.checkout.sessions.create({
+	const sessionParams: Stripe.Checkout.SessionCreateParams = {
+		ui_mode: params.mode === 'embedded' ? 'embedded' : 'hosted',
 		payment_method_types: ['card'],
 		line_items: [
 			{
@@ -72,7 +74,9 @@ export async function createCheckoutSession(
 				stylist_id: params.stylistId
 			}
 		}
-	});
+	};
+
+	const session = await stripe.checkout.sessions.create(sessionParams);
 
 	return session;
 }

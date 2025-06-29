@@ -84,11 +84,11 @@ describe('Admin Services Page', () => {
 		});
 
 		const deleteButtons = screen.getAllByRole('button', { name: /delete/i });
-		
+
 		// Test the component would show confirmation (actual implementation needed)
 		// For now, we just verify the button exists
 		expect(deleteButtons[0]).toBeInTheDocument();
-		
+
 		confirmSpy.mockRestore();
 	});
 });

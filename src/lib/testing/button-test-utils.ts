@@ -1,4 +1,4 @@
-import { vi, type Mock } from 'vitest';
+import { vi, expect, type Mock } from 'vitest';
 import { render as baseRender, type RenderResult } from '@testing-library/svelte';
 import userEvent from '@testing-library/user-event';
 import { goto, pushState } from '$app/navigation';
@@ -28,7 +28,7 @@ export function render<T extends SvelteComponent>(
 ): RenderResult & { user: ReturnType<typeof userEvent.setup> } {
 	const user = userEvent.setup();
 	const result = baseRender(Component, options);
-	return { ...result, user };
+	return Object.assign(result, { user });
 }
 
 // Helper to create mock event handlers with proper typing
@@ -40,10 +40,7 @@ export function createMockHandler() {
 }
 
 // Helper to wait for async operations
-export async function waitForLoadingToFinish(
-	getByRole: RenderResult['getByRole'],
-	timeout = 3000
-) {
+export async function waitForLoadingToFinish(getByRole: RenderResult['getByRole'], timeout = 3000) {
 	const startTime = Date.now();
 	while (Date.now() - startTime < timeout) {
 		try {
@@ -58,7 +55,7 @@ export async function waitForLoadingToFinish(
 }
 
 // Helper to test button states
-export async function expectButtonState(
+export function expectButtonState(
 	button: HTMLElement,
 	state: {
 		disabled?: boolean;
@@ -193,8 +190,7 @@ export async function testFormSubmitButton(
 // Helper for testing button variants
 export const buttonVariants = {
 	default: 'bg-primary text-primary-foreground shadow-xs hover:bg-primary/90',
-	destructive:
-		'bg-destructive shadow-xs hover:bg-destructive/90 focus-visible:ring-destructive/20',
+	destructive: 'bg-destructive shadow-xs hover:bg-destructive/90 focus-visible:ring-destructive/20',
 	outline: 'bg-background shadow-xs hover:bg-accent hover:text-accent-foreground',
 	secondary: 'bg-secondary text-secondary-foreground shadow-xs hover:bg-secondary/80',
 	ghost: 'hover:bg-accent hover:text-accent-foreground',

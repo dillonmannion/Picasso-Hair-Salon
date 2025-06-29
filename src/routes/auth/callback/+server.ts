@@ -24,6 +24,35 @@ export const GET: RequestHandler = async ({ url, locals: { supabase } }) => {
 				redirect(303, '/auth/login?error=exchange_failed');
 			}
 
+			// Get the authenticated user
+			const {
+				data: { user }
+			} = await supabase.auth.getUser();
+
+			if (user) {
+				// Check if user profile exists
+				const { data: existingProfile } = await supabase
+					.from('users')
+					.select('id')
+					.eq('id', user.id)
+					.single();
+
+				// Create user profile if it doesn't exist
+				if (!existingProfile) {
+					const { error: profileError } = await supabase.from('users').insert({
+						id: user.id,
+						email: user.email,
+						full_name: user.user_metadata?.full_name || null,
+						avatar_url: user.user_metadata?.avatar_url || null
+					});
+
+					if (profileError) {
+						console.error('Error creating user profile:', profileError);
+						// Continue with redirect even if profile creation fails
+					}
+				}
+			}
+
 			// Successful authentication - redirect to intended destination
 			const redirectTo = next.startsWith('/') ? next : '/';
 			redirect(303, redirectTo);

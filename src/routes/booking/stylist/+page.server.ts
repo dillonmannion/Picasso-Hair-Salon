@@ -5,7 +5,7 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 	const serviceId = url.searchParams.get('service');
 
 	if (!serviceId) {
-		throw error(400, 'Service ID is required');
+		error(400, 'Service ID is required');
 	}
 
 	// Get the selected service details
@@ -16,7 +16,7 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 		.single();
 
 	if (!service) {
-		throw error(404, 'Service not found');
+		error(404, 'Service not found');
 	}
 
 	// Get stylists who offer this service
@@ -35,14 +35,14 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 
 	if (stylistsError) {
 		console.error('Error loading stylists:', stylistsError);
-		throw error(500, 'Failed to load stylists');
+		error(500, 'Failed to load stylists');
 	}
 
 	// Calculate average ratings for each stylist
 	const stylistsWithRatings = stylists.map((stylist) => {
-		const ratings = stylist.reviews?.map((r: any) => r.rating) || [];
+		const ratings = stylist.reviews?.map((r: { rating: number }) => r.rating) || [];
 		const averageRating =
-			ratings.length > 0 ? ratings.reduce((a: number, b: number) => a + b, 0) / ratings.length : 0;
+			ratings.length > 0 ? ratings.reduce((a, b) => a + b, 0) / ratings.length : 0;
 
 		return {
 			...stylist,

@@ -7,7 +7,7 @@
 
 	function formatTime(time: string): string {
 		const [hours, minutes] = time.split(':');
-		const hour = Number.parseInt(hours || '0');
+		const hour = Number.parseInt(hours ?? '0');
 		const ampm = hour >= 12 ? 'PM' : 'AM';
 		const displayHour = hour === 0 ? 12 : hour > 12 ? hour - 12 : hour;
 		return `${displayHour}:${minutes} ${ampm}`;
@@ -22,7 +22,7 @@
 	// Group slots by period (morning, afternoon, evening)
 	$: groupedSlots = slots.reduce(
 		(acc, slot) => {
-			const hour = Number.parseInt(slot.time.split(':')[0] || '0');
+			const hour = Number.parseInt(slot.time.split(':')[0] ?? '0');
 			const period = hour < 12 ? 'Morning' : hour < 17 ? 'Afternoon' : 'Evening';
 
 			if (!acc[period]) {

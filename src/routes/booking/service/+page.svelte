@@ -32,7 +32,7 @@
 
 	function continueToNextStep() {
 		if (!selectedServiceId) return;
-		goto(`/booking/stylist?service=${selectedServiceId}`);
+		void goto(`/booking/stylist?service=${selectedServiceId}`);
 	}
 </script>
 

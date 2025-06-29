@@ -11,7 +11,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 
 	if (servicesError) {
 		console.error('Error fetching services:', servicesError);
-		throw error(500, 'Failed to load services');
+		error(500, 'Failed to load services');
 	}
 
 	return {
@@ -24,11 +24,12 @@ export const actions = {
 		const formData = await request.formData();
 		const name = formData.get('name') as string;
 		const description = formData.get('description') as string;
-		const price = parseFloat(formData.get('price') as string);
-		const duration = parseInt(formData.get('duration') as string);
+		const price = Number.parseFloat(formData.get('price') as string);
+		const duration = Number.parseInt(formData.get('duration') as string);
 		const category = formData.get('category') as string;
 		const is_active = formData.get('is_active') === 'true';
 
+		// @ts-expect-error "No overload matches the call"
 		const { error: createError } = await locals.supabase.from('services').insert({
 			name,
 			description,
@@ -51,8 +52,8 @@ export const actions = {
 		const id = formData.get('id') as string;
 		const name = formData.get('name') as string;
 		const description = formData.get('description') as string;
-		const price = parseFloat(formData.get('price') as string);
-		const duration = parseInt(formData.get('duration') as string);
+		const price = Number.parseFloat(formData.get('price') as string);
+		const duration = Number.parseInt(formData.get('duration') as string);
 		const category = formData.get('category') as string;
 		const is_active = formData.get('is_active') === 'true';
 

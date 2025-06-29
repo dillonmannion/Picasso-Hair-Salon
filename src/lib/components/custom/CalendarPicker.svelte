@@ -37,7 +37,7 @@
 	}
 
 	function formatDate(date: Date): string {
-		return date.toISOString().split('T')[0] || '';
+		return date.toISOString().split('T')[0] ?? '';
 	}
 
 	function isDateDisabled(date: Date): boolean {
@@ -93,7 +93,8 @@
 			aria-label="Previous month"
 		>
 			<svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-				<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+				<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"
+				></path>
 			</svg>
 		</button>
 
@@ -109,7 +110,8 @@
 			aria-label="Next month"
 		>
 			<svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-				<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+				<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"
+				></path>
 			</svg>
 		</button>
 	</div>

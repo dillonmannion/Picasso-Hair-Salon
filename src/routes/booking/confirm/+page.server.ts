@@ -24,7 +24,7 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 
 	// Get stylist details (if not "any")
 	let stylist = null;
-	let availableStylists: string[] = [];
+	const availableStylists: string[] = [];
 
 	if (stylistId === 'any') {
 		// For "any stylist", find available stylists for this time slot
@@ -139,6 +139,28 @@ export const actions = {
 			return fail(400, { error: 'This time slot is no longer available' });
 		}
 
+		// Ensure user profile exists
+		const { data: existingProfile } = await locals.supabase
+			.from('users')
+			.select('id')
+			.eq('id', user.id)
+			.single();
+
+		// Create user profile if it doesn't exist
+		if (!existingProfile) {
+			const { error: profileError } = await locals.supabase.from('users').insert({
+				id: user.id,
+				email: user.email,
+				full_name: user.user_metadata?.full_name || null,
+				avatar_url: user.user_metadata?.avatar_url || null
+			});
+
+			if (profileError) {
+				console.error('Error creating user profile:', profileError);
+				return fail(500, { error: 'Failed to create user profile' });
+			}
+		}
+
 		// Create the appointment
 		const { data: appointment, error: createError } = await locals.supabase
 			.from('appointments')
@@ -160,8 +182,8 @@ export const actions = {
 			return fail(500, { error: 'Failed to create appointment' });
 		}
 
-		// Redirect to checkout page for payment
-		throw redirect(303, `/api/checkout?appointmentId=${appointment.id}`);
+		// Redirect to embedded payment page
+		throw redirect(303, `/booking/payment?appointment_id=${appointment.id}`);
 	}
 } satisfies Actions;
 

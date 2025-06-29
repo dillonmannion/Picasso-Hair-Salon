@@ -73,6 +73,12 @@ const authHandler: Handle = async ({ event, resolve }) => {
 	// Add admin status to locals
 	event.locals.adminStatus = getAdminStatus(event.locals.user);
 
+	if (event.url.pathname.startsWith('/admin')) {
+		if (!event.locals.adminStatus.isAdmin) {
+			return redirect(303, '/');
+		}
+	}
+
 	// Redirect authenticated users away from auth login page
 	if (event.locals.session && event.url.pathname === '/auth/login') {
 		redirect(303, '/');

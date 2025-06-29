@@ -7,7 +7,7 @@
 	import type { Snippet } from 'svelte';
 
 	let { children, data }: { children: Snippet; data: LayoutData } = $props();
-	let { supabase, user } = $derived(data);
+	let { supabase, user, adminStatus } = $derived(data);
 
 	$effect(() => {
 		const { data: authData } = supabase.auth.onAuthStateChange(() => {
@@ -24,7 +24,7 @@
 </script>
 
 <div class="relative flex min-h-screen flex-col">
-	<Header {user} {supabase} />
+	<Header {user} {supabase} {adminStatus} />
 	<main class="flex-1">
 		{@render children?.()}
 	</main>

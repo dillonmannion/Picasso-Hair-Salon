@@ -18,12 +18,12 @@
 	}
 
 	function goBack() {
-		goto('/booking/service');
+		void goto('/booking/service');
 	}
 
 	function continueToNextStep() {
 		if (!selectedStylistId || !serviceId) return;
-		goto(`/booking/schedule?service=${serviceId}&stylist=${selectedStylistId}`);
+		void goto(`/booking/schedule?service=${serviceId}&stylist=${selectedStylistId}`);
 	}
 </script>
 

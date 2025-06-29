@@ -16,13 +16,7 @@ export const load: PageServerLoad = async ({ locals: { supabase } }) => {
 		error(500, 'Failed to load services');
 	}
 
-	// Convert price from string to number for frontend use
-	const formattedServices = (services ?? []).map((service) => ({
-		...service,
-		price: Number.parseFloat(service.price)
-	}));
-
 	return {
-		services: formattedServices
+		services: services ?? []
 	};
 };

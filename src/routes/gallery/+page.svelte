@@ -25,7 +25,7 @@
 			</div>
 		{:else}
 			<div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-				{#each data.galleryImages as image}
+				{#each data.galleryImages as image (image.id)}
 					<div class="group relative overflow-hidden rounded-lg bg-gray-100">
 						<img
 							src={image.url}

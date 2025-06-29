@@ -1,15 +1,22 @@
 <script lang="ts">
 	import { Button } from '$lib/components/ui/button';
-	import {
-		Card,
-		CardContent,
-		CardDescription,
-		CardHeader,
-		CardTitle
-	} from '$lib/components/ui/card';
+	import ServiceCard from '$lib/components/custom/ServiceCard.svelte';
 	import type { PageData } from './$types';
+	import type { Database } from '$lib/types/database.types';
+
+	type Service = Database['public']['Tables']['services']['Row'];
 
 	let { data }: { data: PageData } = $props();
+
+	function handleEdit(service: Service) {
+		// TODO: Implement edit functionality
+		console.log('Edit service:', service);
+	}
+
+	function handleDelete(service: Service) {
+		// TODO: Implement delete functionality
+		console.log('Delete service:', service);
+	}
 </script>
 
 <svelte:head>
@@ -28,60 +35,7 @@
 	<!-- Services Grid -->
 	<div class="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
 		{#each data.services as service (service.id)}
-			<Card class="relative">
-				{#if !service.is_active}
-					<div class="absolute top-2 right-2">
-						<span
-							class="inline-flex rounded-full bg-red-100 px-2 py-1 text-xs font-medium text-red-800"
-						>
-							Inactive
-						</span>
-					</div>
-				{:else}
-					<div class="absolute top-2 right-2">
-						<span
-							class="inline-flex rounded-full bg-green-100 px-2 py-1 text-xs font-medium text-green-800"
-						>
-							Active
-						</span>
-					</div>
-				{/if}
-
-				<CardHeader>
-					<CardTitle class="flex items-center justify-between">
-						<span>{service.name}</span>
-						<span class="text-lg font-bold text-green-600">
-							${service.price.toFixed(2)}
-						</span>
-					</CardTitle>
-					<CardDescription>{service.description}</CardDescription>
-				</CardHeader>
-
-				<CardContent>
-					<div class="space-y-3">
-						<div class="flex justify-between text-sm">
-							<span class="text-gray-600">Duration:</span>
-							<span class="font-medium">{service.duration} minutes</span>
-						</div>
-
-						<div class="flex justify-between text-sm">
-							<span class="text-gray-600">Category:</span>
-							<span class="font-medium">{service.category}</span>
-						</div>
-
-						<div class="flex space-x-2 pt-2">
-							<Button variant="outline" size="sm" class="flex-1">Edit</Button>
-							<Button
-								variant={service.is_active ? 'destructive' : 'default'}
-								size="sm"
-								class="flex-1"
-							>
-								{service.is_active ? 'Deactivate' : 'Activate'}
-							</Button>
-						</div>
-					</div>
-				</CardContent>
-			</Card>
+			<ServiceCard {service} isAdmin={true} onEdit={handleEdit} onDelete={handleDelete} />
 		{/each}
 	</div>
 
@@ -114,7 +68,7 @@
 									</div>
 								</td>
 								<td class="px-4 py-3">{service.category}</td>
-								<td class="px-4 py-3 font-medium">${service.price.toFixed(2)}</td>
+								<td class="px-4 py-3 font-medium">${service.price}</td>
 								<td class="px-4 py-3">{service.duration} min</td>
 								<td class="px-4 py-3">
 									<span

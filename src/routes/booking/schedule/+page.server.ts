@@ -1,5 +1,7 @@
 import { error } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
+import type { SupabaseClient } from '@supabase/supabase-js';
+import type { Database } from '$lib/types/database.types';
 
 export const load: PageServerLoad = async ({ locals, url }) => {
 	const serviceId = url.searchParams.get('service');
@@ -7,7 +9,7 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 	const selectedDate = url.searchParams.get('date');
 
 	if (!serviceId || !stylistId) {
-		throw error(400, 'Service and stylist IDs are required');
+		error(400, 'Service and stylist IDs are required');
 	}
 
 	// Get service details
@@ -18,7 +20,7 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 		.single();
 
 	if (!service) {
-		throw error(404, 'Service not found');
+		error(404, 'Service not found');
 	}
 
 	// Get stylist details (if not "any")
@@ -72,7 +74,7 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 };
 
 async function generateTimeSlots(
-	supabase: any,
+	supabase: SupabaseClient<Database>,
 	stylistId: string,
 	date: string,
 	serviceDuration: number
@@ -126,7 +128,7 @@ async function generateTimeSlots(
 }
 
 async function generateTimeSlotsForAny(
-	supabase: any,
+	supabase: SupabaseClient<Database>,
 	stylistIds: string[],
 	date: string,
 	serviceDuration: number

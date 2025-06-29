@@ -146,8 +146,9 @@ export default ts.config(
 				...globals.es2024
 			},
 			parserOptions: {
-				project: './tsconfig.json',
-				tsconfigRootDir: import.meta.dirname
+				project: './tsconfig.eslint.json',
+				tsconfigRootDir: import.meta.dirname,
+				extraFileExtensions: ['.svelte']
 			}
 		},
 		rules: {

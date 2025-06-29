@@ -1,12 +1,6 @@
 <script lang="ts">
 	import { Button } from '$lib/components/ui/button';
-	import {
-		Card,
-		CardContent,
-		CardDescription,
-		CardHeader,
-		CardTitle
-	} from '$lib/components/ui/card';
+	import ServiceCard from '$lib/components/custom/ServiceCard.svelte';
 	import type { PageData } from './$types';
 
 	let { data }: { data: PageData } = $props();
@@ -33,35 +27,7 @@
 	<!-- Services Grid -->
 	<div class="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
 		{#each data.services as service (service.id)}
-			<Card class="transition-shadow duration-300 hover:shadow-lg">
-				<CardHeader class="pb-4">
-					<CardTitle class="flex items-center justify-between">
-						<span>{service.name}</span>
-						<span class="text-primary text-2xl font-bold">
-							${service.price.toFixed(2)}
-						</span>
-					</CardTitle>
-					<CardDescription class="text-base">{service.description}</CardDescription>
-				</CardHeader>
-
-				<CardContent>
-					<div class="space-y-4">
-						<div class="grid grid-cols-2 gap-4 text-sm">
-							<div class="flex flex-col">
-								<span class="text-gray-600">Duration</span>
-								<span class="font-medium">{service.duration} minutes</span>
-							</div>
-
-							<div class="flex flex-col">
-								<span class="text-gray-600">Category</span>
-								<span class="font-medium">{service.category}</span>
-							</div>
-						</div>
-
-						<Button class="w-full" size="lg" href="/appointments?service={service.id}">Book Appointment</Button>
-					</div>
-				</CardContent>
-			</Card>
+			<ServiceCard {service} />
 		{/each}
 	</div>
 

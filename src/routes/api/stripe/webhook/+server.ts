@@ -9,12 +9,12 @@ export const POST: RequestHandler = async ({ request }) => {
 	const signature = request.headers.get('stripe-signature');
 
 	if (!signature) {
-		throw error(400, 'No signature');
+		return error(400, 'No signature');
 	}
 
 	if (!env.STRIPE_WEBHOOK_SECRET) {
 		console.error('STRIPE_WEBHOOK_SECRET is not configured');
-		throw error(500, 'Webhook secret not configured');
+		return error(500, 'Webhook secret not configured');
 	}
 
 	const body = await request.text();
@@ -24,7 +24,7 @@ export const POST: RequestHandler = async ({ request }) => {
 
 		// Use service role for webhook operations
 		if (!env.SUPABASE_SERVICE_ROLE_KEY) {
-			throw error(500, 'Service role key not configured');
+			return error(500, 'Service role key not configured');
 		}
 
 		const supabase = createClient(PUBLIC_SUPABASE_URL, env.SUPABASE_SERVICE_ROLE_KEY);
@@ -54,7 +54,7 @@ export const POST: RequestHandler = async ({ request }) => {
 
 				if (updateError) {
 					console.error('Error updating appointment:', updateError);
-					throw error(500, 'Failed to update appointment');
+					return error(500, 'Failed to update appointment');
 				}
 
 				// Create order record
@@ -119,6 +119,6 @@ export const POST: RequestHandler = async ({ request }) => {
 		});
 	} catch (err) {
 		console.error('Webhook error:', err);
-		throw error(400, 'Webhook error');
+		return error(400, 'Webhook error');
 	}
 };

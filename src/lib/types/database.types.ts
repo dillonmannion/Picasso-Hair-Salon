@@ -67,7 +67,7 @@ export interface Database {
 					updated_at?: string;
 					name?: string;
 					description?: string | null;
-					price?: string;
+					price?: number;
 					duration?: number;
 					category?: string;
 					is_active?: boolean;

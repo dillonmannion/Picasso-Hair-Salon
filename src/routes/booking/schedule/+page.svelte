@@ -19,18 +19,18 @@
 	$: if (selectedDate) {
 		const url = new URL($page.url);
 		url.searchParams.set('date', selectedDate);
-		goto(url.toString(), { replaceState: true, noScroll: true });
+		void goto(url.toString(), { replaceState: true, noScroll: true });
 	}
 
 	// Update URL when time changes
 	$: if (selectedTime) {
 		const url = new URL($page.url);
 		url.searchParams.set('time', selectedTime);
-		goto(url.toString(), { replaceState: true, noScroll: true });
+		void goto(url.toString(), { replaceState: true, noScroll: true });
 	}
 
 	function goBack() {
-		goto(`/booking/stylist?service=${serviceId}`);
+		void goto(`/booking/stylist?service=${serviceId}`);
 	}
 
 	function continueToNextStep() {
@@ -43,7 +43,7 @@
 			time: selectedTime
 		});
 
-		goto(`/booking/confirm?${params.toString()}`);
+		void goto(`/booking/confirm?${params.toString()}`);
 	}
 
 	// Generate disabled dates (Sundays and dates with no availability)

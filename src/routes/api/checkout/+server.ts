@@ -36,6 +36,11 @@ export const GET: RequestHandler = ({ url }) => {
 	});
 };
 
+interface CheckoutRequestBody {
+	appointmentId: string;
+	mode?: 'redirect' | 'embedded';
+}
+
 export const POST: RequestHandler = async ({ request, url }) => {
 	try {
 		// Check if user is authenticated
@@ -51,12 +56,16 @@ export const POST: RequestHandler = async ({ request, url }) => {
 
 		// Handle both JSON and form data
 		const contentType = request.headers.get('content-type');
+		let mode: 'redirect' | 'embedded' = 'redirect';
+
 		if (contentType?.includes('application/json')) {
-			const data = await request.json();
+			const data = (await request.json()) as CheckoutRequestBody;
 			appointmentId = data.appointmentId;
+			mode = data.mode ?? 'redirect';
 		} else {
 			const formData = await request.formData();
 			appointmentId = formData.get('appointmentId') as string;
+			mode = (formData.get('mode') as 'redirect' | 'embedded') ?? 'redirect';
 		}
 
 		if (!appointmentId) {
@@ -83,34 +92,49 @@ export const POST: RequestHandler = async ({ request, url }) => {
 			return json({ error: 'Appointment not found' }, { status: 404 });
 		}
 
-		if (appointment.status !== 'scheduled' || appointment.paid) {
+		// Check if appointment is paid (field from migration)
+		const appointmentWithPaid = appointment as typeof appointment & { paid?: boolean };
+		if (appointment.status !== 'scheduled' || appointmentWithPaid.paid) {
 			return json({ error: 'Appointment is not available for payment' }, { status: 400 });
 		}
 
+		// Ensure required fields are not null
+		if (!appointment.service_id || !appointment.stylist_id) {
+			return json({ error: 'Invalid appointment data' }, { status: 400 });
+		}
+
 		// Create Stripe checkout session
-		const session = await createCheckoutSession({
+		const sessionConfig = {
 			appointmentId: appointment.id,
 			serviceId: appointment.service_id,
-			serviceName: appointment.services.name,
-			servicePrice: appointment.services.price,
+			serviceName: appointment.services?.name ?? '',
+			servicePrice: appointment.services?.price ?? 0,
 			stylistId: appointment.stylist_id,
-			stylistName: appointment.stylists.name,
-			customerEmail: user.email || '',
-			customerName: appointment.users.name || user.email || 'Customer',
+			stylistName: appointment.stylists?.name ?? '',
+			customerEmail: user.email ?? '',
+			customerName: appointment.users?.full_name ?? user.email ?? 'Customer',
 			appointmentDate: new Date(appointment.appointment_date).toLocaleDateString(),
 			appointmentTime: appointment.appointment_time,
 			successUrl: `${url.origin}/booking/success?session_id={CHECKOUT_SESSION_ID}`,
-			cancelUrl: `${url.origin}/booking/cancel?appointment_id=${appointmentId}&canceled=true`
-		});
+			cancelUrl: `${url.origin}/booking/cancel?appointment_id=${appointmentId}&canceled=true`,
+			mode: mode === 'embedded' ? 'embedded' : undefined
+		};
+
+		const session = await createCheckoutSession(sessionConfig);
 
 		// For POST requests from form, redirect to Stripe
 		if (!request.headers.get('content-type')?.includes('application/json')) {
 			return new Response(null, {
 				status: 303,
 				headers: {
-					Location: session.url || '/booking/success'
+					Location: session.url ?? '/booking/success'
 				}
 			});
+		}
+
+		// For embedded mode, return client secret
+		if (mode === 'embedded') {
+			return json({ clientSecret: session.client_secret });
 		}
 
 		return json({ url: session.url });
