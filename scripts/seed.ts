@@ -208,6 +208,140 @@ async function seedSampleGalleryImages(stylists: any[]) {
 	return data;
 }
 
+async function seedAppointments(services: any[], stylists: any[]) {
+	console.log('🌱 Seeding sample appointments...');
+
+	// Get or create test users
+	const { data: existingUsers } = await supabase.from('users').select('id').limit(3);
+
+	// If no users exist, create some test users
+	let userIds: string[] = [];
+	if (!existingUsers || existingUsers.length === 0) {
+		console.log('📝 Creating test users for appointments...');
+		const testUsers = [
+			{
+				id: '11111111-1111-1111-1111-111111111111',
+				full_name: 'John Doe',
+				email: 'john.doe@example.com',
+				phone: '555-0101'
+			},
+			{
+				id: '22222222-2222-2222-2222-222222222222',
+				full_name: 'Jane Smith',
+				email: 'jane.smith@example.com',
+				phone: '555-0102'
+			},
+			{
+				id: '33333333-3333-3333-3333-333333333333',
+				full_name: 'Mike Johnson',
+				email: 'mike.johnson@example.com',
+				phone: '555-0103'
+			}
+		];
+
+		const { data: createdUsers, error: userError } = await supabase
+			.from('users')
+			.insert(testUsers)
+			.select();
+
+		if (userError) {
+			console.error('❌ Error creating test users:', userError);
+			// Continue without users - appointments will have null user_id
+		} else {
+			userIds = createdUsers.map((u) => u.id);
+		}
+	} else {
+		userIds = existingUsers.map((u) => u.id);
+	}
+
+	// Generate appointments with various statuses and dates
+	const today = new Date();
+	const appointments = [];
+
+	// Past completed appointments
+	for (let i = 30; i > 7; i -= 7) {
+		const date = new Date(today);
+		date.setDate(date.getDate() - i);
+
+		appointments.push({
+			user_id: userIds[0] || null,
+			service_id: services[0].id, // Haircut & Style
+			stylist_id: stylists[0].id, // Sarah Johnson
+			appointment_date: date.toISOString().split('T')[0],
+			appointment_time: '10:00:00',
+			status: 'completed',
+			notes: 'Regular customer, prefers shorter sides',
+			total_price: services[0].price
+		});
+	}
+
+	// Upcoming confirmed appointments
+	const tomorrow = new Date(today);
+	tomorrow.setDate(tomorrow.getDate() + 1);
+	appointments.push({
+		user_id: userIds[1] || null,
+		service_id: services[1].id, // Hair Color
+		stylist_id: stylists[1].id, // Maria Garcia
+		appointment_date: tomorrow.toISOString().split('T')[0],
+		appointment_time: '14:00:00',
+		status: 'confirmed',
+		notes: 'First time color, wants highlights',
+		total_price: services[1].price
+	});
+
+	// Future pending appointments
+	const nextWeek = new Date(today);
+	nextWeek.setDate(nextWeek.getDate() + 7);
+	appointments.push({
+		user_id: userIds[2] || null,
+		service_id: services[2].id, // Beard Trim
+		stylist_id: stylists[2].id, // Carlos Rodriguez
+		appointment_date: nextWeek.toISOString().split('T')[0],
+		appointment_time: '15:30:00',
+		status: 'pending',
+		notes: 'Monthly appointment',
+		total_price: services[2].price
+	});
+
+	// Cancelled appointment
+	const nextMonth = new Date(today);
+	nextMonth.setDate(nextMonth.getDate() + 14);
+	appointments.push({
+		user_id: userIds[0] || null,
+		service_id: services[0].id,
+		stylist_id: stylists[0].id,
+		appointment_date: nextMonth.toISOString().split('T')[0],
+		appointment_time: '11:00:00',
+		status: 'cancelled',
+		notes: 'Customer cancelled due to travel',
+		total_price: services[0].price
+	});
+
+	// Another completed appointment
+	const lastWeek = new Date(today);
+	lastWeek.setDate(lastWeek.getDate() - 7);
+	appointments.push({
+		user_id: userIds[1] || null,
+		service_id: services[0].id,
+		stylist_id: stylists[2].id,
+		appointment_date: lastWeek.toISOString().split('T')[0],
+		appointment_time: '09:00:00',
+		status: 'completed',
+		notes: 'Regular trim and style',
+		total_price: services[0].price
+	});
+
+	const { data, error } = await supabase.from('appointments').insert(appointments).select();
+
+	if (error) {
+		console.error('❌ Error seeding appointments:', error);
+		throw error;
+	}
+
+	console.log(`✅ Seeded ${data?.length} appointments with various statuses`);
+	return data;
+}
+
 async function main() {
 	try {
 		console.log('🚀 Starting database seed process...');
@@ -236,16 +370,21 @@ async function main() {
 		// Seed sample gallery images
 		await seedSampleGalleryImages(stylists);
 
+		// Seed appointments
+		const appointments = await seedAppointments(services, stylists);
+
 		console.log('🎉 Database seeding completed successfully!');
 		console.log('\n📊 Summary:');
 		console.log(`- Services: ${services?.length || 0}`);
 		console.log(`- Stylists: ${stylists?.length || 0}`);
 		console.log('- Gallery images: 3');
+		console.log(`- Appointments: ${appointments?.length || 0}`);
 
 		console.log('\n🔗 Next steps:');
-		console.log('1. Run `pnpm dev` to test the application');
-		console.log('2. Visit /services and /stylists to see the seeded data');
-		console.log('3. Visit /admin to manage the data');
+		console.log('1. Run `p dev` to test the application');
+		console.log('2. Visit /appointments to see user appointments');
+		console.log('3. Visit /admin/appointments to manage all appointments');
+		console.log('4. Visit /services and /stylists to see the seeded data');
 	} catch (error) {
 		console.error('💥 Seed process failed:', error);
 		process.exit(1);

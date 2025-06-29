@@ -8,9 +8,13 @@
 		CardTitle
 	} from '$lib/components/ui/card';
 	import { Separator } from '$lib/components/ui/separator';
-	import type { PageData } from './$types';
+	import { enhance } from '$app/forms';
+	import type { PageData, ActionData } from './$types';
 
-	let { data }: { data: PageData } = $props();
+	let { data, form }: { data: PageData; form: ActionData } = $props();
+
+	// Track loading states for each appointment
+	let loadingStates = $state<Record<string, { cancel: boolean; reschedule: boolean }>>({});
 
 	function formatDate(dateStr: string) {
 		return new Date(dateStr).toLocaleDateString('en-US', {
@@ -21,6 +25,15 @@
 		});
 	}
 
+	function formatTime(timeStr: string) {
+		// Convert 24-hour time to 12-hour format with AM/PM
+		const [hours, minutes] = timeStr.split(':');
+		const hour = parseInt(hours);
+		const ampm = hour >= 12 ? 'PM' : 'AM';
+		const displayHour = hour === 0 ? 12 : hour > 12 ? hour - 12 : hour;
+		return `${displayHour}:${minutes} ${ampm}`;
+	}
+
 	function getStatusColor(status: string) {
 		switch (status) {
 			case 'confirmed':
@@ -29,9 +42,32 @@
 				return 'text-yellow-600 bg-yellow-50 border-yellow-200';
 			case 'cancelled':
 				return 'text-red-600 bg-red-50 border-red-200';
+			case 'completed':
+				return 'text-blue-600 bg-blue-50 border-blue-200';
 			default:
 				return 'text-gray-600 bg-gray-50 border-gray-200';
 		}
+	}
+
+	function canCancelAppointment(appointment: typeof data.appointments[0]): boolean {
+		if (appointment.status === 'cancelled' || appointment.status === 'completed') {
+			return false;
+		}
+		// Check 24-hour rule
+		const appointmentDateTime = new Date(
+			`${appointment.appointment_date}T${appointment.appointment_time}`
+		);
+		const now = new Date();
+		const hoursUntilAppointment =
+			(appointmentDateTime.getTime() - now.getTime()) / (1000 * 60 * 60);
+		return hoursUntilAppointment >= 24;
+	}
+
+	function setLoading(appointmentId: string, action: 'cancel' | 'reschedule', value: boolean) {
+		if (!loadingStates[appointmentId]) {
+			loadingStates[appointmentId] = { cancel: false, reschedule: false };
+		}
+		loadingStates[appointmentId][action] = value;
 	}
 </script>
 
@@ -49,6 +85,16 @@
 			<Button href="/booking">Book New Appointment</Button>
 		</div>
 
+		{#if form?.message}
+			<div
+				class={form.success
+					? 'rounded border border-green-200 bg-green-50 px-4 py-3 text-green-800'
+					: 'rounded border border-red-200 bg-red-50 px-4 py-3 text-red-800'}
+			>
+				{form.message}
+			</div>
+		{/if}
+
 		{#if data.user && data.appointments.length > 0}
 			<div class="grid gap-4">
 				{#each data.appointments as appointment (appointment.id)}
@@ -56,9 +102,9 @@
 						<CardHeader>
 							<div class="flex items-start justify-between">
 								<div class="space-y-1">
-									<CardTitle class="text-lg">{appointment.service}</CardTitle>
+									<CardTitle class="text-lg">{appointment.service?.name || 'Service'}</CardTitle>
 									<CardDescription>
-										with {appointment.stylist}
+										with {appointment.stylist?.name || 'Stylist'}
 									</CardDescription>
 								</div>
 								<span
@@ -74,50 +120,80 @@
 							<div class="grid grid-cols-1 gap-4 md:grid-cols-3">
 								<div class="space-y-1">
 									<p class="text-muted-foreground text-sm font-medium">Date</p>
-									<p class="text-sm">{formatDate(appointment.date)}</p>
+									<p class="text-sm">{formatDate(appointment.appointment_date)}</p>
 								</div>
 								<div class="space-y-1">
 									<p class="text-muted-foreground text-sm font-medium">Time</p>
-									<p class="text-sm">{appointment.time}</p>
+									<p class="text-sm">{formatTime(appointment.appointment_time)}</p>
 								</div>
 								<div class="space-y-1">
-									<p class="text-muted-foreground text-sm font-medium">Service</p>
-									<p class="text-sm">{appointment.service}</p>
+									<p class="text-muted-foreground text-sm font-medium">Duration</p>
+									<p class="text-sm">{appointment.service?.duration || 0} minutes</p>
 								</div>
 							</div>
+							{#if appointment.notes}
+								<div class="mt-3 space-y-1">
+									<p class="text-muted-foreground text-sm font-medium">Notes</p>
+									<p class="text-sm">{appointment.notes}</p>
+								</div>
+							{/if}
 							<Separator class="my-4" />
 							<div class="flex flex-col gap-2 sm:flex-row">
-								<Button
-									variant="outline"
-									size="sm"
-									onclick={() => {
-										// TODO: Implement reschedule functionality
-										console.log('Reschedule appointment:', appointment.id);
-									}}
-								>
-									Reschedule
-								</Button>
-								<Button
-									variant="outline"
-									size="sm"
-									onclick={() => {
-										// TODO: Implement cancel functionality
-										console.log('Cancel appointment:', appointment.id);
-									}}
-								>
-									Cancel
-								</Button>
-								<Button
-									variant="outline"
-									size="sm"
-									onclick={() => {
-										// TODO: Implement view details functionality
-										console.log('View details:', appointment.id);
-									}}
-								>
+								{#if appointment.status !== 'cancelled' && appointment.status !== 'completed'}
+									<form
+										method="POST"
+										action="?/reschedule"
+										use:enhance={() => {
+											setLoading(appointment.id, 'reschedule', true);
+											return async ({ update }) => {
+												await update();
+												setLoading(appointment.id, 'reschedule', false);
+											};
+										}}
+									>
+										<input type="hidden" name="appointmentId" value={appointment.id} />
+										<Button
+											variant="outline"
+											size="sm"
+											type="submit"
+											disabled={loadingStates[appointment.id]?.reschedule ||
+												!canCancelAppointment(appointment)}
+										>
+											{loadingStates[appointment.id]?.reschedule ? 'Loading...' : 'Reschedule'}
+										</Button>
+									</form>
+									<form
+										method="POST"
+										action="?/cancel"
+										use:enhance={() => {
+											setLoading(appointment.id, 'cancel', true);
+											return async ({ update }) => {
+												await update();
+												setLoading(appointment.id, 'cancel', false);
+											};
+										}}
+									>
+										<input type="hidden" name="appointmentId" value={appointment.id} />
+										<Button
+											variant="outline"
+											size="sm"
+											type="submit"
+											disabled={loadingStates[appointment.id]?.cancel ||
+												!canCancelAppointment(appointment)}
+										>
+											{loadingStates[appointment.id]?.cancel ? 'Cancelling...' : 'Cancel'}
+										</Button>
+									</form>
+								{/if}
+								<Button variant="outline" size="sm" href="/appointments/{appointment.id}">
 									View Details
 								</Button>
 							</div>
+							{#if !canCancelAppointment(appointment) && appointment.status !== 'cancelled' && appointment.status !== 'completed'}
+								<p class="text-muted-foreground mt-2 text-xs">
+									Appointments must be cancelled or rescheduled at least 24 hours in advance
+								</p>
+							{/if}
 						</CardContent>
 					</Card>
 				{/each}

@@ -61,6 +61,7 @@ Slash commands provide quick access to specific Claude Code features. They are t
 ### Memory and Configuration Commands
 
 #### `/init`
+
 Initializes a `CLAUDE.md` file for your project. This command bootstraps a central repository for important project information, conventions, and frequently used commands.
 
 ```shell
@@ -68,6 +69,7 @@ Initializes a `CLAUDE.md` file for your project. This command bootstraps a centr
 ```
 
 #### `/config`
+
 Opens the general configuration menu for Claude Code settings.
 
 ```shell
@@ -75,6 +77,7 @@ Opens the general configuration menu for Claude Code settings.
 ```
 
 #### `/vim`
+
 Enables Vim keybindings within Claude Code. This supports a subset of Vim commands for mode switching, navigation, and editing.
 
 ```shell
@@ -84,6 +87,7 @@ Enables Vim keybindings within Claude Code. This supports a subset of Vim comman
 ### Terminal Setup
 
 #### `/terminal-setup`
+
 Automatically configures Shift+Enter as a more intuitive alternative for entering line breaks in iTerm2 and VS Code terminals.
 
 ```shell
@@ -93,6 +97,7 @@ Automatically configures Shift+Enter as a more intuitive alternative for enterin
 ### MCP Server Commands
 
 #### `/mcp__servername__promptname`
+
 Execute custom prompts exposed by MCP servers. These appear dynamically based on installed MCP servers.
 
 ```shell
@@ -123,10 +128,12 @@ CLAUDE.md files are special markdown files that provide project-specific guidanc
 This file provides guidance to Claude Code when working with code in this repository.
 
 ## Fundamental Rules
+
 - Reference the CLAUDE.md files in subdirectories for directory-specific information
 - Always produce code aligned with the prompt
 
 ## Essential Commands
+
 - `npm run dev` - Start development server
 - `npm run build` - Create production build
 - `npm run test` - Run tests
@@ -140,6 +147,7 @@ CLAUDE.md files support importing other files using the `@path/to/import` syntax
 See @README for project overview and @package.json for available npm commands.
 
 # Additional Instructions
+
 - git workflow @docs/git-instructions.md
 ```
 
@@ -149,6 +157,7 @@ Import personal preferences not checked into the repository:
 
 ```markdown
 # Individual Preferences
+
 - @~/.claude/my-project-instructions.md
 ```
 
@@ -171,21 +180,25 @@ MCP allows Claude Code to integrate with external tools and services through sta
 ### Adding MCP Servers
 
 #### Standard Server (stdio)
+
 ```bash
 claude mcp add my-server /path/to/server
 ```
 
 #### With Arguments
+
 ```bash
 claude mcp add weather-server /usr/local/bin/weather --api-key abc123
 ```
 
 #### SSE Server
+
 ```bash
 claude mcp add --transport sse sse-server https://example.com/sse-endpoint
 ```
 
 #### From JSON Configuration
+
 ```bash
 claude mcp add-json weather-api '{"type":"stdio","command":"/path/to/weather-cli","args":["--api-key","abc123"],"env":{"CACHE_DIR":"/tmp"}}'
 ```
@@ -193,16 +206,19 @@ claude mcp add-json weather-api '{"type":"stdio","command":"/path/to/weather-cli
 ### Managing MCP Servers
 
 #### List All Servers
+
 ```bash
 claude mcp list
 ```
 
 #### Get Server Details
+
 ```bash
 claude mcp get weather-api
 ```
 
 #### Remove a Server
+
 ```bash
 claude mcp remove my-server
 ```
@@ -226,40 +242,44 @@ Claude Code provides various built-in tools that can be extended and customized.
 The text editor tool supports multiple commands:
 
 #### View Command
+
 ```json
 {
-  "command": "view",
-  "path": "primes.py",
-  "view_range": [10, 20]  // Optional: view specific lines
+	"command": "view",
+	"path": "primes.py",
+	"view_range": [10, 20] // Optional: view specific lines
 }
 ```
 
 #### String Replace Command
+
 ```json
 {
-  "command": "str_replace",
-  "path": "primes.py",
-  "old_str": "for num in range(2, limit + 1)",
-  "new_str": "for num in range(2, limit + 1):"
+	"command": "str_replace",
+	"path": "primes.py",
+	"old_str": "for num in range(2, limit + 1)",
+	"new_str": "for num in range(2, limit + 1):"
 }
 ```
 
 #### Create Command
+
 ```json
 {
-  "command": "create",
-  "path": "test_primes.py",
-  "file_text": "import unittest\n# Test content here"
+	"command": "create",
+	"path": "test_primes.py",
+	"file_text": "import unittest\n# Test content here"
 }
 ```
 
 #### Insert Command
+
 ```json
 {
-  "command": "insert",
-  "path": "primes.py",
-  "insert_line": 0,
-  "new_str": "# Module docstring here\n"
+	"command": "insert",
+	"path": "primes.py",
+	"insert_line": 0,
+	"new_str": "# Module docstring here\n"
 }
 ```
 
@@ -295,12 +315,14 @@ curl https://api.anthropic.com/v1/messages \
 Claude Code behavior can be customized through environment variables:
 
 #### Model Selection
+
 ```bash
 export ANTHROPIC_MODEL='claude-opus-4@20250514'
 export ANTHROPIC_SMALL_FAST_MODEL='claude-3-5-haiku@20241022'
 ```
 
 #### AWS/Bedrock Configuration
+
 ```bash
 export AWS_REGION=us-east-1
 export ANTHROPIC_MODEL='arn:aws:bedrock:us-east-2:account-id:model/model-id'
@@ -345,6 +367,7 @@ Tool(optional-specifier)
 ```
 
 Examples:
+
 - `Bash(npm run build)` - Allow specific command
 - `Bash(npm run test:*)` - Allow pattern matching
 - `Edit(docs/**)` - Allow editing in specific directories
@@ -355,6 +378,7 @@ Examples:
 ### Policy File Locations
 
 Enterprise policy files are located at:
+
 - macOS/Linux: `/Library/Application Support/ClaudeCode/policies.json`
 - Linux (alternative): `/etc/claude-code/policies.json`
 
@@ -363,6 +387,7 @@ Enterprise policy files are located at:
 ### 1. Project-Specific Instructions
 
 Always create a `CLAUDE.md` file at your project root with:
+
 - Essential commands specific to your project
 - Code style guidelines
 - Testing procedures
@@ -385,7 +410,7 @@ I'll help you implement a usage metrics feature. Let me create a todo list:
 For better tool usage, encourage analysis:
 
 ```
-Answer the user's request using relevant tools. Before calling a tool, 
+Answer the user's request using relevant tools. Before calling a tool,
 do some analysis within <thinking></thinking> tags.
 ```
 
@@ -395,10 +420,10 @@ When tools fail, provide clear error messages:
 
 ```json
 {
-  "type": "tool_result",
-  "tool_use_id": "toolu_123",
-  "content": "Error: No match found. Please check your text.",
-  "is_error": true
+	"type": "tool_result",
+	"tool_use_id": "toolu_123",
+	"content": "Error: No match found. Please check your text.",
+	"is_error": true
 }
 ```
 

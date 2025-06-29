@@ -72,7 +72,7 @@
 <div class="checkout-container">
 	{#if loading}
 		<div class="loading">
-			<div class="spinner" />
+			<div class="spinner"></div>
 			<p>Loading checkout...</p>
 		</div>
 	{:else if error}
@@ -81,7 +81,7 @@
 			<button on:click={() => window.location.reload()}>Try Again</button>
 		</div>
 	{:else}
-		<div bind:this={checkoutDiv} class="stripe-checkout" />
+		<div bind:this={checkoutDiv} class="stripe-checkout"></div>
 	{/if}
 </div>
 

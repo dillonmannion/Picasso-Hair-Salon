@@ -42,7 +42,7 @@
 				style="width: {currentStepIndex === -1
 					? 0
 					: (currentStepIndex / (steps.length - 1)) * 100}%"
-			/>
+			></div>
 		</div>
 
 		<!-- Steps -->
