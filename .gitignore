@@ -16,6 +16,7 @@ implementation
 
 # Node
 test-results
+test-failures
 node_modules
 
 # pnpm

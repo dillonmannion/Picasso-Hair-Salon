@@ -87,7 +87,7 @@ export const actions = {
 
 		const { supabase } = locals;
 		const notesValue = notes ? notes.toString() : null;
-		
+
 		const { error } = await supabase
 			.from('appointments')
 			.update({ notes: notesValue, updated_at: new Date().toISOString() })

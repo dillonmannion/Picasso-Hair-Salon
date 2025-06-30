@@ -60,5 +60,25 @@ export default defineConfig({
 		alias: {
 			$lib: './src/lib'
 		}
+	},
+
+	test: {
+		environment: 'jsdom',
+		globals: true,
+		setupFiles: ['./src/lib/test-utils/setup.js'],
+		include: ['src/**/*.{test,spec}.{js,ts}'],
+		coverage: {
+			reporter: ['text', 'json', 'html'],
+			exclude: [
+				'node_modules/',
+				'src/lib/test-utils/',
+				'**/*.config.*',
+				'**/__tests__/**'
+			]
+		},
+		pool: 'forks',
+		clearMocks: true,
+		mockReset: true,
+		restoreMocks: true
 	}
 });

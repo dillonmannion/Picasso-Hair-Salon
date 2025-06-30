@@ -1,0 +1,237 @@
+/* Atelier by Tiffany Design System */
+
+/* Import base styles */
+@import '../../app.css';
+
+/* Font Optimization - Preconnect and Font Display */
+/* Note: Add these preconnect links to your app.html <head> for optimal performance:
+   <link rel="preconnect" href="https://fonts.googleapis.com">
+   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+*/
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Montserrat:wght@300;400;500;600&family=Cormorant+Garamond:wght@300;400;600&display=swap');
+
+/* Atelier Design Tokens */
+:root {
+	/* Atelier Brand Colors */
+	--atelier-luxury-black: oklch(0.15 0.01 0);
+	--atelier-classic-white: oklch(0.98 0 0);
+	--atelier-elegant-gold: oklch(0.75 0.12 70);
+	--atelier-soft-rose: oklch(0.85 0.08 20);
+	--atelier-deep-burgundy: oklch(0.35 0.15 15);
+	--atelier-champagne: oklch(0.92 0.04 65);
+	--atelier-midnight-blue: oklch(0.25 0.08 250);
+	--atelier-sage-green: oklch(0.65 0.06 140);
+
+	/* Atelier Semantic Colors */
+	--atelier-background: var(--atelier-classic-white);
+	--atelier-foreground: var(--atelier-luxury-black);
+	--atelier-primary: var(--atelier-elegant-gold);
+	--atelier-primary-hover: oklch(0.7 0.14 70);
+	--atelier-secondary: var(--atelier-soft-rose);
+	--atelier-accent: var(--atelier-champagne);
+	--atelier-muted: oklch(0.94 0.01 60);
+	--atelier-border: oklch(0.9 0.01 60);
+
+	/* Atelier Spacing */
+	--atelier-space-xs: 0.5rem;
+	--atelier-space-sm: 1rem;
+	--atelier-space-md: 1.5rem;
+	--atelier-space-lg: 2rem;
+	--atelier-space-xl: 3rem;
+	--atelier-space-2xl: 4rem;
+
+	/* Atelier Typography */
+	--atelier-font-serif: 'Playfair Display', 'Georgia', serif;
+	--atelier-font-sans: 'Montserrat', system-ui, sans-serif;
+	--atelier-font-display: 'Cormorant Garamond', 'Georgia', serif;
+
+	/* Atelier Animation Timing */
+	--atelier-transition-fast: 150ms;
+	--atelier-transition-base: 250ms;
+	--atelier-transition-slow: 350ms;
+	--atelier-transition-slower: 500ms;
+
+	/* Atelier Shadows */
+	--atelier-shadow-sm: 0 1px 3px oklch(0 0 0 / 0.08);
+	--atelier-shadow-md: 0 4px 8px oklch(0 0 0 / 0.12);
+	--atelier-shadow-lg: 0 10px 20px oklch(0 0 0 / 0.15);
+	--atelier-shadow-xl: 0 20px 40px oklch(0 0 0 / 0.2);
+	--atelier-shadow-gold: 0 4px 20px oklch(0.75 0.12 70 / 0.25);
+}
+
+/* Dark Mode Atelier Tokens */
+.dark {
+	--atelier-background: var(--atelier-luxury-black);
+	--atelier-foreground: var(--atelier-classic-white);
+	--atelier-primary: var(--atelier-elegant-gold);
+	--atelier-primary-hover: oklch(0.8 0.1 70);
+	--atelier-secondary: var(--atelier-soft-rose);
+	--atelier-accent: var(--atelier-midnight-blue);
+	--atelier-muted: oklch(0.2 0.01 60);
+	--atelier-border: oklch(0.25 0.01 60);
+
+	/* Adjusted shadows for dark mode */
+	--atelier-shadow-sm: 0 1px 3px oklch(1 0 0 / 0.05);
+	--atelier-shadow-md: 0 4px 8px oklch(1 0 0 / 0.08);
+	--atelier-shadow-lg: 0 10px 20px oklch(1 0 0 / 0.1);
+	--atelier-shadow-xl: 0 20px 40px oklch(1 0 0 / 0.15);
+	--atelier-shadow-gold: 0 4px 20px oklch(0.75 0.12 70 / 0.35);
+}
+
+/* Extend Tailwind theme */
+@theme inline {
+	/* Atelier Colors */
+	--color-atelier-black: var(--atelier-luxury-black);
+	--color-atelier-white: var(--atelier-classic-white);
+	--color-atelier-gold: var(--atelier-elegant-gold);
+	--color-atelier-rose: var(--atelier-soft-rose);
+	--color-atelier-burgundy: var(--atelier-deep-burgundy);
+	--color-atelier-champagne: var(--atelier-champagne);
+	--color-atelier-midnight: var(--atelier-midnight-blue);
+	--color-atelier-sage: var(--atelier-sage-green);
+
+	/* Atelier Semantic Colors */
+	--color-atelier-bg: var(--atelier-background);
+	--color-atelier-fg: var(--atelier-foreground);
+	--color-atelier-primary: var(--atelier-primary);
+	--color-atelier-primary-hover: var(--atelier-primary-hover);
+	--color-atelier-secondary: var(--atelier-secondary);
+	--color-atelier-accent: var(--atelier-accent);
+	--color-atelier-muted: var(--atelier-muted);
+	--color-atelier-border: var(--atelier-border);
+
+	/* Atelier Spacing */
+	--spacing-atelier-xs: var(--atelier-space-xs);
+	--spacing-atelier-sm: var(--atelier-space-sm);
+	--spacing-atelier-md: var(--atelier-space-md);
+	--spacing-atelier-lg: var(--atelier-space-lg);
+	--spacing-atelier-xl: var(--atelier-space-xl);
+	--spacing-atelier-2xl: var(--atelier-space-2xl);
+
+	/* Atelier Font Families */
+	--font-family-atelier-serif: var(--atelier-font-serif);
+	--font-family-atelier-sans: var(--atelier-font-sans);
+	--font-family-atelier-display: var(--atelier-font-display);
+
+	/* Atelier Shadows */
+	--shadow-atelier-sm: var(--atelier-shadow-sm);
+	--shadow-atelier-md: var(--atelier-shadow-md);
+	--shadow-atelier-lg: var(--atelier-shadow-lg);
+	--shadow-atelier-xl: var(--atelier-shadow-xl);
+	--shadow-atelier-gold: var(--atelier-shadow-gold);
+}
+
+/* Atelier Animations */
+@keyframes atelier-fade-in {
+	from {
+		opacity: 0;
+		transform: translateY(0.5rem);
+	}
+	to {
+		opacity: 1;
+		transform: translateY(0);
+	}
+}
+
+@keyframes atelier-scale-in {
+	from {
+		opacity: 0;
+		transform: scale(0.95);
+	}
+	to {
+		opacity: 1;
+		transform: scale(1);
+	}
+}
+
+@keyframes atelier-slide-up {
+	from {
+		opacity: 0;
+		transform: translateY(1rem);
+	}
+	to {
+		opacity: 1;
+		transform: translateY(0);
+	}
+}
+
+@keyframes atelier-shimmer {
+	0% {
+		background-position: -200% center;
+	}
+	100% {
+		background-position: 200% center;
+	}
+}
+
+@keyframes atelier-glow {
+	0%,
+	100% {
+		opacity: 1;
+		transform: scale(1);
+	}
+	50% {
+		opacity: 0.8;
+		transform: scale(1.05);
+	}
+}
+
+/* Atelier Utility Classes */
+@layer utilities {
+	.atelier-animate-fade-in {
+		animation: atelier-fade-in var(--atelier-transition-base) ease-out;
+	}
+
+	.atelier-animate-scale-in {
+		animation: atelier-scale-in var(--atelier-transition-base) ease-out;
+	}
+
+	.atelier-animate-slide-up {
+		animation: atelier-slide-up var(--atelier-transition-slow) ease-out;
+	}
+
+	.atelier-animate-shimmer {
+		background: linear-gradient(90deg, transparent 25%, oklch(1 0 0 / 0.2) 50%, transparent 75%);
+		background-size: 200% 100%;
+		animation: atelier-shimmer 2s infinite;
+	}
+
+	.atelier-animate-glow {
+		animation: atelier-glow 2s ease-in-out infinite;
+	}
+
+	/* Atelier Transitions */
+	.atelier-transition-fast {
+		transition-duration: var(--atelier-transition-fast);
+	}
+
+	.atelier-transition-base {
+		transition-duration: var(--atelier-transition-base);
+	}
+
+	.atelier-transition-slow {
+		transition-duration: var(--atelier-transition-slow);
+	}
+
+	.atelier-transition-slower {
+		transition-duration: var(--atelier-transition-slower);
+	}
+
+	/* Atelier Text Gradients */
+	.atelier-text-gradient-gold {
+		background: linear-gradient(135deg, var(--atelier-elegant-gold), var(--atelier-champagne));
+		-webkit-background-clip: text;
+		-webkit-text-fill-color: transparent;
+		background-clip: text;
+	}
+
+	.atelier-text-gradient-rose {
+		background: linear-gradient(135deg, var(--atelier-soft-rose), var(--atelier-deep-burgundy));
+		-webkit-background-clip: text;
+		-webkit-text-fill-color: transparent;
+		background-clip: text;
+	}
+}
+
+/* Font Loading */
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Montserrat:wght@300;400;500;600;700&family=Cormorant+Garamond:wght@300;400;600;700&display=swap');

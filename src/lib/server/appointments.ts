@@ -1,6 +1,7 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Database } from '$lib/types/database.types';
 import { error } from '@sveltejs/kit';
+import { APPOINTMENT_ERRORS, ADMIN_ERRORS } from '$lib/constants/errors';
 
 type Tables = Database['public']['Tables'];
 type Appointment = Tables['appointments']['Row'];
@@ -38,6 +39,35 @@ export function canCancelAppointment(appointmentDate: string, appointmentTime: s
 }
 
 /**
+ * Validates if a date/time is in the future
+ */
+export function isValidAppointmentDateTime(date: string, time: string): boolean {
+	const appointmentDateTime = new Date(`${date}T${time}`);
+	const now = new Date();
+	return appointmentDateTime > now;
+}
+
+/**
+ * Validates appointment status transitions
+ */
+export function isValidStatusTransition(
+	currentStatus: AppointmentStatus,
+	newStatus: AppointmentStatus
+): boolean {
+	// Define valid transitions
+	const validTransitions: Record<AppointmentStatus, AppointmentStatus[]> = {
+		[APPOINTMENT_STATUS.PENDING]: [APPOINTMENT_STATUS.CONFIRMED, APPOINTMENT_STATUS.CANCELLED],
+		[APPOINTMENT_STATUS.CONFIRMED]: [APPOINTMENT_STATUS.COMPLETED, APPOINTMENT_STATUS.CANCELLED],
+		[APPOINTMENT_STATUS.CANCELLED]: [
+			APPOINTMENT_STATUS.PENDING // Admin can reactivate
+		],
+		[APPOINTMENT_STATUS.COMPLETED]: [] // No transitions from completed
+	};
+
+	return validTransitions[currentStatus]?.includes(newStatus) ?? false;
+}
+
+/**
  * Get all appointments for a specific user
  */
 export async function getUserAppointments(
@@ -67,7 +97,7 @@ export async function getUserAppointments(
 
 	if (dbError) {
 		console.error('Error fetching user appointments:', dbError);
-		error(500, 'Failed to fetch appointments');
+		error(500, APPOINTMENT_ERRORS.DATABASE_ERROR);
 	}
 
 	return data as AppointmentWithDetails[];
@@ -118,7 +148,7 @@ export async function getAllAppointments(
 
 	if (dbError) {
 		console.error('Error fetching all appointments:', dbError);
-		error(500, 'Failed to fetch appointments');
+		error(500, APPOINTMENT_ERRORS.DATABASE_ERROR);
 	}
 
 	return data as AppointmentWithDetails[];
@@ -149,7 +179,7 @@ export async function getAppointmentById(
 			return null; // Not found
 		}
 		console.error('Error fetching appointment:', dbError);
-		error(500, 'Failed to fetch appointment');
+		error(500, APPOINTMENT_ERRORS.DATABASE_ERROR);
 	}
 
 	return data as AppointmentWithDetails;
@@ -167,26 +197,26 @@ export async function cancelAppointment(
 	const appointment = await getAppointmentById(supabase, appointmentId);
 
 	if (!appointment) {
-		return { success: false, error: 'Appointment not found' };
+		return { success: false, error: APPOINTMENT_ERRORS.APPOINTMENT_NOT_FOUND };
 	}
 
 	// Check if user owns the appointment (if userId provided)
 	if (userId && appointment.user_id !== userId) {
-		return { success: false, error: 'Unauthorized to cancel this appointment' };
+		return { success: false, error: APPOINTMENT_ERRORS.NOT_YOUR_APPOINTMENT };
 	}
 
 	// Check if appointment can be cancelled
 	if (appointment.status === APPOINTMENT_STATUS.CANCELLED) {
-		return { success: false, error: 'Appointment is already cancelled' };
+		return { success: false, error: APPOINTMENT_ERRORS.ALREADY_CANCELLED };
 	}
 
 	if (appointment.status === APPOINTMENT_STATUS.COMPLETED) {
-		return { success: false, error: 'Cannot cancel a completed appointment' };
+		return { success: false, error: APPOINTMENT_ERRORS.CANNOT_CANCEL_COMPLETED };
 	}
 
 	// Check 24-hour rule
 	if (!canCancelAppointment(appointment.appointment_date, appointment.appointment_time)) {
-		return { success: false, error: 'Appointments must be cancelled at least 24 hours in advance' };
+		return { success: false, error: APPOINTMENT_ERRORS.CANCELLATION_TOO_LATE };
 	}
 
 	// Update appointment status
@@ -197,7 +227,7 @@ export async function cancelAppointment(
 
 	if (updateError) {
 		console.error('Error cancelling appointment:', updateError);
-		return { success: false, error: 'Failed to cancel appointment' };
+		return { success: false, error: APPOINTMENT_ERRORS.DATABASE_ERROR };
 	}
 
 	return { success: true };
@@ -215,7 +245,7 @@ export async function updateAppointmentStatus(
 	const appointment = await getAppointmentById(supabase, appointmentId);
 
 	if (!appointment) {
-		return { success: false, error: 'Appointment not found' };
+		return { success: false, error: APPOINTMENT_ERRORS.APPOINTMENT_NOT_FOUND };
 	}
 
 	// Validate status transitions
@@ -223,7 +253,7 @@ export async function updateAppointmentStatus(
 		appointment.status === APPOINTMENT_STATUS.COMPLETED &&
 		status !== APPOINTMENT_STATUS.COMPLETED
 	) {
-		return { success: false, error: 'Cannot change status of a completed appointment' };
+		return { success: false, error: APPOINTMENT_ERRORS.INVALID_STATUS_TRANSITION };
 	}
 
 	if (
@@ -240,7 +270,7 @@ export async function updateAppointmentStatus(
 		);
 
 		if (!isAvailable) {
-			return { success: false, error: 'Time slot is no longer available' };
+			return { success: false, error: APPOINTMENT_ERRORS.TIME_SLOT_UNAVAILABLE };
 		}
 	}
 
@@ -251,7 +281,7 @@ export async function updateAppointmentStatus(
 
 	if (updateError) {
 		console.error('Error updating appointment status:', updateError);
-		return { success: false, error: 'Failed to update appointment status' };
+		return { success: false, error: APPOINTMENT_ERRORS.DATABASE_ERROR };
 	}
 
 	return { success: true };
@@ -302,28 +332,28 @@ export async function rescheduleAppointment(
 	const appointment = await getAppointmentById(supabase, appointmentId);
 
 	if (!appointment) {
-		return { success: false, error: 'Appointment not found' };
+		return { success: false, error: APPOINTMENT_ERRORS.APPOINTMENT_NOT_FOUND };
 	}
 
 	// Check if user owns the appointment (if userId provided)
 	if (userId && appointment.user_id !== userId) {
-		return { success: false, error: 'Unauthorized to reschedule this appointment' };
+		return { success: false, error: APPOINTMENT_ERRORS.NOT_YOUR_APPOINTMENT };
 	}
 
 	// Check if appointment can be rescheduled
 	if (appointment.status === APPOINTMENT_STATUS.CANCELLED) {
-		return { success: false, error: 'Cannot reschedule a cancelled appointment' };
+		return { success: false, error: APPOINTMENT_ERRORS.APPOINTMENT_NOT_PENDING };
 	}
 
 	if (appointment.status === APPOINTMENT_STATUS.COMPLETED) {
-		return { success: false, error: 'Cannot reschedule a completed appointment' };
+		return { success: false, error: APPOINTMENT_ERRORS.APPOINTMENT_NOT_PENDING };
 	}
 
 	// Check 24-hour rule for current appointment
 	if (!canCancelAppointment(appointment.appointment_date, appointment.appointment_time)) {
 		return {
 			success: false,
-			error: 'Appointments must be rescheduled at least 24 hours in advance'
+			error: APPOINTMENT_ERRORS.CANCELLATION_TOO_LATE
 		};
 	}
 
@@ -336,7 +366,7 @@ export async function rescheduleAppointment(
 	);
 
 	if (!isAvailable) {
-		return { success: false, error: 'Selected time slot is not available' };
+		return { success: false, error: APPOINTMENT_ERRORS.TIME_SLOT_UNAVAILABLE };
 	}
 
 	// Update appointment
@@ -351,7 +381,7 @@ export async function rescheduleAppointment(
 
 	if (updateError) {
 		console.error('Error rescheduling appointment:', updateError);
-		return { success: false, error: 'Failed to reschedule appointment' };
+		return { success: false, error: APPOINTMENT_ERRORS.DATABASE_ERROR };
 	}
 
 	return { success: true };
@@ -384,7 +414,7 @@ export async function getAppointmentStats(
 
 	if (dbError) {
 		console.error('Error fetching appointment stats:', dbError);
-		error(500, 'Failed to fetch appointment statistics');
+		error(500, APPOINTMENT_ERRORS.DATABASE_ERROR);
 	}
 
 	const today = new Date().toISOString().split('T')[0];
@@ -414,10 +444,155 @@ export async function getAppointmentStats(
 		}
 
 		// Count week's appointments
-		if (appointment.appointment_date && appointment.appointment_date >= today && appointment.appointment_date <= weekFromNow) {
+		if (
+			appointment.appointment_date &&
+			appointment.appointment_date >= today &&
+			appointment.appointment_date <= weekFromNow
+		) {
 			stats.weekCount++;
 		}
 	});
 
 	return stats;
+}
+
+/**
+ * Create a new appointment with validation
+ */
+export async function createAppointment(
+	supabase: SupabaseClient<Database>,
+	data: {
+		userId: string;
+		serviceId: string;
+		stylistId: string;
+		appointmentDate: string;
+		appointmentTime: string;
+		notes?: string;
+		totalPrice?: string;
+	}
+): Promise<{ success: boolean; appointmentId?: string; error?: string }> {
+	// Validate date/time is in the future
+	if (!isValidAppointmentDateTime(data.appointmentDate, data.appointmentTime)) {
+		return { success: false, error: APPOINTMENT_ERRORS.PAST_DATE };
+	}
+
+	// Check if time slot is available
+	const isAvailable = await checkTimeSlotAvailability(
+		supabase,
+		data.stylistId,
+		data.appointmentDate,
+		data.appointmentTime
+	);
+
+	if (!isAvailable) {
+		return { success: false, error: APPOINTMENT_ERRORS.TIME_SLOT_UNAVAILABLE };
+	}
+
+	// Check for user double-booking
+	const { data: existingAppointments, error: checkError } = await supabase
+		.from('appointments')
+		.select('id')
+		.eq('user_id', data.userId)
+		.eq('appointment_date', data.appointmentDate)
+		.eq('appointment_time', data.appointmentTime)
+		.in('status', [APPOINTMENT_STATUS.PENDING, APPOINTMENT_STATUS.CONFIRMED]);
+
+	if (checkError) {
+		console.error('Error checking for double booking:', checkError);
+		return { success: false, error: APPOINTMENT_ERRORS.DATABASE_ERROR };
+	}
+
+	if (existingAppointments && existingAppointments.length > 0) {
+		return { success: false, error: APPOINTMENT_ERRORS.DOUBLE_BOOKING };
+	}
+
+	// Create the appointment
+	const { data: newAppointment, error: insertError } = await supabase
+		.from('appointments')
+		.insert({
+			user_id: data.userId,
+			service_id: data.serviceId,
+			stylist_id: data.stylistId,
+			appointment_date: data.appointmentDate,
+			appointment_time: data.appointmentTime,
+			status: APPOINTMENT_STATUS.PENDING,
+			notes: data.notes,
+			total_price: data.totalPrice
+		})
+		.select('id')
+		.single();
+
+	if (insertError) {
+		console.error('Error creating appointment:', insertError);
+		return { success: false, error: APPOINTMENT_ERRORS.DATABASE_ERROR };
+	}
+
+	return { success: true, appointmentId: newAppointment.id };
+}
+
+/**
+ * Update appointment details (admin function)
+ */
+export async function updateAppointment(
+	supabase: SupabaseClient<Database>,
+	appointmentId: string,
+	updates: {
+		serviceId?: string;
+		stylistId?: string;
+		appointmentDate?: string;
+		appointmentTime?: string;
+		notes?: string;
+		totalPrice?: string;
+	}
+): Promise<{ success: boolean; error?: string }> {
+	const appointment = await getAppointmentById(supabase, appointmentId);
+
+	if (!appointment) {
+		return { success: false, error: APPOINTMENT_ERRORS.APPOINTMENT_NOT_FOUND };
+	}
+
+	// If changing date/time, validate it's in the future
+	if (updates.appointmentDate || updates.appointmentTime) {
+		const newDate = updates.appointmentDate || appointment.appointment_date;
+		const newTime = updates.appointmentTime || appointment.appointment_time;
+
+		if (!isValidAppointmentDateTime(newDate, newTime)) {
+			return { success: false, error: APPOINTMENT_ERRORS.PAST_DATE };
+		}
+
+		// Check availability if changing stylist or time
+		if (
+			updates.stylistId !== appointment.stylist_id ||
+			updates.appointmentDate !== appointment.appointment_date ||
+			updates.appointmentTime !== appointment.appointment_time
+		) {
+			const isAvailable = await checkTimeSlotAvailability(
+				supabase,
+				updates.stylistId || appointment.stylist_id!,
+				newDate,
+				newTime,
+				appointmentId
+			);
+
+			if (!isAvailable) {
+				return { success: false, error: APPOINTMENT_ERRORS.TIME_SLOT_UNAVAILABLE };
+			}
+		}
+	}
+
+	// Perform the update
+	const { error: updateError } = await supabase
+		.from('appointments')
+		.update({
+			...updates,
+			updated_at: new Date().toISOString()
+		})
+		.eq('id', appointmentId);
+
+	if (updateError) {
+		console.error('Error updating appointment:', updateError);
+		return { success: false, error: APPOINTMENT_ERRORS.DATABASE_ERROR };
+	}
+
+	return { success: true };
 }

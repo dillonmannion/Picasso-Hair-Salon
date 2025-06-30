@@ -49,7 +49,7 @@
 		}
 	}
 
-	function canCancelAppointment(appointment: typeof data.appointments[0]): boolean {
+	function canCancelAppointment(appointment: (typeof data.appointments)[0]): boolean {
 		if (appointment.status === 'cancelled' || appointment.status === 'completed') {
 			return false;
 		}
@@ -85,13 +85,13 @@
 			<Button href="/booking">Book New Appointment</Button>
 		</div>
 
-		{#if form?.message}
+		{#if form?.message || form?.error}
 			<div
 				class={form.success
 					? 'rounded border border-green-200 bg-green-50 px-4 py-3 text-green-800'
 					: 'rounded border border-red-200 bg-red-50 px-4 py-3 text-red-800'}
 			>
-				{form.message}
+				{form.message || form.error}
 			</div>
 		{/if}
 
@@ -145,7 +145,7 @@
 										action="?/reschedule"
 										use:enhance={() => {
 											setLoading(appointment.id, 'reschedule', true);
-											return async ({ update }) => {
+											return async ({ result, update }) => {
 												await update();
 												setLoading(appointment.id, 'reschedule', false);
 											};
@@ -167,7 +167,7 @@
 										action="?/cancel"
 										use:enhance={() => {
 											setLoading(appointment.id, 'cancel', true);
-											return async ({ update }) => {
+											return async ({ result, update }) => {
 												await update();
 												setLoading(appointment.id, 'cancel', false);
 											};
