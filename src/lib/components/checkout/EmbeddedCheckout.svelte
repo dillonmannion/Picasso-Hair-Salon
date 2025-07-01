@@ -17,7 +17,7 @@
 
 	async function initializeCheckout() {
 		try {
-			stripe = await loadStripe(PUBLIC_STRIPE_PUBLISHABLE_KEY);
+			stripe = await loadStripe(PUBLIC_STRIPE_PUBLISHABLE_KEY as string);
 			if (!stripe) {
 				throw new Error('Failed to load Stripe');
 			}

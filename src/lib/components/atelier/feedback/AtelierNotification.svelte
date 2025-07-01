@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { fly, fade } from 'svelte/transition';
 	import { flip } from 'svelte/animate';
-	import { notifications, type Notification } from '$lib/stores/atelierNotifications';
+	import { notifications } from '$lib/stores/atelierNotifications';
 	import { cn } from '$lib/utils';
 	import AtelierButton from '../AtelierButton.svelte';
 
@@ -68,7 +68,7 @@
 					{/if}
 					{#if notification.actions && notification.actions.length > 0}
 						<div class="mt-3 flex gap-2">
-							{#each notification.actions as action}
+							{#each notification.actions as action (action.label)}
 								<AtelierButton size="sm" variant="outline" onclick={action.action}>
 									{action.label}
 								</AtelierButton>

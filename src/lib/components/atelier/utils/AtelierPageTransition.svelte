@@ -5,11 +5,7 @@
 	import { fade } from 'svelte/transition';
 	import AtelierLoader from '../feedback/AtelierLoader.svelte';
 
-	let isTransitioning = $state(false);
-
-	$effect(() => {
-		isTransitioning = !!$navigating;
-	});
+	const isTransitioning = $derived(!!$navigating);
 
 	onMount(() => {
 		setupPageTransitions();

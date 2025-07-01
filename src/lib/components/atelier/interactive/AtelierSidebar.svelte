@@ -1,10 +1,10 @@
 <script lang="ts">
-	import { onDestroy } from 'svelte';
 	import { fly, fade } from 'svelte/transition';
 	import { cubicOut } from 'svelte/easing';
 	import { cn } from '$lib/utils';
 	import AtelierButton from '../AtelierButton.svelte';
 	import { X, Menu } from 'lucide-svelte';
+	import type { Snippet } from 'svelte';
 
 	interface SidebarProps {
 		open?: boolean;
@@ -17,9 +17,9 @@
 		closeOnEscape?: boolean;
 		width?: string;
 		class?: string;
-		children?: () => any;
-		footer?: () => any;
-		trigger?: () => any;
+		children?: Snippet;
+		footer?: Snippet;
+		trigger?: Snippet<[{ onclick: () => void }]>;
 	}
 
 	let {
@@ -33,8 +33,8 @@
 		closeOnEscape = true,
 		width = '20rem',
 		class: className,
-		children = () => {},
-		footer = () => {},
+		children,
+		footer,
 		trigger
 	}: SidebarProps = $props();
 
@@ -177,7 +177,7 @@
 				{#if showCloseButton}
 					<AtelierButton
 						variant="ghost"
-						size="icon"
+						size="sm"
 						onclick={closeSidebar}
 						class="-mr-2 ml-auto"
 						aria-label="Close sidebar"
@@ -190,7 +190,9 @@
 
 		<!-- Content -->
 		<div class="atelier-sidebar-content flex-1 overflow-y-auto px-6 py-6">
-			{@render children()}
+			{#if children}
+				{@render children()}
+			{/if}
 		</div>
 
 		<!-- Footer -->

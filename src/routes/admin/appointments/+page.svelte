@@ -77,11 +77,11 @@
 			params.set('endDate', endDateInput.value);
 		}
 
-		goto(`?${params.toString()}`);
+		void goto(`?${params.toString()}`);
 	}
 
 	function clearFilters() {
-		goto('/admin/appointments');
+		void goto('/admin/appointments');
 	}
 </script>
 
@@ -160,7 +160,7 @@
 						onchange={applyFilters}
 					>
 						<option value="all">All Statuses</option>
-						{#each Object.values(APPOINTMENT_STATUS) as status}
+						{#each Object.values(APPOINTMENT_STATUS) as status (status)}
 							<option value={status}>{status.charAt(0).toUpperCase() + status.slice(1)}</option>
 						{/each}
 					</select>
@@ -174,7 +174,7 @@
 						onchange={applyFilters}
 					>
 						<option value="all">All Stylists</option>
-						{#each data.stylists as stylist}
+						{#each data.stylists as stylist (stylist.id)}
 							<option value={stylist.id}>{stylist.name}</option>
 						{/each}
 					</select>

@@ -3,6 +3,7 @@
 	import { fade, scale } from 'svelte/transition';
 	import { cn } from '$lib/utils';
 	import { atelierModal } from '$lib/stores/atelierModal';
+	import type { Snippet } from 'svelte';
 
 	interface ModalProps {
 		open?: boolean;
@@ -13,8 +14,8 @@
 		closeOnOutsideClick?: boolean;
 		closeOnEscape?: boolean;
 		class?: string;
-		children?: () => any;
-		actions?: () => any;
+		children?: Snippet;
+		actions?: Snippet;
 	}
 
 	let {
@@ -26,8 +27,8 @@
 		closeOnOutsideClick = true,
 		closeOnEscape = true,
 		class: className,
-		children = () => {},
-		actions = () => {}
+		children,
+		actions
 	}: ModalProps = $props();
 
 	let modalElement = $state<HTMLDivElement>();
@@ -39,7 +40,7 @@
 		storeState = state;
 	});
 
-	const isOpen = $derived(open !== undefined ? open : storeState.isOpen);
+	const isOpen = $derived(open ?? storeState.isOpen);
 
 	function handleClose() {
 		open = false;
@@ -60,12 +61,12 @@
 			const firstElement = focusableElements[0];
 			const lastElement = focusableElements.at(-1);
 
-			if (event.shiftKey && document.activeElement === firstElement) {
+			if (event.shiftKey && document.activeElement === firstElement && lastElement) {
 				event.preventDefault();
-				lastElement?.focus();
-			} else if (!event.shiftKey && document.activeElement === lastElement) {
+				lastElement.focus();
+			} else if (!event.shiftKey && document.activeElement === lastElement && firstElement) {
 				event.preventDefault();
-				firstElement?.focus();
+				firstElement.focus();
 			}
 		}
 	}
@@ -128,7 +129,7 @@
 			transition:scale={{ duration: 200, start: 0.95 }}
 			onclick={(e) => e.stopPropagation()}
 		>
-			{#if title || showCloseButton}
+			{#if title ?? showCloseButton}
 				<div
 					class="flex items-center justify-between border-b border-gray-200 p-6 dark:border-gray-700"
 				>
@@ -167,7 +168,9 @@
 						{description}
 					</p>
 				{/if}
-				{@render children()}
+				{#if children}
+					{@render children()}
+				{/if}
 			</div>
 
 			{#if actions}

@@ -3,12 +3,13 @@
 	import { slide } from 'svelte/transition';
 	import { cubicOut } from 'svelte/easing';
 	import { ChevronDown } from 'lucide-svelte';
+	import type { Snippet } from 'svelte';
 
 	interface AccordionItem {
 		id: string;
 		title: string;
-		content: () => any;
-		icon?: any;
+		content: Snippet;
+		icon?: Snippet;
 		disabled?: boolean;
 	}
 
@@ -134,7 +135,7 @@
 </script>
 
 <div class={containerClasses} role="region" aria-label="Accordion">
-	{#each items as item, index}
+	{#each items as item, index (item.id)}
 		{@const isOpen = openItems.has(item.id)}
 		<div class={itemClasses(item, index)}>
 			<button

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { onMount, onDestroy } from 'svelte';
+	import { onMount } from 'svelte';
 	import type { Snippet } from 'svelte';
 
 	interface MenuItem {
@@ -115,7 +115,7 @@
 			</div>
 
 			<ul class="atelier-header__menu">
-				{#each menuItems as item}
+				{#each menuItems as item (item.href)}
 					<li class="atelier-header__menu-item">
 						<a
 							href={item.href}
@@ -150,7 +150,7 @@
 		aria-hidden={!isMobileMenuOpen}
 	>
 		<ul class="atelier-header__mobile-menu-list">
-			{#each menuItems as item}
+			{#each menuItems as item (item.href)}
 				<li class="atelier-header__mobile-menu-item">
 					<a
 						href={item.href}

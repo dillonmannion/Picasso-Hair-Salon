@@ -6,12 +6,12 @@
 	const appointmentId = $derived($page.url.searchParams.get('appointment_id'));
 
 	function handleComplete() {
-		goto('/booking/success');
+		void goto('/booking/success');
 	}
 
 	$effect(() => {
 		if (!appointmentId) {
-			goto('/booking');
+			void goto('/booking');
 		}
 	});
 </script>

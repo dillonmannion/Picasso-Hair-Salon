@@ -43,11 +43,11 @@
 			!canAccessStep(currentPath)
 		) {
 			if (!bookingState.serviceId) {
-				goto('/booking/service');
+				void goto('/booking/service');
 			} else if (!bookingState.stylistId) {
-				goto(`/booking/stylist?service=${bookingState.serviceId}`);
+				void goto(`/booking/stylist?service=${bookingState.serviceId}`);
 			} else if (!bookingState.date || !bookingState.time) {
-				goto(
+				void goto(
 					`/booking/schedule?service=${bookingState.serviceId}&stylist=${bookingState.stylistId}`
 				);
 			}

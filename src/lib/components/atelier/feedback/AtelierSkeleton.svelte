@@ -66,7 +66,7 @@
 
 {#if count > 1}
 	<div class="space-y-3">
-		{#each Array(count) as _, i}
+		{#each Array(count) as _, i (i)}
 			<div
 				class={skeletonClass}
 				style="width: {size.width}; height: {size.height};"

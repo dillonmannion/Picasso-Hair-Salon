@@ -2,7 +2,7 @@
 	import { goto } from '$app/navigation';
 
 	$effect(() => {
-		goto('/booking/service');
+		void goto('/booking/service');
 	});
 </script>
 

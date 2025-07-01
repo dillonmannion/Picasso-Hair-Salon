@@ -10,7 +10,7 @@
 	}
 
 	let {
-		selectedDate = null,
+		selectedDate = $bindable(null),
 		minDate = new Date(),
 		maxDate = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
 		disabledDates = [],
@@ -65,6 +65,7 @@
 	function selectDate(date: Date) {
 		if (!isDateDisabled(date)) {
 			const dateStr = formatDate(date);
+			selectedDate = dateStr;
 			onDateSelect?.(dateStr);
 		}
 	}

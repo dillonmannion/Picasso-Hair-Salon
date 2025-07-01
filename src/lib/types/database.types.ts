@@ -124,6 +124,7 @@ export interface Database {
 					status: string;
 					notes: string | null;
 					total_price: string | null;
+					paid: boolean;
 				};
 				Insert: {
 					id?: string;
@@ -137,6 +138,7 @@ export interface Database {
 					status?: string;
 					notes?: string | null;
 					total_price?: string | null;
+					paid?: boolean;
 				};
 				Update: {
 					id?: string;
@@ -150,6 +152,7 @@ export interface Database {
 					status?: string;
 					notes?: string | null;
 					total_price?: string | null;
+					paid?: boolean;
 				};
 				Relationships: [
 					{

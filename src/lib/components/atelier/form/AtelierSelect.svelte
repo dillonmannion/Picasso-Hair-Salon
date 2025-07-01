@@ -72,7 +72,7 @@
 				? `${internalValue.length} selected`
 				: placeholder
 			: internalValue
-				? options.find((opt) => opt.value === internalValue)?.label || placeholder
+				? (options.find((opt) => opt.value === internalValue)?.label ?? placeholder)
 				: placeholder
 	);
 
@@ -161,7 +161,8 @@
 
 	// Reset highlighted index when filtered options change
 	$effect(() => {
-		filteredOptions;
+		// Access filteredOptions to trigger reactivity
+		void filteredOptions;
 		highlightedIndex = -1;
 	});
 
@@ -216,7 +217,10 @@
 				{#if internalValue && !disabled}
 					<button
 						type="button"
-						onclick|stopPropagation={clearSelection}
+						onclick={(e) => {
+							e.stopPropagation();
+							clearSelection();
+						}}
 						class="text-gray-400 transition-colors hover:text-gray-600 dark:hover:text-gray-300"
 						aria-label="Clear selection"
 					>
@@ -251,7 +255,7 @@
 						class="focus:ring-atelier-gold/50 w-full rounded-md border border-gray-300 bg-white px-3
 							py-2 text-sm text-gray-900 focus:ring-2 focus:outline-none
 							dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100"
-						onclick|stopPropagation
+						onclick={(e) => e.stopPropagation()}
 					/>
 				</div>
 			{/if}
@@ -259,7 +263,7 @@
 			{#if filteredOptions.length === 0}
 				<div class="px-4 py-3 text-sm text-gray-500 dark:text-gray-400">No options found</div>
 			{:else}
-				{#each filteredOptions as option, index}
+				{#each filteredOptions as option, index (option.value)}
 					<div
 						role="option"
 						aria-selected={isSelected(option.value)}

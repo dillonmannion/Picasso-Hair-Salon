@@ -13,7 +13,7 @@
 		onTimeSelect?: (time: string) => void;
 	}
 
-	let { slots = [], selectedTime = null, columns = 4, onTimeSelect }: Props = $props();
+	let { slots = [], selectedTime = $bindable(null), columns = 4, onTimeSelect }: Props = $props();
 
 	function formatTime(time: string): string {
 		const [hours, minutes] = time.split(':');
@@ -25,6 +25,7 @@
 
 	function selectTime(time: string, available: boolean) {
 		if (available) {
+			selectedTime = time;
 			onTimeSelect?.(time);
 		}
 	}

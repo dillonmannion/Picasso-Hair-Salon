@@ -67,7 +67,7 @@
 		caption: 'sans'
 	};
 
-	const selectedFont = $derived(font || defaultFonts[variant]);
+	const selectedFont = $derived(font || defaultFonts[variant]) as 'serif' | 'sans' | 'display';
 
 	const typographyClass = $derived(
 		`atelier-typography atelier-typography--${variant} ${variantClasses[variant]} ${
@@ -75,7 +75,7 @@
 		} ${alignClasses[align]} ${gradient ? 'atelier-text-gradient-gold' : ''} ${className}`
 	);
 
-	const Element = as;
+	const Element = as as keyof HTMLElementTagNameMap;
 </script>
 
 <svelte:element this={Element} class={typographyClass}>

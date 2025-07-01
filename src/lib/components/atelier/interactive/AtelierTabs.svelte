@@ -181,7 +181,7 @@
 			</div>
 		{/if}
 
-		{#each tabs as tab}
+		{#each tabs as tab (tab.id)}
 			<button
 				type="button"
 				role="tab"

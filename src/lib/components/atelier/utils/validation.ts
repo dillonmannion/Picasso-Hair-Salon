@@ -16,12 +16,12 @@ export const validators = {
 
 	minLength: (length: number, message?: string): ValidationRule => ({
 		test: (value) => !value || String(value).length >= length,
-		message: message || `Must be at least ${length} characters`
+		message: message ?? `Must be at least ${length} characters`
 	}),
 
 	maxLength: (length: number, message?: string): ValidationRule => ({
 		test: (value) => !value || String(value).length <= length,
-		message: message || `Must be no more than ${length} characters`
+		message: message ?? `Must be no more than ${length} characters`
 	}),
 
 	email: (message = 'Invalid email address'): ValidationRule => ({
@@ -30,7 +30,7 @@ export const validators = {
 	}),
 
 	phone: (message = 'Invalid phone number'): ValidationRule => ({
-		test: (value) => !value || /^[\d\s\-\+\(\)]+$/.test(String(value)),
+		test: (value) => !value || /^[\d\s\-+()]+$/.test(String(value)),
 		message
 	}),
 
@@ -41,12 +41,12 @@ export const validators = {
 
 	min: (min: number, message?: string): ValidationRule => ({
 		test: (value) => !value || Number(value) >= min,
-		message: message || `Must be at least ${min}`
+		message: message ?? `Must be at least ${min}`
 	}),
 
 	max: (max: number, message?: string): ValidationRule => ({
 		test: (value) => !value || Number(value) <= max,
-		message: message || `Must be no more than ${max}`
+		message: message ?? `Must be no more than ${max}`
 	}),
 
 	custom: (fn: (value: any) => boolean, message: string): ValidationRule => ({

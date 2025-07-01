@@ -55,7 +55,7 @@
 
 	function distributeImages() {
 		const cols: GalleryImage[][] = Array.from({ length: columnCount }, () => []);
-		const columnHeights = new Array(columnCount).fill(0);
+		const columnHeights: number[] = new Array(columnCount).fill(0);
 
 		images.forEach((image) => {
 			// Find shortest column
@@ -169,7 +169,7 @@
 	aria-label="Image gallery"
 >
 	<div class="atelier-gallery__container">
-		{#each imageColumns as column, columnIndex}
+		{#each imageColumns as column, columnIndex (columnIndex)}
 			<div class="atelier-gallery__column" data-column={columnIndex}>
 				{#each column as image (image.id)}
 					<figure

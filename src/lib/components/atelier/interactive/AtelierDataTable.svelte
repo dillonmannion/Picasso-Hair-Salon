@@ -1,7 +1,6 @@
 <script lang="ts" generics="T extends Record<string, any>">
 	import { cn } from '$lib/utils';
 	import { ChevronUp, ChevronDown, ChevronsUpDown } from 'lucide-svelte';
-	import AtelierButton from '../AtelierButton.svelte';
 
 	interface Column<T> {
 		key: keyof T;
@@ -9,7 +8,7 @@
 		sortable?: boolean;
 		width?: string;
 		align?: 'left' | 'center' | 'right';
-		cell?: (value: T[keyof T], row: T) => any;
+		cell?: (value: T[keyof T], row: T) => void;
 	}
 
 	interface DataTableProps<T> {
@@ -46,8 +45,8 @@
 		if (!sortColumn || !sortable) return data;
 
 		return [...data].sort((a, b) => {
-			const aVal = a[sortColumn];
-			const bVal = b[sortColumn];
+			const aVal = a[sortColumn] as any;
+			const bVal = b[sortColumn] as any;
 
 			if (aVal === bVal) return 0;
 			if (aVal === null || aVal === undefined) return 1;
@@ -108,7 +107,7 @@
 	<table class={tableClasses}>
 		<thead>
 			<tr>
-				{#each columns as column}
+				{#each columns as column (column.key)}
 					<th class={cn(headerClasses, getCellAlignment(column.align))} style:width={column.width}>
 						{#if sortable && column.sortable !== false}
 							<button
@@ -164,7 +163,7 @@
 							}
 						}}
 					>
-						{#each columns as column}
+						{#each columns as column (column.key)}
 							<td class={cn(cellClasses, getCellAlignment(column.align))}>
 								{#if column.cell}
 									{@render column.cell(row[column.key], row)}

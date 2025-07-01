@@ -14,7 +14,7 @@
 <div class={cn('atelier-loading-states', className)}>
 	{#if type === 'card'}
 		<div class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-			{#each Array(count) as _}
+			{#each Array(count) as _, i (i)}
 				<div class="rounded-lg border border-gray-200 p-4 dark:border-gray-700">
 					<AtelierSkeleton variant="rectangular" height="160px" />
 					<div class="mt-4 space-y-2">
@@ -27,7 +27,7 @@
 		</div>
 	{:else if type === 'list'}
 		<div class="space-y-4">
-			{#each Array(count) as _}
+			{#each Array(count) as _, i (i)}
 				<div
 					class="flex items-center gap-4 rounded-lg border border-gray-200 p-4 dark:border-gray-700"
 				>
@@ -45,7 +45,7 @@
 				<AtelierSkeleton variant="text" width="200px" />
 			</div>
 			<div class="divide-y divide-gray-200 dark:divide-gray-700">
-				{#each Array(count) as _}
+				{#each Array(count) as _, i (i)}
 					<div class="flex items-center gap-4 p-4">
 						<AtelierSkeleton variant="text" width="20%" />
 						<AtelierSkeleton variant="text" width="30%" />
@@ -57,7 +57,7 @@
 		</div>
 	{:else if type === 'form'}
 		<div class="space-y-6">
-			{#each Array(count) as _}
+			{#each Array(count) as _, i (i)}
 				<div class="space-y-2">
 					<AtelierSkeleton variant="text" width="100px" height="12px" />
 					<AtelierSkeleton variant="rectangular" height="40px" />

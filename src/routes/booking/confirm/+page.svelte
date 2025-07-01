@@ -22,7 +22,7 @@
 			date: data.date,
 			time: data.time
 		});
-		goto(`/booking/schedule?${params.toString()}`);
+		void goto(`/booking/schedule?${params.toString()}`);
 	}
 </script>
 
@@ -41,7 +41,7 @@
 				isSubmitting = false;
 				if (result.type === 'redirect') {
 					// Let SvelteKit handle the redirect
-					update();
+					await update();
 				} else if (result.type === 'failure') {
 					// Handle error
 					alert(result.data?.error || 'Failed to create appointment');

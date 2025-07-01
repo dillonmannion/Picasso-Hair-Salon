@@ -7,7 +7,7 @@ const DEFAULT_ADMIN_EMAILS = ['admin@picassosalon.com', 'owner@picassosalon.com'
 
 // Get admin emails from environment or use defaults
 export const ADMIN_EMAILS = env.ADMIN_EMAILS
-	? env.ADMIN_EMAILS.split(',').map((email: string) => email.trim().toLowerCase())
+	? (env.ADMIN_EMAILS as string).split(',').map((email: string) => email.trim().toLowerCase())
 	: DEFAULT_ADMIN_EMAILS;
 
 /**
