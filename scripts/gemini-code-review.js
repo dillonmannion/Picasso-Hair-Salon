@@ -5,9 +5,9 @@
  * Uses the gemini CLI command to review code and determine if refactoring is needed
  */
 
-import { exec } from 'child_process';
+import { spawn } from 'child_process';
 import { promises as fs } from 'fs';
-import path from 'path';
+import os from 'os';
 
 /**
  * Parse command line arguments in format --key=value
@@ -79,40 +79,72 @@ Remember:
 - Score 4-6: Minor improvements possible but not critical  
 - Score 7-10: Refactoring strongly recommended`;
 
-    // Call Gemini CLI with escaped prompt
-    const escapedPrompt = prompt.replace(/"/g, '\\"').replace(/\$/g, '\\$').replace(/`/g, '\\`');
-
     console.log('⏳ Calling Gemini CLI...');
+    console.log('📝 Prompt length:', prompt.length, 'characters');
 
-    exec(`gemini -p "${escapedPrompt}"`, async (error, stdout, stderr) => {
-      if (error) {
-        console.error('❌ Gemini CLI error:', error.message);
-        if (stderr) console.error('Stderr:', stderr);
+    return new Promise((resolve, reject) => {
+      // Spawn gemini process with stdin input
+      const geminiProcess = spawn('gemini', ['-p', '-'], {
+        env: {
+          ...process.env,
+          HOME: os.homedir() // Ensure HOME is set for auth files
+        },
+        stdio: ['pipe', 'pipe', 'pipe']
+      });
 
-        // Use mock review if Gemini CLI is not available
-        if (error.message.includes('command not found')) {
-          console.log('⚠️  Gemini CLI not found, using mock review...');
-          await mockReview(args, codeContent);
-          return;
+      let stdout = '';
+      let stderr = '';
+
+      // Send prompt via stdin
+      geminiProcess.stdin.write(prompt);
+      geminiProcess.stdin.end();
+
+      geminiProcess.stdout.on('data', (data) => {
+        stdout += data.toString();
+      });
+
+      geminiProcess.stderr.on('data', (data) => {
+        stderr += data.toString();
+      });
+
+      geminiProcess.on('error', (error) => {
+        console.error('❌ Failed to spawn gemini process:', error.message);
+        reject(error);
+      });
+
+      geminiProcess.on('close', (code) => {
+        if (code !== 0) {
+          console.error('❌ Gemini CLI error: Exit code', code);
+          if (stderr) console.error('Stderr:', stderr);
+          process.exit(1);
         }
 
+        // Output the review
+        console.log(stdout);
+
+        // Extract refactor score
+        const scoreMatch = stdout.match(/REFACTOR_SCORE:\s*(\d+)/);
+        if (scoreMatch) {
+          const score = parseInt(scoreMatch[1]);
+          // Exit with score as exit code (0 = no refactor, 10 = must refactor)
+          process.exit(score);
+        } else {
+          console.error('⚠️  Could not extract refactor score from response');
+          process.exit(5); // Default to middle score
+        }
+      });
+
+      // Set timeout
+      const timeout = setTimeout(() => {
+        geminiProcess.kill();
+        console.error('❌ Gemini CLI timeout after 5 minutes');
         process.exit(1);
-      }
+      }, 300000);
 
-      // Output the review
-      console.log(stdout);
-
-      // Extract refactor score
-      const scoreMatch = stdout.match(/REFACTOR_SCORE:\s*(\d+)/);
-      if (scoreMatch) {
-        const score = parseInt(scoreMatch[1]);
-        // Exit with score as exit code (0 = no refactor, 10 = must refactor)
-        process.exit(score);
-      } else {
-        console.error('⚠️  Could not extract refactor score from response');
-        process.exit(5); // Default to middle score
-      }
+      // Clear timeout on successful completion
+      geminiProcess.on('close', () => clearTimeout(timeout));
     });
+
   } catch (error) {
     console.error('❌ Error:', error.message);
     process.exit(99);
@@ -166,77 +198,10 @@ MUST refactor if:
 - Duplicated logic spans more than 3 lines`;
 }
 
-/**
- * Mock review for testing without Gemini CLI
- */
-async function mockReview(args, codeContent) {
-  console.log('🧪 Running mock code review...');
-
-  // Simple heuristics for mock scoring
-  let score = 0;
-  const issues = [];
-
-  // Check for magic numbers
-  if (/\b\d{2,}\b/.test(codeContent) && !/const\s+\w+\s*=\s*\d+/.test(codeContent)) {
-    score += 3;
-    issues.push('Magic numbers detected');
-  }
-
-  // Check for any types
-  if (/:\s*any\b/.test(codeContent)) {
-    score += 3;
-    issues.push('Use of "any" type detected');
-  }
-
-  // Check for long functions (crude check)
-  const functionMatches = codeContent.match(/\{[^}]{500,}/g);
-  if (functionMatches) {
-    score += 2;
-    issues.push('Long functions detected');
-  }
-
-  // Check for deep nesting
-  if (/\s{12,}/.test(codeContent)) {
-    score += 2;
-    issues.push('Deep nesting detected');
-  }
-
-  const mockResponse = `REFACTOR_SCORE: ${score}
-
-## Assessment Summary
-Mock review detected ${issues.length} potential issues in the code.
-
-## Refactoring Needed
-${issues.length > 0 ? issues.join('\n') : 'None - code is already clean'}
-
-## Specific Improvements
-${score >= 7 ? 'Refactoring recommended to address the issues listed above.' : 'No refactoring needed'}`;
-
-  console.log(mockResponse);
-  process.exit(score);
-}
-
 // Main execution
 async function main() {
   const args = parseArgs();
-
-  // Check if we should use mock mode
-  if (process.env.GEMINI_MOCK === 'true') {
-    const codeContent = await fs.readFile(args.file, 'utf8');
-    await mockReview(args, codeContent);
-    return;
-  }
-
-  // Check if gemini CLI is available
-  exec('which gemini', async (error) => {
-    if (error) {
-      console.log('⚠️  Gemini CLI not found, using mock mode...');
-      const codeContent = await fs.readFile(args.file, 'utf8');
-      await mockReview(args, codeContent);
-    } else {
-      await reviewCode(args);
-    }
-  });
+  await reviewCode(args);
 }
 
 // Run the script
