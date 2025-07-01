@@ -35,12 +35,12 @@
 	let textareaElement: HTMLTextAreaElement;
 
 	// Calculate character count
-	$: charCount = value.length;
-	$: charPercentage = maxLength ? (charCount / maxLength) * 100 : 0;
+	let charCount = $derived(value.length);
+	let charPercentage = $derived(maxLength ? (charCount / maxLength) * 100 : 0);
 
 	// Determine if label should float
-	$: hasValue = value !== '';
-	$: shouldFloat = hasValue || isFocused || placeholder;
+	let hasValue = $derived(value !== '');
+	let shouldFloat = $derived(hasValue || isFocused || placeholder);
 
 	// Auto-resize logic
 	function adjustHeight() {
@@ -52,7 +52,7 @@
 		// Set new height based on scrollHeight
 		const newHeight = Math.max(
 			textareaElement.scrollHeight,
-			parseInt(getComputedStyle(textareaElement).minHeight) || 0
+			Number.parseInt(getComputedStyle(textareaElement).minHeight) || 0
 		);
 
 		textareaElement.style.height = `${newHeight}px`;
@@ -87,26 +87,27 @@
 	}
 
 	// Determine border color based on state
-	$: borderColor = error
-		? 'border-red-500 focus:border-red-500 focus:ring-red-500/30'
-		: charPercentage > 90 && maxLength
-			? 'border-orange-500 focus:border-orange-500 focus:ring-orange-500/30'
-			: 'border-gray-300 dark:border-gray-600 focus:border-atelier-gold focus:ring-atelier-gold/30';
+	let borderColor = $derived(
+		error
+			? 'border-red-500 focus:border-red-500 focus:ring-red-500/30'
+			: charPercentage > 90 && maxLength
+				? 'border-orange-500 focus:border-orange-500 focus:ring-orange-500/30'
+				: 'border-gray-300 dark:border-gray-600 focus:border-atelier-gold focus:ring-atelier-gold/30'
+	);
 
 	// Determine label color
-	$: labelColor = error
-		? 'text-red-500'
-		: isFocused
-			? 'text-atelier-gold'
-			: 'text-gray-500 dark:text-gray-400';
+	let labelColor = $derived(
+		error ? 'text-red-500' : isFocused ? 'text-atelier-gold' : 'text-gray-500 dark:text-gray-400'
+	);
 
 	// Determine character count color
-	$: charCountColor =
+	let charCountColor = $derived(
 		charPercentage > 90
 			? 'text-orange-500'
 			: charPercentage > 75
 				? 'text-yellow-600'
-				: 'text-gray-500';
+				: 'text-gray-500'
+	);
 
 	// Initial height adjustment
 	onMount(() => {
@@ -114,9 +115,11 @@
 	});
 
 	// Adjust height when value changes programmatically
-	$: if (textareaElement && value !== undefined) {
-		adjustHeight();
-	}
+	$effect(() => {
+		if (textareaElement && value !== undefined) {
+			adjustHeight();
+		}
+	});
 </script>
 
 <div class="atelier-textarea-wrapper relative {className}">

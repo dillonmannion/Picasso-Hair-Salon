@@ -11,7 +11,6 @@
 	import { Label } from '$lib/components/ui/label';
 	import { enhance } from '$app/forms';
 	import { goto } from '$app/navigation';
-	import { page } from '$app/stores';
 	import type { PageData, ActionData } from './$types';
 
 	let { data, form }: { data: PageData; form: ActionData } = $props();
@@ -52,14 +51,13 @@
 
 	function formatTime(timeStr: string) {
 		const [hours, minutes] = timeStr.split(':');
-		const hour = parseInt(hours);
+		const hour = Number.parseInt(hours);
 		const ampm = hour >= 12 ? 'PM' : 'AM';
 		const displayHour = hour === 0 ? 12 : hour > 12 ? hour - 12 : hour;
 		return `${displayHour}:${minutes} ${ampm}`;
 	}
 
 	function applyFilters() {
-		const formData = new FormData();
 		const statusSelect = document.getElementById('status-filter') as HTMLSelectElement;
 		const stylistSelect = document.getElementById('stylist-filter') as HTMLSelectElement;
 		const startDateInput = document.getElementById('start-date') as HTMLInputElement;
@@ -261,7 +259,7 @@
 								</td>
 								<td class="px-4 py-3">
 									${appointment.total_price
-										? parseFloat(appointment.total_price).toFixed(2)
+										? Number.parseFloat(appointment.total_price).toFixed(2)
 										: '0.00'}
 								</td>
 								<td class="px-4 py-3">

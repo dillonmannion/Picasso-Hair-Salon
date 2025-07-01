@@ -51,7 +51,7 @@
 		</svg>
 	{:else if variant === 'dots'}
 		<div class="flex items-center gap-1">
-			{#each [0, 1, 2] as i}
+			{#each [0, 1, 2] as i (i)}
 				<div
 					class={cn('bg-atelier-primary animate-bounce rounded-full', dotSizeClasses[size])}
 					style="animation-delay: {i * 150}ms"

@@ -46,30 +46,35 @@
 	let searchInput: HTMLInputElement;
 
 	// Normalize value to always be an array internally for easier handling
-	$: internalValue = multiple
-		? Array.isArray(value)
-			? value
-			: value
-				? [value]
-				: []
-		: Array.isArray(value)
-			? value[0]
-			: value;
+	let internalValue = $derived(
+		multiple
+			? Array.isArray(value)
+				? value
+				: value
+					? [value]
+					: []
+			: Array.isArray(value)
+				? value[0]
+				: value
+	);
 
 	// Filter options based on search
-	$: filteredOptions =
+	let filteredOptions = $derived(
 		searchable && searchQuery
 			? options.filter((opt) => opt.label.toLowerCase().includes(searchQuery.toLowerCase()))
-			: options;
+			: options
+	);
 
 	// Get display text
-	$: displayText = multiple
-		? internalValue.length > 0
-			? `${internalValue.length} selected`
-			: placeholder
-		: internalValue
-			? options.find((opt) => opt.value === internalValue)?.label || placeholder
-			: placeholder;
+	let displayText = $derived(
+		multiple
+			? Array.isArray(internalValue) && internalValue.length > 0
+				? `${internalValue.length} selected`
+				: placeholder
+			: internalValue
+				? options.find((opt) => opt.value === internalValue)?.label || placeholder
+				: placeholder
+	);
 
 	function toggleDropdown() {
 		if (disabled) return;
@@ -155,16 +160,22 @@
 	}
 
 	// Reset highlighted index when filtered options change
-	$: filteredOptions, (highlightedIndex = -1);
+	$effect(() => {
+		filteredOptions;
+		highlightedIndex = -1;
+	});
 
 	// Handle click outside
-	$: if (typeof window !== 'undefined') {
-		if (isOpen) {
-			window.addEventListener('click', handleClickOutside);
-		} else {
-			window.removeEventListener('click', handleClickOutside);
+	$effect(() => {
+		if (typeof window !== 'undefined') {
+			if (isOpen) {
+				window.addEventListener('click', handleClickOutside);
+				return () => {
+					window.removeEventListener('click', handleClickOutside);
+				};
+			}
 		}
-	}
+	});
 </script>
 
 <div bind:this={selectElement} class="atelier-select-wrapper relative {className}">

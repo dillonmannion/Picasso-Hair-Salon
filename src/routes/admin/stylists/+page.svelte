@@ -96,7 +96,7 @@
 						<div>
 							<h4 class="mb-2 text-sm font-medium text-gray-700">Specialties</h4>
 							<div class="flex flex-wrap gap-1">
-								{#each stylist.specialties as specialty (specialty)}
+								{#each stylist.specialties ?? [] as specialty (specialty)}
 									<span class="inline-flex rounded-md bg-blue-100 px-2 py-1 text-xs text-blue-800">
 										{specialty}
 									</span>
@@ -106,7 +106,9 @@
 
 						<div>
 							<h4 class="mb-1 text-sm font-medium text-gray-700">Schedule</h4>
-							<p class="text-xs text-gray-600">{formatSchedule(stylist.availability)}</p>
+							<p class="text-xs text-gray-600">
+								{formatSchedule(stylist.availability as StylistAvailability)}
+							</p>
 						</div>
 
 						<div class="flex space-x-2 pt-2">
@@ -154,16 +156,16 @@
 								</td>
 								<td class="px-4 py-3">
 									<div class="flex flex-wrap gap-1">
-										{#each stylist.specialties.slice(0, 2) as specialty (specialty)}
+										{#each (stylist.specialties ?? []).slice(0, 2) as specialty (specialty)}
 											<span
 												class="inline-flex rounded-md bg-blue-100 px-2 py-1 text-xs text-blue-800"
 											>
 												{specialty}
 											</span>
 										{/each}
-										{#if stylist.specialties.length > 2}
+										{#if (stylist.specialties ?? []).length > 2}
 											<span class="text-xs text-gray-500"
-												>+{stylist.specialties.length - 2} more</span
+												>+{(stylist.specialties ?? []).length - 2} more</span
 											>
 										{/if}
 									</div>
@@ -179,7 +181,8 @@
 								</td>
 								<td class="px-4 py-3">
 									<span class="text-sm text-gray-600">
-										{Object.values(stylist.availability).filter(Boolean).length} days
+										{Object.values(stylist.availability as StylistAvailability).filter(Boolean)
+											.length} days
 									</span>
 								</td>
 								<td class="px-4 py-3">

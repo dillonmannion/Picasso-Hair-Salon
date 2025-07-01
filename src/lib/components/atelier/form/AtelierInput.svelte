@@ -33,8 +33,8 @@
 	let inputElement: HTMLInputElement;
 
 	// Determine if label should float
-	$: hasValue = value !== '' && value !== null && value !== undefined;
-	$: shouldFloat = hasValue || isFocused || placeholder;
+	let hasValue = $derived(value !== '' && value !== null && value !== undefined);
+	let shouldFloat = $derived(hasValue || isFocused || placeholder);
 
 	function handleFocus(event: FocusEvent) {
 		isFocused = true;
@@ -61,20 +61,24 @@
 	}
 
 	// Determine border color based on state
-	$: borderColor = error
-		? 'border-red-500 focus:border-red-500 focus:ring-red-500/30'
-		: success
-			? 'border-green-500 focus:border-green-500 focus:ring-green-500/30'
-			: 'border-gray-300 dark:border-gray-600 focus:border-atelier-gold focus:ring-atelier-gold/30';
+	let borderColor = $derived(
+		error
+			? 'border-red-500 focus:border-red-500 focus:ring-red-500/30'
+			: success
+				? 'border-green-500 focus:border-green-500 focus:ring-green-500/30'
+				: 'border-gray-300 dark:border-gray-600 focus:border-atelier-gold focus:ring-atelier-gold/30'
+	);
 
 	// Determine label color based on state
-	$: labelColor = error
-		? 'text-red-500'
-		: success
-			? 'text-green-500'
-			: isFocused
-				? 'text-atelier-gold'
-				: 'text-gray-500 dark:text-gray-400';
+	let labelColor = $derived(
+		error
+			? 'text-red-500'
+			: success
+				? 'text-green-500'
+				: isFocused
+					? 'text-atelier-gold'
+					: 'text-gray-500 dark:text-gray-400'
+	);
 </script>
 
 <div class="atelier-input-wrapper relative {className}">

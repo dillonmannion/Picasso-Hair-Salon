@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import AtelierButton from '../AtelierButton.svelte';
 
 	interface CTAConfig {
 		text: string;
@@ -160,23 +159,23 @@
 			{#if cta || ctaSecondary}
 				<div class="atelier-hero__actions">
 					{#if cta}
-						<AtelierButton
+						<a
 							href={cta.href}
-							variant={cta.variant || 'primary'}
-							size={cta.size || 'lg'}
+							class="atelier-button atelier-button--{cta.variant ||
+								'primary'} atelier-button--{cta.size || 'lg'}"
 						>
 							{cta.text}
-						</AtelierButton>
+						</a>
 					{/if}
 
 					{#if ctaSecondary}
-						<AtelierButton
+						<a
 							href={ctaSecondary.href}
-							variant={ctaSecondary.variant || 'outline'}
-							size={ctaSecondary.size || 'lg'}
+							class="atelier-button atelier-button--{ctaSecondary.variant ||
+								'outline'} atelier-button--{ctaSecondary.size || 'lg'}"
 						>
 							{ctaSecondary.text}
-						</AtelierButton>
+						</a>
 					{/if}
 				</div>
 			{/if}
@@ -311,6 +310,75 @@
 				max-width: 300px;
 			}
 		}
+	}
+
+	/* Button styles for CTA links */
+	.atelier-button {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		font-weight: 500;
+		text-decoration: none;
+		transition: all 0.2s ease;
+		border-radius: 0.5rem;
+		cursor: pointer;
+		outline: none;
+		border: 2px solid transparent;
+	}
+
+	.atelier-button:focus-visible {
+		outline: 2px solid white;
+		outline-offset: 2px;
+	}
+
+	/* Size variants */
+	.atelier-button--sm {
+		padding: 0.375rem 0.75rem;
+		font-size: 0.875rem;
+	}
+
+	.atelier-button--md {
+		padding: 0.5rem 1rem;
+		font-size: 1rem;
+	}
+
+	.atelier-button--lg {
+		padding: 0.75rem 1.5rem;
+		font-size: 1.125rem;
+	}
+
+	/* Style variants */
+	.atelier-button--primary {
+		background: white;
+		color: var(--atelier-text-primary, #1a1a1a);
+		border-color: white;
+	}
+
+	.atelier-button--primary:hover {
+		background: rgba(255, 255, 255, 0.9);
+		transform: translateY(-2px);
+	}
+
+	.atelier-button--outline {
+		background: transparent;
+		color: white;
+		border-color: white;
+	}
+
+	.atelier-button--outline:hover {
+		background: rgba(255, 255, 255, 0.1);
+		transform: translateY(-2px);
+	}
+
+	.atelier-button--secondary {
+		background: rgba(255, 255, 255, 0.2);
+		color: white;
+		backdrop-filter: blur(10px);
+	}
+
+	.atelier-button--secondary:hover {
+		background: rgba(255, 255, 255, 0.3);
+		transform: translateY(-2px);
 	}
 
 	@keyframes atelier-hero-fade-up {

@@ -28,7 +28,7 @@ export class MediaQueryListMock implements MediaQueryList {
 
 	removeListener(listener: (this: MediaQueryList, ev: MediaQueryListEvent) => any): void {
 		const index = this.listeners.indexOf(listener);
-		if (index > -1) {
+		if (index !== -1) {
 			this.listeners.splice(index, 1);
 		}
 	}
@@ -44,7 +44,7 @@ export class MediaQueryListMock implements MediaQueryList {
 		const listeners = this.eventListeners.get(type);
 		if (listeners) {
 			const index = listeners.indexOf(listener);
-			if (index > -1) {
+			if (index !== -1) {
 				listeners.splice(index, 1);
 			}
 		}

@@ -4,7 +4,6 @@
 	import ServiceGrid from '$lib/components/atelier/content/ServiceGrid.svelte';
 	import AtelierButton from '$lib/components/atelier/AtelierButton.svelte';
 	import AtelierSkeleton from '$lib/components/atelier/feedback/AtelierSkeleton.svelte';
-	import AtelierNotification from '$lib/components/atelier/feedback/AtelierNotification.svelte';
 	import type { PageData } from './$types';
 
 	let { data }: { data: PageData } = $props();
@@ -67,13 +66,16 @@
 
 		<!-- Services Grid -->
 		{#if error}
-			<AtelierNotification type="error" title="Error loading services">
-				{error}
-			</AtelierNotification>
+			<div
+				class="rounded-lg border border-red-200 bg-red-50 p-4 text-red-800 dark:border-red-800 dark:bg-red-900/20"
+			>
+				<h3 class="mb-1 font-semibold">Error loading services</h3>
+				<p>{error}</p>
+			</div>
 		{:else if isLoading}
 			<!-- Loading skeleton -->
 			<div class="gap-atelier-lg grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
-				{#each Array(6) as _, i}
+				{#each Array(6) as _, i (i)}
 					<AtelierSkeleton class="h-[300px] rounded-xl" />
 				{/each}
 			</div>
@@ -102,8 +104,8 @@
 				for you.
 			</Typography>
 			<div class="gap-atelier-sm flex flex-col justify-center sm:flex-row">
-				<AtelierButton size="large" href="/appointments">Book Your Appointment</AtelierButton>
-				<AtelierButton variant="outline" size="large">Call Us: (555) 123-4567</AtelierButton>
+				<AtelierButton size="lg" href="/appointments">Book Your Appointment</AtelierButton>
+				<AtelierButton variant="outline" size="lg">Call Us: (555) 123-4567</AtelierButton>
 			</div>
 		</div>
 	</div>

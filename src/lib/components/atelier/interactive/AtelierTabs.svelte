@@ -37,7 +37,7 @@
 
 	// Ensure activeTab is valid
 	$effect(() => {
-		if (!activeTab && tabs.length > 0) {
+		if (!activeTab && tabs.length > 0 && tabs[0]) {
 			activeTab = tabs[0].id;
 		}
 	});
@@ -80,7 +80,7 @@
 			}
 		}
 
-		if (newIndex !== currentIndex && !tabs[newIndex]?.disabled) {
+		if (newIndex !== currentIndex && tabs[newIndex] && !tabs[newIndex].disabled) {
 			selectTab(tabs[newIndex].id);
 		}
 	}

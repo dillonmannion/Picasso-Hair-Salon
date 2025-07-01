@@ -417,8 +417,8 @@ export async function getAppointmentStats(
 		error(500, APPOINTMENT_ERRORS.DATABASE_ERROR);
 	}
 
-	const today = new Date().toISOString().split('T')[0];
-	const weekFromNow = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0];
+	const today = new Date().toISOString().split('T')[0]!;
+	const weekFromNow = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]!;
 
 	const stats = {
 		total: data.length,

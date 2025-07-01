@@ -18,7 +18,7 @@
 	}
 
 	let {
-		open = false,
+		open = $bindable(false),
 		onclose,
 		title,
 		description,
@@ -42,6 +42,7 @@
 	const isOpen = $derived(open !== undefined ? open : storeState.isOpen);
 
 	function handleClose() {
+		open = false;
 		onclose?.();
 		atelierModal.close();
 	}

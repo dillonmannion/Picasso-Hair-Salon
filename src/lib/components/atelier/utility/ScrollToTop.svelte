@@ -1,8 +1,8 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
 	import { ChevronUp } from 'lucide-svelte';
+	import type { HTMLButtonAttributes } from 'svelte/elements';
 
-	interface ScrollToTopProps {
+	interface ScrollToTopProps extends HTMLButtonAttributes {
 		threshold?: number;
 		position?: 'bottom-right' | 'bottom-left';
 		size?: 'small' | 'medium' | 'large';
@@ -52,15 +52,16 @@
 		button?.focus();
 	}
 
-	onMount(() => {
+	$effect(() => {
 		// Check initial scroll position
 		handleScroll();
 
 		// Add scroll listener with passive flag for better performance
-		window.addEventListener('scroll', handleScroll, { passive: true });
+		const scrollHandler = () => handleScroll();
+		window.addEventListener('scroll', scrollHandler, { passive: true });
 
 		return () => {
-			window.removeEventListener('scroll', handleScroll);
+			window.removeEventListener('scroll', scrollHandler);
 		};
 	});
 </script>

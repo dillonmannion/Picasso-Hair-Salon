@@ -36,7 +36,7 @@
 	let headerElement: HTMLElement;
 
 	let rafId: number;
-	let scrollTimeout: number;
+	let scrollTimeout: ReturnType<typeof setTimeout>;
 
 	function handleScroll() {
 		if (rafId) return;

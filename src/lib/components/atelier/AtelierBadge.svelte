@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { cn } from '$lib/utils';
+	import type { Snippet } from 'svelte';
 
 	type BadgeVariant = 'default' | 'success' | 'warning' | 'error' | 'info';
 	type BadgeSize = 'sm' | 'md';
@@ -12,7 +13,7 @@
 		closable?: boolean;
 		onclose?: () => void;
 		class?: string;
-		children?: () => any;
+		children?: Snippet;
 	}
 
 	let {
@@ -22,7 +23,7 @@
 		closable = false,
 		onclose,
 		class: className,
-		children = () => {}
+		children
 	}: BadgeProps = $props();
 
 	const baseStyles =
@@ -64,7 +65,7 @@
 </script>
 
 <span class={badgeClass} role="status">
-	{@render children()}
+	{@render children?.()}
 	{#if closable}
 		<button type="button" onclick={onclose} class={closeButtonClass} aria-label="Remove badge">
 			<svg

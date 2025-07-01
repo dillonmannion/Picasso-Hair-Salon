@@ -1,7 +1,7 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
+	import type { HTMLImgAttributes } from 'svelte/elements';
 
-	interface OptimizedImageProps {
+	interface OptimizedImageProps extends Omit<HTMLImgAttributes, 'src' | 'alt' | 'loading'> {
 		src: string;
 		alt: string;
 		srcset?: string;
@@ -47,7 +47,7 @@
 		isLoaded = true;
 	}
 
-	onMount(() => {
+	$effect(() => {
 		// If native lazy loading is supported or loading is eager, no need for IntersectionObserver
 		if (supportsNativeLazyLoading || loading === 'eager') {
 			return;
@@ -81,12 +81,14 @@
 	});
 
 	// Determine if we should load the image
-	$: shouldLoad = loading === 'eager' || supportsNativeLazyLoading || isIntersecting;
+	const shouldLoad = $derived(loading === 'eager' || supportsNativeLazyLoading || isIntersecting);
 
 	// Build the style string
-	$: computedStyle = [style, width ? `width: ${width}px` : '', height ? `height: ${height}px` : '']
-		.filter(Boolean)
-		.join('; ');
+	const computedStyle = $derived(
+		[style, width ? `width: ${width}px` : '', height ? `height: ${height}px` : '']
+			.filter(Boolean)
+			.join('; ')
+	);
 </script>
 
 <div class="atelier-optimized-image relative overflow-hidden {className}" style={computedStyle}>

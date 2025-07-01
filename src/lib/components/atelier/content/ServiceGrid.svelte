@@ -92,6 +92,18 @@
 			window.location.href = service.link;
 		}
 	}
+
+	function handleServiceClick(service: Service) {
+		if (service.link) {
+			window.location.href = service.link;
+		}
+	}
+
+	function handleServiceKeyDown(event: KeyboardEvent, service: Service) {
+		if (service.link) {
+			handleKeyDown(event, service);
+		}
+	}
 </script>
 
 <div
@@ -109,8 +121,8 @@
 			data-service-id={service.id}
 			role={service.link ? 'button' : undefined}
 			tabindex={service.link ? 0 : undefined}
-			onkeydown={service.link ? (e) => handleKeyDown(e, service) : undefined}
-			onclick={service.link ? () => (window.location.href = service.link) : undefined}
+			onkeydown={(e) => handleServiceKeyDown(e, service)}
+			onclick={() => handleServiceClick(service)}
 		>
 			{#if service.image}
 				<div class="atelier-service-card__image-container">

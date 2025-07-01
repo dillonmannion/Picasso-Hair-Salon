@@ -60,7 +60,7 @@
 		images.forEach((image) => {
 			// Find shortest column
 			const shortestColumn = columnHeights.indexOf(Math.min(...columnHeights));
-			cols[shortestColumn].push(image);
+			cols[shortestColumn]?.push(image);
 
 			// Estimate height based on aspect ratio if provided
 			if (image.width && image.height) {
@@ -95,6 +95,18 @@
 		if (lightboxEnabled && (event.key === 'Enter' || event.key === ' ')) {
 			event.preventDefault();
 			handleImageClick(image, new MouseEvent('click'));
+		}
+	}
+
+	function handleGalleryClick(event: MouseEvent, image: GalleryImage) {
+		if (lightboxEnabled) {
+			handleImageClick(image, event);
+		}
+	}
+
+	function handleGalleryKeyDown(event: KeyboardEvent, image: GalleryImage) {
+		if (lightboxEnabled) {
+			handleKeyDown(event, image);
 		}
 	}
 
@@ -142,9 +154,11 @@
 		}
 	});
 
-	$: if (images) {
-		distributeImages();
-	}
+	$effect(() => {
+		if (images) {
+			distributeImages();
+		}
+	});
 </script>
 
 <div
@@ -169,8 +183,8 @@
 						data-alt={lightboxEnabled ? image.alt : undefined}
 						role={lightboxEnabled ? 'button' : undefined}
 						tabindex={lightboxEnabled ? 0 : undefined}
-						onclick={lightboxEnabled ? (e) => handleImageClick(image, e) : undefined}
-						onkeydown={lightboxEnabled ? (e) => handleKeyDown(e, image) : undefined}
+						onclick={(e) => handleGalleryClick(e, image)}
+						onkeydown={(e) => handleGalleryKeyDown(e, image)}
 					>
 						<div class="atelier-gallery__image-wrapper">
 							<img
