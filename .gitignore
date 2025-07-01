@@ -1,53 +1,45 @@
-# USER ADDED
-CLAUDE.md
-.claude
-PicassoDevPlan.md
-prompt.md
-.vscode
-DevPlan.md
-CODEBASE_DOCUMENTATION.md
-STAGE1_DAY3_IMPLEMENTATION_PLAN.md
-STAGE1_DAY4-5_SUMMARY.md
-.idea/*
-.idea
-requirements
-planning
-implementation
-
-# Node
-test-results
-test-failures
+# Dependencies
 node_modules
+.pnpm-store
 
-# pnpm
-.pnpm-debug.log*
+# Environment variables
+.env
+.env.local
+.env.*.local
 
-# Output
-.output
+# Build outputs
+.svelte-kit
 .vercel
-.netlify
-.wrangler
-/.svelte-kit
-/build
+dist
+build
 
-# OS
+# Test outputs
+coverage
+test-results
+playwright-report
+
+# Logs
+logs
+*.log
+pnpm-debug.log*
+
+# OS files
 .DS_Store
 Thumbs.db
 
-# Env
-.env
-.env.*
-!.env.example
-!.env.test
+# IDE
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+.idea
 
-# Vite
-vite.config.js.timestamp-*
-vite.config.ts.timestamp-*
+# Supabase
+supabase/.env
+supabase/.branches
+supabase/.temp
 
-# Auto-generated files from libraries/plugins
-src/lib/paraglide
-**/.generated
-**/generated
-**/__generated__
-**/*.generated.*
-**/*.gen.*
+# TypeScript
+*.tsbuildinfo
+
+# Misc
+.vercel

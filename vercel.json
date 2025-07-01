@@ -1,0 +1,63 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  
+  "framework": "sveltekit",
+  
+  "buildCommand": "pnpm build",
+  "outputDirectory": ".vercel/output",
+  "devCommand": "pnpm dev",
+  "installCommand": "pnpm install --frozen-lockfile",
+  
+  "functions": {
+    "src/routes/api/*.js": {
+      "maxDuration": 10
+    }
+  },
+  
+  "regions": ["iad1"],
+  
+  "crons": [],
+  
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        {
+          "key": "X-Content-Type-Options",
+          "value": "nosniff"
+        },
+        {
+          "key": "X-Frame-Options",
+          "value": "DENY"
+        },
+        {
+          "key": "X-XSS-Protection",
+          "value": "1; mode=block"
+        },
+        {
+          "key": "Referrer-Policy",
+          "value": "strict-origin-when-cross-origin"
+        }
+      ]
+    },
+    {
+      "source": "/api/(.*)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "no-cache, no-store, must-revalidate"
+        }
+      ]
+    }
+  ],
+  
+  "rewrites": [
+    {
+      "source": "/api/health",
+      "destination": "/api/health-check"
+    }
+  ],
+  
+  "cleanUrls": true,
+  "trailingSlash": false
+}

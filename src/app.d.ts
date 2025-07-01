@@ -1,42 +1,31 @@
-import { SupabaseClient, Session, User } from '@supabase/supabase-js';
-import type { Database } from '$lib/types/database.types';
-
-// See https://svelte.dev/docs/kit/types#app.d.ts
+// See https://kit.svelte.dev/docs/types#app
 // for information about these interfaces
 declare global {
-	namespace App {
-		// interface Error {}
-		interface Locals {
-			supabase: SupabaseClient<Database>;
-			safeGetSession(): Promise<{ session: Session | null; user: User | null }>;
-			session: Session | null;
-			user: User | null;
-			adminStatus: {
-				isAdmin: boolean;
-				email: string | null;
-				canManageServices: boolean;
-				canManageStylists: boolean;
-				canManageAppointments: boolean;
-				canManageGallery: boolean;
-				canViewAllUsers: boolean;
-			};
-		}
-		interface PageData {
-			session: Session | null;
-			user: User | null;
-			adminStatus?: {
-				isAdmin: boolean;
-				email: string | null;
-				canManageServices: boolean;
-				canManageStylists: boolean;
-				canManageAppointments: boolean;
-				canManageGallery: boolean;
-				canViewAllUsers: boolean;
-			};
-		}
-		// interface PageState {}
-		// interface Platform {}
-	}
+  namespace App {
+    interface Error {
+      message: string;
+      code?: string;
+    }
+    
+    interface Locals {
+      supabase: import('@supabase/supabase-js').SupabaseClient;
+      safeGetSession: () => Promise<{
+        session: import('@supabase/supabase-js').Session | null;
+        user: import('@supabase/supabase-js').User | null;
+      }>;
+      session: import('@supabase/supabase-js').Session | null;
+      user: import('@supabase/supabase-js').User | null;
+    }
+    
+    interface PageData {
+      session: import('@supabase/supabase-js').Session | null;
+      user: import('@supabase/supabase-js').User | null;
+    }
+    
+    interface PageState {}
+    
+    interface Platform {}
+  }
 }
 
 export {};

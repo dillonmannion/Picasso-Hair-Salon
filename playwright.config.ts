@@ -1,82 +1,55 @@
 import { defineConfig, devices } from '@playwright/test';
 
 export default defineConfig({
-	// Test directory
-	testDir: 'e2e',
+  testDir: './tests/e2e',
+  
+  // Fail fast for TDD workflow
+  fullyParallel: true,
+  forbidOnly: !!process.env.CI,
+  retries: process.env.CI ? 2 : 0,
+  workers: process.env.CI ? 1 : undefined,
+  
+  // Reporter configuration
+  reporter: [
+    ['html'],
+    ['json', { outputFile: 'test-results/results.json' }],
+    ['junit', { outputFile: 'test-results/junit.xml' }]
+  ],
+  
+  // Global test settings
+  use: {
+    baseURL: process.env.PLAYWRIGHT_BASE_URL || 'http://localhost:5173',
+    trace: 'on-first-retry',
+    screenshot: 'only-on-failure',
+    video: 'retain-on-failure'
+  },
 
-	// Performance optimizations
-	fullyParallel: true,
-	forbidOnly: !!process.env.CI,
-	retries: process.env.CI ? 2 : 0,
-	...(process.env.CI && { workers: 2 }),
+  // Test projects for different browsers
+  projects: [
+    {
+      name: 'chromium',
+      use: { ...devices['Desktop Chrome'] }
+    },
+    {
+      name: 'firefox',
+      use: { ...devices['Desktop Firefox'] }
+    },
+    {
+      name: 'webkit',
+      use: { ...devices['Desktop Safari'] }
+    },
+    // Mobile testing
+    {
+      name: 'mobile-chrome',
+      use: { ...devices['Pixel 5'] }
+    }
+  ],
 
-	// Advanced failure handling for CI
-	...(process.env.CI && { maxFailures: 10 }),
-	failOnFlakyTests: !!process.env.CI,
-
-	// Reporter configuration optimized for CI/local
-	reporter: [
-		process.env.CI ? ['blob'] : ['html', { open: 'never' }],
-		['list'],
-		['json', { outputFile: 'test-results/results.json' }]
-	],
-
-	// Global test configuration
-	use: {
-		baseURL: 'http://localhost:4173',
-		trace: 'on-first-retry',
-		screenshot: 'only-on-failure',
-		video: 'retain-on-failure',
-		actionTimeout: 10 * 1000, // 10 seconds
-		navigationTimeout: 30 * 1000 // 30 seconds
-	},
-
-	// Browser projects optimized for CI
-	projects: [
-		{
-			name: 'chromium',
-			use: { ...devices['Desktop Chrome'] }
-		},
-		{
-			name: 'firefox',
-			use: { ...devices['Desktop Firefox'] }
-		},
-		{
-			name: 'webkit',
-			use: { ...devices['Desktop Safari'] }
-		},
-		// Mobile testing
-		{
-			name: 'Mobile Chrome',
-			use: { ...devices['Pixel 5'] }
-		},
-		{
-			name: 'Mobile Safari',
-			use: { ...devices['iPhone 12'] }
-		}
-	],
-
-	// Optimized web server configuration
-	webServer: {
-		command: 'npm run build && npm run preview',
-		port: 4173,
-		reuseExistingServer: !process.env.CI,
-		timeout: 120 * 1000, // 2 minutes
-		stdout: 'pipe',
-		stderr: 'pipe'
-	},
-
-	// Output configuration
-	outputDir: 'test-results',
-
-	// Build configuration for faster transpilation
-	build: {
-		external: ['**/*bundle.js']
-	},
-
-	// Test timeout configurations
-	timeout: 30 * 1000, // 30 seconds per test
-	expect: {
-		timeout: 10 * 1000 // 10 seconds for assertions
-	}
+  // Development server configuration
+  webServer: {
+    command: 'pnpm dev',
+    port: 5173,
+    reuseExistingServer: !process.env.CI,
+    timeout: 120000
+  }
 });
