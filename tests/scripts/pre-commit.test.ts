@@ -1,17 +1,23 @@
-import { describe, it, expect, vi, beforeEach, Mock } from 'vitest';
-import { exec as execCallback } from 'child_process';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 
-// Mock child_process module
-vi.mock('child_process', () => ({
-  exec: vi.fn()
-}));
+const { mockExec } = vi.hoisted(() => {
+  return {
+    mockExec: vi.fn()
+  };
+});
 
-const mockExec = execCallback as unknown as Mock;
+// Mock child_process module before any imports that use it
+vi.mock('child_process', async (importOriginal) => {
+  const actual = await importOriginal();
+  return {
+    ...actual,
+    exec: mockExec
+  };
+});
 
 describe('Pre-commit Hook Behavior', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    vi.resetModules();
   });
 
   describe('Core functionality', () => {

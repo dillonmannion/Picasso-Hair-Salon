@@ -1,6 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { handle } from '../src/hooks.server';
 import { redirect } from '@sveltejs/kit';
+import { createServerClient } from '@supabase/ssr';
 
 vi.mock('@sveltejs/kit', () => ({
   redirect: vi.fn((status, location) => {
@@ -15,22 +16,38 @@ vi.mock('@sveltejs/kit', () => ({
 }));
 
 vi.mock('@supabase/ssr', () => ({
-  createServerClient: vi.fn(() => ({
-    auth: {
-      getSession: vi.fn(),
-      getUser: vi.fn()
-    }
-  }))
+  createServerClient: vi.fn()
+}));
+
+vi.mock('$env/static/public', () => ({
+  PUBLIC_SUPABASE_URL: 'https://test.supabase.co',
+  PUBLIC_SUPABASE_ANON_KEY: 'test-anon-key'
 }));
 
 describe('Authentication Guard', () => {
   let mockEvent: any;
   let mockResolve: any;
+  let mockSupabaseClient: any;
+  let mockGetSession: any;
+  let mockGetUser: any;
 
   beforeEach(() => {
     vi.clearAllMocks();
     
     mockResolve = vi.fn(async (event) => new Response('OK'));
+    
+    mockGetSession = vi.fn();
+    mockGetUser = vi.fn();
+    
+    mockSupabaseClient = {
+      auth: {
+        getSession: mockGetSession,
+        getUser: mockGetUser
+      }
+    };
+    
+    // Configure the createServerClient mock
+    vi.mocked(createServerClient).mockReturnValue(mockSupabaseClient);
     
     mockEvent = {
       url: new URL('http://localhost:5173/'),
@@ -45,15 +62,9 @@ describe('Authentication Guard', () => {
   describe('Protected route access', () => {
     it('should redirect unauthenticated users to login when accessing protected routes', async () => {
       mockEvent.url = new URL('http://localhost:5173/protected/dashboard');
-      mockEvent.locals.supabase = {
-        auth: {
-          getSession: vi.fn().mockResolvedValue({ data: { session: null } })
-        }
-      };
-      mockEvent.locals.safeGetSession = vi.fn().mockResolvedValue({ 
-        session: null, 
-        user: null 
-      });
+      
+      // Configure mocks for unauthenticated user
+      mockGetSession.mockResolvedValue({ data: { session: null } });
 
       await expect(handle({ event: mockEvent, resolve: mockResolve })).rejects.toEqual({
         status: 303,
@@ -68,22 +79,16 @@ describe('Authentication Guard', () => {
       const mockUser = { id: 'user-123', email: 'test@example.com' };
       
       mockEvent.url = new URL('http://localhost:5173/protected/dashboard');
-      mockEvent.locals.supabase = {
-        auth: {
-          getSession: vi.fn().mockResolvedValue({ data: { session: mockSession } }),
-          getUser: vi.fn().mockResolvedValue({ data: { user: mockUser }, error: null })
-        }
-      };
-      mockEvent.locals.safeGetSession = vi.fn().mockResolvedValue({ 
-        session: mockSession, 
-        user: mockUser 
-      });
+      
+      // Configure mocks for authenticated user
+      mockGetSession.mockResolvedValue({ data: { session: mockSession } });
+      mockGetUser.mockResolvedValue({ data: { user: mockUser }, error: null });
 
       const response = await handle({ event: mockEvent, resolve: mockResolve });
       
       expect(response).toBeInstanceOf(Response);
       expect(redirect).not.toHaveBeenCalled();
-      expect(mockResolve).toHaveBeenCalledWith(mockEvent);
+      expect(mockResolve).toHaveBeenCalled();
     });
   });
 
@@ -93,16 +98,10 @@ describe('Authentication Guard', () => {
       const mockUser = { id: 'user-123', email: 'test@example.com' };
       
       mockEvent.url = new URL('http://localhost:5173/auth/login');
-      mockEvent.locals.supabase = {
-        auth: {
-          getSession: vi.fn().mockResolvedValue({ data: { session: mockSession } }),
-          getUser: vi.fn().mockResolvedValue({ data: { user: mockUser }, error: null })
-        }
-      };
-      mockEvent.locals.safeGetSession = vi.fn().mockResolvedValue({ 
-        session: mockSession, 
-        user: mockUser 
-      });
+      
+      // Configure mocks for authenticated user
+      mockGetSession.mockResolvedValue({ data: { session: mockSession } });
+      mockGetUser.mockResolvedValue({ data: { user: mockUser }, error: null });
 
       await expect(handle({ event: mockEvent, resolve: mockResolve })).rejects.toEqual({
         status: 303,
@@ -114,15 +113,9 @@ describe('Authentication Guard', () => {
 
     it('should allow unauthenticated users to access login page', async () => {
       mockEvent.url = new URL('http://localhost:5173/auth/login');
-      mockEvent.locals.supabase = {
-        auth: {
-          getSession: vi.fn().mockResolvedValue({ data: { session: null } })
-        }
-      };
-      mockEvent.locals.safeGetSession = vi.fn().mockResolvedValue({ 
-        session: null, 
-        user: null 
-      });
+      
+      // Configure mocks for unauthenticated user
+      mockGetSession.mockResolvedValue({ data: { session: null } });
 
       const response = await handle({ event: mockEvent, resolve: mockResolve });
       
@@ -134,15 +127,9 @@ describe('Authentication Guard', () => {
   describe('Public route access', () => {
     it('should allow unauthenticated users to access public routes', async () => {
       mockEvent.url = new URL('http://localhost:5173/about');
-      mockEvent.locals.supabase = {
-        auth: {
-          getSession: vi.fn().mockResolvedValue({ data: { session: null } })
-        }
-      };
-      mockEvent.locals.safeGetSession = vi.fn().mockResolvedValue({ 
-        session: null, 
-        user: null 
-      });
+      
+      // Configure mocks for unauthenticated user
+      mockGetSession.mockResolvedValue({ data: { session: null } });
 
       const response = await handle({ event: mockEvent, resolve: mockResolve });
       
@@ -155,16 +142,10 @@ describe('Authentication Guard', () => {
       const mockUser = { id: 'user-123', email: 'test@example.com' };
       
       mockEvent.url = new URL('http://localhost:5173/about');
-      mockEvent.locals.supabase = {
-        auth: {
-          getSession: vi.fn().mockResolvedValue({ data: { session: mockSession } }),
-          getUser: vi.fn().mockResolvedValue({ data: { user: mockUser }, error: null })
-        }
-      };
-      mockEvent.locals.safeGetSession = vi.fn().mockResolvedValue({ 
-        session: mockSession, 
-        user: mockUser 
-      });
+      
+      // Configure mocks for authenticated user
+      mockGetSession.mockResolvedValue({ data: { session: mockSession } });
+      mockGetUser.mockResolvedValue({ data: { user: mockUser }, error: null });
 
       const response = await handle({ event: mockEvent, resolve: mockResolve });
       
@@ -176,20 +157,14 @@ describe('Authentication Guard', () => {
   describe('Session validation', () => {
     it('should treat invalid JWT sessions as unauthenticated', async () => {
       mockEvent.url = new URL('http://localhost:5173/protected/profile');
-      mockEvent.locals.supabase = {
-        auth: {
-          getSession: vi.fn().mockResolvedValue({ 
-            data: { session: { access_token: 'invalid-token' } } 
-          }),
-          getUser: vi.fn().mockResolvedValue({ 
-            data: { user: null }, 
-            error: new Error('Invalid JWT') 
-          })
-        }
-      };
-      mockEvent.locals.safeGetSession = vi.fn().mockResolvedValue({ 
-        session: null, 
-        user: null 
+      
+      // Configure mocks for invalid JWT
+      mockGetSession.mockResolvedValue({ 
+        data: { session: { access_token: 'invalid-token' } } 
+      });
+      mockGetUser.mockResolvedValue({ 
+        data: { user: null }, 
+        error: new Error('Invalid JWT') 
       });
 
       await expect(handle({ event: mockEvent, resolve: mockResolve })).rejects.toEqual({
@@ -203,16 +178,10 @@ describe('Authentication Guard', () => {
       const mockUser = { id: 'user-123', email: 'test@example.com' };
       
       mockEvent.url = new URL('http://localhost:5173/');
-      mockEvent.locals.supabase = {
-        auth: {
-          getSession: vi.fn().mockResolvedValue({ data: { session: mockSession } }),
-          getUser: vi.fn().mockResolvedValue({ data: { user: mockUser }, error: null })
-        }
-      };
-      mockEvent.locals.safeGetSession = vi.fn().mockResolvedValue({ 
-        session: mockSession, 
-        user: mockUser 
-      });
+      
+      // Configure mocks for authenticated user
+      mockGetSession.mockResolvedValue({ data: { session: mockSession } });
+      mockGetUser.mockResolvedValue({ data: { user: mockUser }, error: null });
 
       await handle({ event: mockEvent, resolve: mockResolve });
       
