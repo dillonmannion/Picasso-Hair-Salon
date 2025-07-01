@@ -9,15 +9,23 @@
 		icon?: string;
 	}
 
-	export let steps: Step[] = [
-		{ id: 'service', title: 'Service', path: '/booking/service', icon: '✂️' },
-		{ id: 'stylist', title: 'Stylist', path: '/booking/stylist', icon: '👤' },
-		{ id: 'schedule', title: 'Schedule', path: '/booking/schedule', icon: '📅' },
-		{ id: 'confirm', title: 'Confirm', path: '/booking/confirm', icon: '✔️' },
-		{ id: 'success', title: 'Success', path: '/booking/success', icon: '🎉' }
-	];
+	interface Props {
+		steps?: Step[];
+	}
 
-	$: currentStepIndex = steps.findIndex((step) => $page.url.pathname.startsWith(step.path));
+	let {
+		steps = [
+			{ id: 'service', title: 'Service', path: '/booking/service', icon: '✂️' },
+			{ id: 'stylist', title: 'Stylist', path: '/booking/stylist', icon: '👤' },
+			{ id: 'schedule', title: 'Schedule', path: '/booking/schedule', icon: '📅' },
+			{ id: 'confirm', title: 'Confirm', path: '/booking/confirm', icon: '✔️' },
+			{ id: 'success', title: 'Success', path: '/booking/success', icon: '🎉' }
+		]
+	}: Props = $props();
+
+	let currentStepIndex = $derived(
+		steps.findIndex((step) => $page.url.pathname.startsWith(step.path))
+	);
 
 	function isStepComplete(index: number): boolean {
 		return index < currentStepIndex;
@@ -28,7 +36,6 @@
 	}
 
 	function canNavigateToStep(index: number): boolean {
-		// Can navigate to any previous step or the next immediate step
 		return index <= currentStepIndex + 1;
 	}
 </script>

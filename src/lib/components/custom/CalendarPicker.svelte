@@ -1,17 +1,28 @@
 <script lang="ts">
 	import { cn } from '$lib/utils/cn';
 
-	export let selectedDate: string | null = null;
-	export let minDate: Date = new Date();
-	export let maxDate: Date = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000); // 30 days from now
-	export let disabledDates: string[] = [];
-
-	let currentMonth = new Date(minDate);
-	let weeks: Date[][] = [];
-
-	$: {
-		generateCalendar(currentMonth);
+	interface Props {
+		selectedDate?: string | null;
+		minDate?: Date;
+		maxDate?: Date;
+		disabledDates?: string[];
+		onDateSelect?: (date: string) => void;
 	}
+
+	let {
+		selectedDate = null,
+		minDate = new Date(),
+		maxDate = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
+		disabledDates = [],
+		onDateSelect
+	}: Props = $props();
+
+	let currentMonth = $state(new Date(minDate));
+	let weeks = $state<Date[][]>([]);
+
+	$effect(() => {
+		generateCalendar(currentMonth);
+	});
 
 	function generateCalendar(month: Date) {
 		const year = month.getFullYear();
@@ -53,7 +64,8 @@
 
 	function selectDate(date: Date) {
 		if (!isDateDisabled(date)) {
-			selectedDate = formatDate(date);
+			const dateStr = formatDate(date);
+			onDateSelect?.(dateStr);
 		}
 	}
 
