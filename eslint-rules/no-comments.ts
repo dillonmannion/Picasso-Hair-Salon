@@ -1,4 +1,4 @@
-import { Rule } from 'eslint';
+import type { Rule } from 'eslint';
 import { TSESTree } from '@typescript-eslint/types';
 
 export const noCommentsRule: Rule.RuleModule = {

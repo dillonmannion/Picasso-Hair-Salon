@@ -1,5 +1,7 @@
 # Workflow Init Command
 
+**⚠️ USER-ONLY COMMAND**: This command is designed to be run by users only. Claude should never attempt to execute this command via Bash. When Claude needs to proceed with workflow actions, it should perform the appropriate TDD steps directly.
+
 Initialize a new feature workflow with unified state tracking.
 
 ## Command: /workflow-init [feature-description]
@@ -8,192 +10,114 @@ Initialize a new feature workflow with unified state tracking.
 
 ## Purpose
 
-Start a new feature implementation workflow with a single state file tracking all phases.
+Start a new feature implementation workflow, creating a clean state and workspace.
 
-## Implementation Instructions
+## For Claude
+
+When working within the TDD workflow:
+- Do NOT attempt to run this command via Bash
+- Instead, perform the appropriate TDD actions based on the current phase
+- User will control workflow progression using these commands
+- Focus on generating tests, implementations, and refactoring as needed
+
+## Implementation
 
 ### 1. Validate Environment
 
 ```bash
-# Check for existing active workflow
+# Check for an existing active workflow
 if [ -f ".workflow/state.yaml" ]; then
-  status=$(grep "status:" .workflow/state.yaml | cut -d' ' -f2)
-  if [ "$status" = "active" ] || [ "$status" = "paused" ]; then
-    echo "❌ Active workflow detected. Complete or abort it first."
-    echo "   Use: /workflow-status to see current state"
-    echo "   Use: /workflow-abort to safely abort"
-    exit 1
-  fi
+  echo "❌ An active workflow already exists."
+  echo "   Use /workflow-status to see its state or /workflow-abort to terminate it."
+  exit 1
 fi
 
-# Ensure clean workspace
-mkdir -p .workflow/current/{requirements,plan,tests,implementation}
+# Ensure a feature description is provided
+if [ -z "$1" ]; then
+  echo "❌ Please provide a feature description."
+  echo "   Usage: /workflow-init <feature-description>"
+  echo "   Example: /workflow-init Add user authentication with OAuth"
+  exit 1
+fi
+
+# Clean and create directory structure
+mkdir -p .workflow/current/{requirements,plan}
 mkdir -p completed
-mkdir -p scripts
 ```
 
-### 2. Initialize State File
+### 2. Extract Feature Name
 
-Create `.workflow/state.yaml`:
+```bash
+# Convert multi-word description to a URL-friendly slug
+feature_slug=$(echo "$1" | tr '[:upper:]' '[:lower:]' | sed -e 's/[^a-z0-9]/-/g' -e 's/--\+/-/g' -e 's/^-//' -e 's/-$//')
+```
 
-```yaml
-feature: '[extracted-feature-name]'
-description: '[full-feature-description]'
-phase: 'requirements'
-subphase: 'discovery'
-status: 'active'
-started: '[ISO-timestamp]'
-last_updated: '[ISO-timestamp]'
+### 3. Initialize State File (`.workflow/state.yaml`)
+
+```bash
+cat > .workflow/state.yaml << EOF
+feature: "$feature_slug"
+description: "$1"
+phase: "requirements" # requirements -> planning -> implementation -> complete
+status: "active"
+started: "$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+last_updated: "$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+
+# Checkpoints track major phase completions
 checkpoints:
   requirements_complete: false
-  context_validated: false
-  plan_consensus: false
-  implementation_started: false
-  tests_passing: false
+  plan_generated: false
   implementation_complete: false
+
+# Context stores transient data for the current phase
 current_context:
-  question_index: 0
-  questions_answered: []
-  iteration_count: 0
-  test_cycle: 0
-  completed_files: []
-  pending_files: []
-metadata:
-  estimated_complexity: 'unknown' # small|medium|large
-  technologies: []
-  gemini_reviews: 0
-  context7_validations: 0
+  question_index: 1 # Start with the first question
+EOF
 ```
 
-### 3. Initial Requirements Setup
+### 4. Create Initial Requirements Questions
 
-Create `.workflow/current/requirements/discovery-questions.md`:
+```bash
+# Create the discovery questions file for the requirements phase
+cat > .workflow/current/requirements/discovery-questions.md << 'EOF'
+# Discovery Questions
 
-```markdown
-# Discovery Questions for [feature-name]
+These questions help clarify the feature's scope. Answer with "yes", "no", or "idk".
 
-These questions help understand the scope and constraints of the feature.
-All questions are yes/no with smart defaults if unknown.
-
+---
 ## Q1: Will this feature have a user-facing interface?
-
-**Default if unknown:** Yes
-**Why we ask:** Determines if we need frontend components and UX considerations.
+**Why we ask:** Determines if we need frontend components, UI/UX design, and accessibility considerations.
 **Your answer:** [pending]
-
-## Q2: Does this feature need to integrate with existing authentication/authorization?
-
-**Default if unknown:** Yes
-**Why we ask:** Security considerations affect architecture decisions.
+---
+## Q2: Does this feature need to store new data or modify existing data structures?
+**Why we ask:** Determines the need for database schema changes, migrations, and data validation layers (like Zod schemas).
 **Your answer:** [pending]
-
-## Q3: Will this feature handle sensitive or personal data?
-
-**Default if unknown:** Yes (safer to assume yes)
-**Why we ask:** Determines encryption, audit, and compliance requirements.
+---
+## Q3: Will this feature integrate with any third-party APIs or services?
+**Why we ask:** Identifies the need for API clients, error handling for external services, and secret management.
 **Your answer:** [pending]
-
-## Q4: Should this feature work offline or in low-connectivity scenarios?
-
-**Default if unknown:** No
-**Why we ask:** Affects data synchronization and caching strategies.
+---
+## Q4: Does this feature involve user authentication or authorization?
+**Why we ask:** Security is paramount. This dictates the use of auth middleware, session management, and role-based access control.
 **Your answer:** [pending]
-
-## Q5: Do you need real-time updates (live data push to users)?
-
-**Default if unknown:** No
-**Why we ask:** Determines if we need WebSocket or polling infrastructure.
+---
+## Q5: Are there specific performance or scalability requirements?
+**Why we ask:** Influences choices around caching, database queries, asynchronous jobs, and infrastructure.
 **Your answer:** [pending]
+---
+EOF
 ```
 
-### 4. Display Initial Status
+### 5. Display Initial Status
 
-```
-🚀 Feature workflow initialized!
-
-Feature: [feature-name]
-Phase: Requirements Gathering
-Status: Active
-
-📋 Starting with 5 discovery questions to understand your needs.
-Each question has a smart default if you're unsure.
-
-Ready for first question? Use: /workflow-continue
+```bash
+echo "🚀 Feature workflow initialized!"
+echo ""
+echo "Feature: $feature_slug"
+echo "Phase:   Requirements Gathering"
+echo ""
+echo "Next, we'll ask 5 discovery questions to understand your needs."
+echo "➡️  Run /workflow-continue to start."
 ```
 
-### 5. Log Initial Context Analysis
-
-Create `.workflow/current/requirements/initial-analysis.md`:
-
-```markdown
-# Initial Codebase Analysis
-
-## Detected Project Type
-
-[Analyze package.json, tech stack]
-
-## Relevant Existing Patterns
-
-[Search for similar features]
-
-## Available MCP Servers
-
-[Check /mcp status]
-
-## Preliminary Technology List
-
-[For context7 validation later]
-```
-
-## Error Handling
-
-### Missing Feature Description
-
-```
-❌ Please provide a feature description
-Usage: /workflow-init <feature-description>
-Example: /workflow-init add user authentication with OAuth
-```
-
-### Invalid Characters in Feature Name
-
-```
-❌ Feature name contains invalid characters
-Please use only letters, numbers, spaces, and hyphens
-```
-
-### Workspace Not Clean
-
-```
-⚠️  Existing workflow artifacts detected
-Run /workflow-cleanup to archive old work
-Or manually review .workflow/ directory
-```
-
-## State Transitions
-
-After initialization:
-
-- Phase: requirements
-- Subphase: discovery
-- Next Command: /workflow-continue (to start questions)
-
-## Important Implementation Notes
-
-1. **Feature Name Extraction**: Convert description to slug
-   - "Add user authentication" → "user-authentication"
-   - Remove special characters, lowercase, hyphenate
-
-2. **Atomic Operations**: State file updates must be atomic
-   - Write to temp file first
-   - Move to replace existing
-
-3. **Validation First**: Always validate before state changes
-   - Check file permissions
-   - Verify required tools (jq, yq if available)
-   - Ensure scripts directory exists
-
-4. **Context Persistence**: Save everything for resume capability
-   - User answers
-   - Discovered patterns
-   - Technology choices
+---

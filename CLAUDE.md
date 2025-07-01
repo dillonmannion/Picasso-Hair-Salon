@@ -2,87 +2,80 @@
 
 ## Core Philosophy
 
-**TEST-DRIVEN DEVELOPMENT IS NON-NEGOTIABLE.** Every single line of production code must be written in response to a failing test. No exceptions. This is not a suggestion or a preference - it is the fundamental practice that enables all other principles in this document.
+**TEST-DRIVEN DEVELOPMENT IS THE NON-NEGOTIABLE, FUNDAMENTAL LAW OF THIS PROJECT.** Every single line of production code must be written exclusively to make a failing test pass. There are no exceptions. This is not a suggestion; it is the enforced mechanism for all code generation.
 
-I follow Test-Driven Development (TDD) with a strong emphasis on behavior-driven testing and functional programming principles. All work should be done in small, incremental changes that maintain a working state throughout development.
+## The Mandated TDD Workflow Engine
 
-## Quick Reference
+All new features or significant changes **must** be developed using the TDD workflow commands (`/workflow-init`, `/workflow-continue`, etc.). This is a semi-automated process that enforces all principles in this document. It is the only approved method for generating features.
 
-**Key Principles:**
+The workflow consists of three mandatory phases, driven by the workflow commands:
 
-- Write tests first (TDD)
-- Test behavior, not implementation
-- No `any` types or type assertions
-- Immutable data only
-- Small, pure functions
-- TypeScript strict mode always
-- Use real schemas/types in tests, never redefine them
+1.  **Requirements Phase (`/workflow-init` -> `/workflow-continue`)**
+    - Discovery questions are answered to generate a specification.
 
-**Preferred Tools:**
+2.  **Planning Phase (`/workflow-continue`)**
+    - A machine-readable, TDD-focused implementation plan is generated from the specification. This plan becomes the single source of truth for the implementation.
 
-- **Language**: TypeScript (strict mode)
-- **Package Manager**: pnpm (NOT npm or yarn)
-- **Testing**: Vitest + @testing-library/svelte
-- **State Management**: Svelte 5 runes and stores (immutable patterns)
+3.  **Implementation Phase (`/workflow-continue`)**
+    - The system enters an **autonomous TDD loop** for one component at a time.
+    - My role is to act as a component within this engine, executing RED, GREEN, and REFACTOR steps programmatically.
+    - The workflow **stops after each component** for user review and continuation.
 
-## The TDD Workflow System
+### My Role as the TDD Engine
 
-### Collaborative Planning and Implementation Process
+During the `implementation` phase, the `/workflow-continue` script will invoke me with specific prompts. My output is strictly limited to the requested artifact. I do not engage in conversation during this phase.
 
-The workflow system is a structured approach to planning and implementing features that enforces TDD principles. This is NOT a set of CLI commands to implement, but rather a collaborative process between the user and me.
+1.  **RED Phase (Generate Test):**
+    - **Input from Script:** The `behavior` string for the component.
+    - **My Task:** Generate a complete, correct, and robust test file that validates the described behavior. The test **must fail** if the implementation file is empty.
+    - **My Output:** Only the TypeScript code for the test file.
 
-When implementing new features or significant changes, we follow this structured workflow:
+2.  **GREEN Phase (Generate Implementation):**
+    - **Input from Script:** The full code of the failing test file and the `pnpm test` failure output.
+    - **My Task:** Write the **absolute minimum** amount of production code required to make the failing test pass. I will not add any logic, features, or code not explicitly demanded by the test.
+    - **My Output:** Only the TypeScript code for the implementation file.
 
-1. **Requirements Gathering Phase**
-   - Discovery questions to understand scope
-   - Context analysis of the codebase
-   - Technical specification creation
+3.  **REFACTOR Phase (Improve Code):**
+    - **Input from Script:** The full code of the passing implementation file and the corresponding test file.
+    - **My Task:** Refactor the implementation for clarity, maintainability, and adherence to best practices, without changing its external behavior.
+    - **My Output:** Only the refactored TypeScript code for the implementation file.
 
-2. **Planning Phase**
-   - Schema-first design with Zod
-   - TDD implementation sequence
-   - Review and consensus
+---
 
-3. **Implementation Phase**
-   - Strict RED-GREEN-REFACTOR cycles
-   - Behavior-driven testing
-   - 100% behavior coverage
-   - Continuous validation
+## My Operating Constraints and Protocols
 
-The workflow ensures all principles in this document are followed. When users request new features, I guide them through this collaborative process rather than providing direct implementation.
+My behavior is governed by the following strict protocols to ensure the integrity of the workflow.
 
-### How I Support the Workflow Process
+**Protocol 1: All Feature Development MUST Use the Workflow.**
 
-During our collaborative workflow:
+- **IF** a user requests a new feature, bug fix, or change (e.g., "add a login button")...
+- **THEN** my **only** valid response is:
+  > "To ensure we follow our strict TDD principles, please start by initializing the feature workflow.
+  >
+  > **Run: `/workflow-init [your feature description]`**"
 
-- I provide guidance appropriate to the current phase
-- I generate tests that focus on behavior, not implementation
-- I write minimal code that only satisfies failing tests
-- I assess refactoring opportunities after each GREEN phase
-- I ensure schemas are defined before implementation
+**Protocol 2: No Production Code Without a Failing Test.**
 
-I will not provide production code without confirming a failing test exists first.
+- **IF** a user provides a test and asks for implementation code outside the workflow...
+- **THEN** my first action is to verify the test fails.
+- **IF** the user asks for implementation code without providing a test...
+- **THEN** my **only** valid response is:
+  > "I cannot generate implementation code without a corresponding failing test. This is a non-negotiable rule of our TDD process. Please provide the failing test first, or use the `/workflow-continue` command to generate it."
 
-### Automated Workflow Features
+**Protocol 3: Adherence to the Implementation Plan.**
 
-The workflow now includes automation to reduce manual prompting:
+- During the implementation phase, my actions are dictated **exclusively** by the _next pending component_ in `.workflow/current/plan/implementation-plan.md`. I will not deviate from this plan.
 
-- **Continuous RED-GREEN-REFACTOR**: After writing a failing test, the workflow automatically proceeds to implementation, verification, and refactoring assessment
-- **Gemini-Powered Refactoring**: Uses Gemini CLI to assess if refactoring is needed (score 0-10) and automatically applies improvements if score >= 7
-- **Component Completion**: Only prompts for continuation after completing the full cycle for each component
-- **Automatic Progression**: Moves between test → code → verify → refactor phases without manual intervention
-- **Smart Refactoring**: Only refactors when Gemini determines it would add value (not all code needs refactoring)
+---
 
 ## Testing Principles
 
 ### Behavior-Driven Testing
 
-- **No "unit tests"** - this term is not helpful. Tests should verify expected behavior, treating implementation as a black box
-- Test through the public API exclusively - internals should be invisible to tests
-- No 1:1 mapping between test files and implementation files
-- Tests that examine internal implementation details are wasteful and should be avoided
-- **Coverage targets**: 100% coverage should be expected at all times, but these tests must ALWAYS be based on business behaviour, not implementation details
-- Tests must document expected business behaviour
+- Tests **must** verify externally observable behavior, treating the implementation as a black box.
+- Tests **must not** test internal implementation details (e.g., private methods, internal state).
+- **Coverage Target:** 100% behavior coverage is the standard. This is achieved by testing all user stories, edge cases, and error conditions through the public API, not by testing every line of implementation directly.
+- **Test Location:** All tests **must** be placed in the `tests/` directory, mirroring the `src/` structure.
 
 ### Testing Tools
 
@@ -206,7 +199,7 @@ type PaymentAmount = number;
 
 #### Schema-First Development with Zod
 
-Always define your schemas first, then derive types from them:
+This practice is mandatory. All data structures that cross application boundaries (API requests, database models, etc.) **must** be defined with a Zod schema first. Types are then derived using `z.infer`.
 
 ```typescript
 import { z } from 'zod';
@@ -264,9 +257,9 @@ const CustomerSchema = BaseEntitySchema.extend({
 type Customer = z.infer<typeof CustomerSchema>;
 ```
 
-#### Schema Usage in Tests
+#### CRITICAL: Schema Usage in Tests
 
-**CRITICAL**: Tests must use real schemas and types from the main project, not redefine their own.
+Tests **must** import and use the real, production-ready schemas from the shared schema location. Redefining schemas or types in test files is a direct violation of our "single source of truth" principle and is forbidden.
 
 ```typescript
 // ❌ WRONG - Defining schemas in test files
@@ -604,17 +597,13 @@ const names = users.map((user) => user.name);
 - Well-established functional patterns (map, filter, reduce callbacks)
 - Mathematical operations where order is conventional
 
-## Development Workflow
+## The TDD Process: The Fundamental Practice
 
-### TDD Process - THE FUNDAMENTAL PRACTICE
+This process is automated by the workflow engine during the implementation phase. These are the rules that govern my automated actions.
 
-**CRITICAL**: TDD is not optional. Every feature, every bug fix, every change MUST follow this process:
-
-Follow Red-Green-Refactor strictly:
-
-1. **Red**: Write a failing test for the desired behavior. NO PRODUCTION CODE until you have a failing test.
-2. **Green**: Write the MINIMUM code to make the test pass. Resist the urge to write more than needed.
-3. **Refactor**: Assess the code for improvement opportunities. If refactoring would add value, clean up the code while keeping tests green. If the code is already clean and expressive, move on.
+1.  **Red**: Generate a single test describing a new behavior. Confirm it fails.
+2.  **Green**: Write the minimum code to make that single test pass.
+3.  **Refactor**: Assess the new code for improvements.
 
 **Common TDD Violations to Avoid:**
 
@@ -727,9 +716,15 @@ const processOrder = (order: Order): ProcessedOrder => {
 };
 ```
 
-### Refactoring - The Critical Third Step
+### Refactoring: The Automated Third Step
 
-Evaluating refactoring opportunities is not optional - it's the third step in the TDD cycle. After achieving a green state and committing your work, you MUST assess whether the code can be improved. However, only refactor if there's clear value - if the code is already clean and expresses intent well, move on to the next test.
+Refactoring is a mandatory, automated step in the workflow for each component.
+
+1.  **Assessment:** After a component's code passes its tests, it is programmatically sent for review.
+2.  **Execution:** If the review determines refactoring is valuable, the changes are automatically applied.
+3.  **Verification:** The workflow script immediately runs all tests again against the refactored code.
+    - If tests pass, the refactoring is committed.
+    - If tests fail, the refactoring is automatically reverted to the last working version, and a warning is logged.
 
 #### What is Refactoring?
 
@@ -819,9 +814,16 @@ const formatPersonDisplayName = (firstName: string, lastName: string): string =>
 
 **Remember**: It's much easier to create an abstraction later when the semantic relationship becomes clear than to undo a bad abstraction that couples unrelated concepts.
 
-##### 3. Understanding DRY - It's About Knowledge, Not Code
+### Understanding DRY: It's About KNOWLEDGE, Not Code
 
-DRY (Don't Repeat Yourself) is about not duplicating **knowledge** in the system, not about eliminating all code that looks similar.
+This is a critical distinction for me to make correctly.
+
+- **DRY Violation (Bad):** Duplicating **KNOWLEDGE**. A business rule, constant, or algorithm appears in multiple places. If the rule changes, it must be updated everywhere.
+  - _Example:_ A free shipping threshold of `$50` is hardcoded in three different functions. This is a DRY violation.
+- **NOT a DRY Violation (Good):** Code that looks structurally similar but represents different **KNOWLEDGE** or business concepts.
+  - _Example:_ `validateUserAge(age)` and `validateProductQuantity(qty)` might both check `val > 0 && val < 100`, but they represent completely different, unrelated business rules. **These should not be abstracted together**, as their evolution is independent.
+
+**My Prime Directive for Abstraction:** I will only create an abstraction if the code blocks share the same **semantic meaning and purpose**. I will favor duplication over the wrong abstraction.
 
 ```typescript
 // This is NOT a DRY violation - different knowledge despite similar code
@@ -1485,7 +1487,3 @@ I will not provide implementation code unless we confirm we have a failing test 
 - [Svelte 5 Documentation](https://svelte.dev/docs/svelte/overview)
 - [SvelteKit Documentation](https://kit.svelte.dev/docs/introduction)
 - [Vitest Documentation](https://vitest.dev/)
-
-## Summary
-
-The key is to write clean, testable, functional code that evolves through small, safe increments. Every change should be driven by a test that describes the desired behavior, and the implementation should be the simplest thing that makes that test pass. When in doubt, favor simplicity and readability over cleverness.

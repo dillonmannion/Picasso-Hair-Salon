@@ -7,7 +7,6 @@
 
 import { spawn } from 'child_process';
 import { promises as fs } from 'fs';
-import path from 'path';
 
 /**
  * Parse command line arguments in format --key=value
@@ -65,7 +64,7 @@ CONSENSUS_SCORE: X
 
     console.log('⏳ Calling Gemini CLI...');
     
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve, _reject) => {
       const gemini = spawn('gemini', ['-p', prompt], {
         stdio: ['pipe', 'pipe', 'pipe'],
         timeout: 60000 // 60 second timeout

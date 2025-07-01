@@ -1,5 +1,7 @@
 # Workflow Abort Command
 
+**⚠️ USER-ONLY COMMAND**: This command is designed to be run by users only. Claude should never attempt to execute this command via Bash. If a user needs to abort a workflow, they will run this command themselves.
+
 Safely abort the current workflow and optionally archive partial work.
 
 ## Command: /workflow-abort
@@ -10,60 +12,56 @@ Safely abort the current workflow and optionally archive partial work.
 
 Safely terminate an active workflow at any stage, preserving work for potential future reference.
 
+## For Claude
+
+When working within the TDD workflow:
+- Do NOT attempt to run this command via Bash
+- If issues arise that might warrant aborting, inform the user and suggest they run this command
+- Continue with TDD work unless the user explicitly aborts the workflow
+- Always respect the current workflow state
+
 ## Implementation
 
 ### 1. Confirm Abort Intent
 
 ```bash
 if [ ! -f ".workflow/state.yaml" ]; then
-  echo "❌ No active workflow to abort"
+  echo "❌ No active workflow to abort."
   exit 0
 fi
 
 # Get workflow details
 feature=$(grep "^feature:" .workflow/state.yaml | cut -d'"' -f2)
 phase=$(grep "^phase:" .workflow/state.yaml | cut -d'"' -f2)
-started=$(grep "^started:" .workflow/state.yaml | cut -d'"' -f2)
-duration=$(calculate_duration "$started" "$(date -u +%Y-%m-%dT%H:%M:%SZ)")
 
-echo "⚠️  ABORT WORKFLOW?"
-echo "━━━━━━━━━━━━━━━━━"
-echo ""
-echo "Feature: $feature"
+echo "⚠️  ABORT WORKFLOW: $feature?"
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 echo "Current Phase: $phase"
-echo "Duration: $duration"
 echo ""
 
 # Show work that will be affected
-case "$phase" in
-  "requirements")
-    questions_answered=$(grep -c "Your answer: \(yes\|no\|idk\)" .workflow/current/requirements/*.md 2>/dev/null || echo 0)
-    echo "Work to be archived:"
-    echo "- Requirements questions answered: $questions_answered"
-    ;;
-
-  "planning")
-    iterations=$(grep "iteration_count:" .workflow/state.yaml | cut -d' ' -f2)
-    echo "Work to be archived:"
-    echo "- Planning iterations: $iterations"
-    ;;
-
-  "implementation")
-    files_created=$(find .workflow/current/implementation -type f | wc -l)
-    tests_written=$(find .workflow/current/tests -type f | wc -l)
-    echo "Work to be archived:"
-    echo "- Implementation files: $files_created"
-    echo "- Test files: $tests_written"
-    ;;
-esac
+if [ "$phase" = "implementation" ]; then
+  completed=$(grep -c 'status: "complete"' .workflow/current/plan/implementation-plan.md 2>/dev/null || echo 0)
+  total=$(grep -c '## COMPONENT' .workflow/current/plan/implementation-plan.md 2>/dev/null || echo 0)
+  echo "Work to be archived/discarded:"
+  echo "- Implemented components: $completed / $total"
+  echo "- Any uncommitted code in src/ and tests/."
+fi
 
 echo ""
 echo "Options:"
-echo "1. Archive and abort (preserves work for reference)"
-echo "2. Discard and abort (removes all work)"
+echo "1. Archive and abort (preserves all work in 'completed/.aborted')"
+echo "2. Discard and abort (deletes all workflow artifacts)"
 echo "3. Cancel (return to workflow)"
 echo ""
-echo "Choose option (1/2/3):"
+read -p "Choose option (1/2/3): " choice
+
+case $choice in
+    1) archive_and_abort ;;
+    2) discard_and_abort ;;
+    3) cancel_abort ;;
+    *) echo "Invalid option." ;;
+esac
 ```
 
 ### 2. Handle User Choice

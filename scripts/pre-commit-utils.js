@@ -7,7 +7,7 @@ export const getStagedFiles = async () => {
   try {
     const { stdout } = await execAsync('git diff --cached --name-only --diff-filter=ACM');
     return stdout.trim().split('\n').filter(Boolean);
-  } catch (error) {
+  } catch {
     return [];
   }
 };

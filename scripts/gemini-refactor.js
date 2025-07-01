@@ -7,7 +7,6 @@
 
 import { exec } from 'child_process';
 import { promises as fs } from 'fs';
-import path from 'path';
 
 /**
  * Parse command line arguments in format --key=value

@@ -1,4 +1,13 @@
-import { ProfileSchema, OAuthCallbackParamsSchema, ButtonPropsSchema, type Profile, type OAuthCallbackParams, type ButtonProps } from '$lib/schemas';
+import { 
+  ProfileSchema, 
+  OAuthCallbackParamsSchema, 
+  OAuthErrorParamsSchema,
+  ButtonPropsSchema, 
+  type Profile, 
+  type OAuthCallbackParams, 
+  type OAuthErrorParams,
+  type ButtonProps 
+} from '$lib/schemas';
 
 export const createMockProfile = (overrides?: Partial<Profile>): Profile => {
   const baseProfile = {
@@ -34,4 +43,16 @@ export const createMockButtonProps = (overrides?: Partial<ButtonProps>): ButtonP
   const propsData = { ...baseProps, ...overrides };
   
   return ButtonPropsSchema.parse(propsData);
+};
+
+export const createMockOAuthError = (overrides?: Partial<OAuthErrorParams>): OAuthErrorParams => {
+  const baseError = {
+    error: 'access_denied',
+    error_code: 'AUTH001',
+    error_description: 'User denied access'
+  };
+
+  const errorData = { ...baseError, ...overrides };
+  
+  return OAuthErrorParamsSchema.parse(errorData);
 };

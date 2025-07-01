@@ -47,6 +47,6 @@ export default [
     }
   },
   {
-    ignores: ['build/', '.svelte-kit/', 'dist/', 'coverage/', 'playwright-report/']
+    ignores: ['build/', '.svelte-kit/', 'dist/', 'coverage/', 'playwright-report/', 'src/lib/components/*.svelte']
   }
 ];
