@@ -22,7 +22,7 @@
 	}: SkeletonProps = $props();
 
 	const baseStyles = 'bg-gray-200 dark:bg-gray-700';
-	
+
 	const animationStyles = animate ? 'animate-pulse' : '';
 
 	const variantStyles = {
@@ -60,12 +60,7 @@
 	const size = $derived(getSize());
 
 	const skeletonClass = $derived(
-		cn(
-			baseStyles,
-			animationStyles,
-			variantStyles[variant],
-			className
-		)
+		cn(baseStyles, animationStyles, variantStyles[variant], className)
 	);
 </script>
 

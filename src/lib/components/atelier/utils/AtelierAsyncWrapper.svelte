@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { cn } from '$lib/utils';
 	import AtelierLoader from '../feedback/AtelierLoader.svelte';
-	
+
 	interface AsyncWrapperProps {
 		loading?: boolean;
 		error?: Error | null;
@@ -31,15 +31,11 @@
 	}: AsyncWrapperProps = $props();
 
 	const containerClass = $derived(
-		cn(
-			'atelier-async-wrapper relative',
-			loading && 'flex items-center justify-center',
-			className
-		)
+		cn('atelier-async-wrapper relative', loading && 'flex items-center justify-center', className)
 	);
 </script>
 
-<div 
+<div
 	class={containerClass}
 	style={loading || error || empty ? `min-height: ${minHeight}` : undefined}
 >
@@ -49,9 +45,9 @@
 			<p class="text-sm text-gray-500 dark:text-gray-400">Loading...</p>
 		</div>
 	{:else if error}
-		<div class="flex flex-col items-center justify-center gap-4 text-center p-8">
+		<div class="flex flex-col items-center justify-center gap-4 p-8 text-center">
 			<svg
-				class="w-12 h-12 text-red-500 dark:text-red-400"
+				class="h-12 w-12 text-red-500 dark:text-red-400"
 				fill="none"
 				stroke="currentColor"
 				viewBox="0 0 24 24"
@@ -76,16 +72,16 @@
 			{#if retry}
 				<button
 					onclick={retry}
-					class="px-4 py-2 text-sm font-medium text-white bg-atelier-primary hover:bg-atelier-primary/90 rounded-lg transition-colors"
+					class="bg-atelier-primary hover:bg-atelier-primary/90 rounded-lg px-4 py-2 text-sm font-medium text-white transition-colors"
 				>
 					Try Again
 				</button>
 			{/if}
 		</div>
 	{:else if empty}
-		<div class="flex flex-col items-center justify-center gap-4 text-center p-8">
+		<div class="flex flex-col items-center justify-center gap-4 p-8 text-center">
 			<svg
-				class="w-12 h-12 text-gray-400 dark:text-gray-600"
+				class="h-12 w-12 text-gray-400 dark:text-gray-600"
 				fill="none"
 				stroke="currentColor"
 				viewBox="0 0 24 24"

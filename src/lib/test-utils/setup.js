@@ -10,7 +10,7 @@ afterEach(() => {
 // Mock window.matchMedia
 Object.defineProperty(window, 'matchMedia', {
 	writable: true,
-	value: vi.fn().mockImplementation(query => ({
+	value: vi.fn().mockImplementation((query) => ({
 		matches: false,
 		media: query,
 		onchange: null,
@@ -44,10 +44,7 @@ global.ResizeObserver = class ResizeObserver {
 // Suppress console errors in tests by default
 const originalError = console.error;
 console.error = (...args) => {
-	if (
-		typeof args[0] === 'string' &&
-		args[0].includes('Consider adding an error boundary')
-	) {
+	if (typeof args[0] === 'string' && args[0].includes('Consider adding an error boundary')) {
 		return;
 	}
 	originalError.call(console, ...args);

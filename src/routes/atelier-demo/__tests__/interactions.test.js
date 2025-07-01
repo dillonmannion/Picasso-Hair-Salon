@@ -70,11 +70,11 @@ describe('Component Interaction Tests', () => {
 			});
 
 			const button = screen.getByRole('button');
-			
+
 			// Hover interaction
 			await user.hover(button);
 			// Note: Actual hover styles are CSS-based, we verify the interaction works
-			
+
 			await user.unhover(button);
 		});
 	});
@@ -258,9 +258,7 @@ describe('Component Interaction Tests', () => {
 
 		test('handles keyboard navigation', async () => {
 			const { user } = renderWithTheme(AtelierAccordion, {
-				items: [
-					{ id: '1', title: 'Panel 1', content: 'Content 1' }
-				]
+				items: [{ id: '1', title: 'Panel 1', content: 'Content 1' }]
 			});
 
 			const button = screen.getByRole('button', { name: /Panel 1/i });
@@ -380,10 +378,10 @@ describe('Component Interaction Tests', () => {
 
 			// Find trigger button
 			const trigger = screen.getByRole('button', { name: /open sidebar/i });
-			
+
 			// Click to open
 			await user.click(trigger);
-			
+
 			await waitFor(() => {
 				const sidebar = screen.getByRole('complementary');
 				expect(sidebar).toHaveAttribute('aria-hidden', 'false');
@@ -499,9 +497,12 @@ describe('Component Interaction Tests', () => {
 			expect(screen.queryByRole('tooltip')).not.toBeInTheDocument();
 
 			// Wait for delay
-			await waitFor(() => {
-				expect(screen.getByRole('tooltip')).toBeInTheDocument();
-			}, { timeout: 600 });
+			await waitFor(
+				() => {
+					expect(screen.getByRole('tooltip')).toBeInTheDocument();
+				},
+				{ timeout: 600 }
+			);
 		});
 	});
 
@@ -548,9 +549,12 @@ describe('Component Interaction Tests', () => {
 			});
 
 			// Should disappear after timeout
-			await waitFor(() => {
-				expect(screen.queryByText('Info')).not.toBeInTheDocument();
-			}, { timeout: 200 });
+			await waitFor(
+				() => {
+					expect(screen.queryByText('Info')).not.toBeInTheDocument();
+				},
+				{ timeout: 200 }
+			);
 		});
 	});
 
@@ -614,7 +618,7 @@ describe('Component Interaction Tests', () => {
 			});
 
 			const button = screen.getByRole('button');
-			
+
 			// Tab to button
 			await user.tab();
 			expect(document.activeElement).toBe(button);

@@ -152,9 +152,7 @@ export function createTheme(overrides = {}) {
  * @param {Function} modifier
  */
 export function createMany(factory, count, modifier = (item, index) => item) {
-	return Array.from({ length: count }, (_, index) => 
-		modifier(factory(), index)
-	);
+	return Array.from({ length: count }, (_, index) => modifier(factory(), index));
 }
 
 /**

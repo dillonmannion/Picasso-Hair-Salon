@@ -50,7 +50,7 @@
 	let touched = $state(false);
 	let internalError = $state('');
 	let textareaRef: HTMLTextAreaElement;
-	
+
 	const error = $derived(externalError || internalError);
 	const hasError = $derived(!!error && touched);
 	const textareaId = $derived(id || `atelier-textarea-${crypto.randomUUID()}`);
@@ -73,15 +73,15 @@
 	function handleInput(e: Event) {
 		const target = e.target as HTMLTextAreaElement;
 		value = target.value;
-		
+
 		if (autoResize) {
 			adjustHeight();
 		}
-		
+
 		if (validateOnChange && touched) {
 			handleValidation(value);
 		}
-		
+
 		restProps.oninput?.(e);
 	}
 
@@ -89,12 +89,12 @@
 		if (!textareaRef || !autoResize) return;
 
 		textareaRef.style.height = 'auto';
-		
+
 		const scrollHeight = textareaRef.scrollHeight;
 		const lineHeight = parseInt(getComputedStyle(textareaRef).lineHeight);
 		const minHeight = lineHeight * minRows;
 		const maxHeight = lineHeight * maxRows;
-		
+
 		const newHeight = Math.min(Math.max(scrollHeight, minHeight), maxHeight);
 		textareaRef.style.height = `${newHeight}px`;
 	}
@@ -152,7 +152,7 @@
 		<label
 			for={textareaId}
 			class={cn(
-				'block mb-1.5 text-sm font-medium',
+				'mb-1.5 block text-sm font-medium',
 				'text-gray-700 dark:text-gray-300',
 				hasError && 'text-red-600 dark:text-red-400',
 				disabled && 'text-gray-500 dark:text-gray-500',
@@ -161,7 +161,7 @@
 		>
 			{label}
 			{#if required}
-				<span class="text-red-500 ml-0.5">*</span>
+				<span class="ml-0.5 text-red-500">*</span>
 			{/if}
 		</label>
 	{/if}
@@ -185,7 +185,9 @@
 		/>
 
 		{#if value && !disabled}
-			<div class="absolute bottom-2 right-2 text-xs text-gray-400 dark:text-gray-600 pointer-events-none">
+			<div
+				class="pointer-events-none absolute right-2 bottom-2 text-xs text-gray-400 dark:text-gray-600"
+			>
 				{value.length} characters
 			</div>
 		{/if}
@@ -194,10 +196,7 @@
 	{#if hasError}
 		<p
 			id={`${textareaId}-error`}
-			class={cn(
-				'mt-1.5 text-sm text-red-600 dark:text-red-400',
-				errorClass
-			)}
+			class={cn('mt-1.5 text-sm text-red-600 dark:text-red-400', errorClass)}
 			role="alert"
 		>
 			{error}
@@ -205,10 +204,7 @@
 	{:else if hint}
 		<p
 			id={`${textareaId}-hint`}
-			class={cn(
-				'mt-1.5 text-sm text-gray-500 dark:text-gray-400',
-				hintClass
-			)}
+			class={cn('mt-1.5 text-sm text-gray-500 dark:text-gray-400', hintClass)}
 		>
 			{hint}
 		</p>

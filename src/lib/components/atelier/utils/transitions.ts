@@ -15,9 +15,9 @@ export const atelierTransitions = {
 			delay: 0,
 			easing: cubicOut
 		};
-		
+
 		const config = { ...defaultParams, ...params };
-		
+
 		return {
 			duration: config.duration,
 			delay: config.delay,
@@ -35,9 +35,9 @@ export const atelierTransitions = {
 			delay: 0,
 			easing: cubicOut
 		};
-		
+
 		const config = { ...defaultParams, ...params };
-		
+
 		return {
 			duration: config.duration,
 			delay: config.delay,
@@ -55,9 +55,9 @@ export const atelierTransitions = {
 			delay: 0,
 			easing: cubicOut
 		};
-		
+
 		const config = { ...defaultParams, ...params };
-		
+
 		return {
 			duration: config.duration,
 			delay: config.delay,

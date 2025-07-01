@@ -69,12 +69,7 @@ export default defineConfig({
 		include: ['src/**/*.{test,spec}.{js,ts}'],
 		coverage: {
 			reporter: ['text', 'json', 'html'],
-			exclude: [
-				'node_modules/',
-				'src/lib/test-utils/',
-				'**/*.config.*',
-				'**/__tests__/**'
-			]
+			exclude: ['node_modules/', 'src/lib/test-utils/', '**/*.config.*', '**/__tests__/**']
 		},
 		pool: 'forks',
 		clearMocks: true,

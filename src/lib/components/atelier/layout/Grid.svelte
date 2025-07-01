@@ -27,8 +27,13 @@
 		children?: Snippet;
 	}
 
-	let { cols = 1, gap = 'md', responsive = true, class: className = '', children }: Props =
-		$props();
+	let {
+		cols = 1,
+		gap = 'md',
+		responsive = true,
+		class: className = '',
+		children
+	}: Props = $props();
 
 	const gapClasses = {
 		sm: 'gap-atelier-xs md:gap-atelier-sm',
@@ -55,7 +60,9 @@
 		}
 	};
 
-	const gridClass = $derived(`atelier-grid grid ${getColClasses()} ${gapClasses[gap]} ${className}`);
+	const gridClass = $derived(
+		`atelier-grid grid ${getColClasses()} ${gapClasses[gap]} ${className}`
+	);
 </script>
 
 <div class={gridClass}>

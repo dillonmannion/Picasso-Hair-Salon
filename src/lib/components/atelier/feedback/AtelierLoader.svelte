@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { cn } from '$lib/utils';
-	
+
 	type LoaderSize = 'sm' | 'md' | 'lg';
 	type LoaderVariant = 'spinner' | 'dots' | 'pulse' | 'shimmer';
 
@@ -36,18 +36,12 @@
 <div class={loaderClass} role="status" aria-label={label}>
 	{#if variant === 'spinner'}
 		<svg
-			class={cn('animate-spin text-atelier-primary', sizeClasses[size])}
+			class={cn('text-atelier-primary animate-spin', sizeClasses[size])}
 			xmlns="http://www.w3.org/2000/svg"
 			fill="none"
 			viewBox="0 0 24 24"
 		>
-			<circle
-				class="opacity-25"
-				cx="12"
-				cy="12"
-				r="10"
-				stroke="currentColor"
-				stroke-width="4"
+			<circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"
 			></circle>
 			<path
 				class="opacity-75"
@@ -59,10 +53,7 @@
 		<div class="flex items-center gap-1">
 			{#each [0, 1, 2] as i}
 				<div
-					class={cn(
-						'bg-atelier-primary rounded-full animate-bounce',
-						dotSizeClasses[size]
-					)}
+					class={cn('bg-atelier-primary animate-bounce rounded-full', dotSizeClasses[size])}
 					style="animation-delay: {i * 150}ms"
 				></div>
 			{/each}
@@ -71,26 +62,18 @@
 		<div class="relative inline-flex">
 			<div
 				class={cn(
-					'bg-atelier-primary rounded-full animate-ping absolute inline-flex h-full w-full opacity-75',
+					'bg-atelier-primary absolute inline-flex h-full w-full animate-ping rounded-full opacity-75',
 					sizeClasses[size]
 				)}
 			></div>
 			<div
-				class={cn(
-					'bg-atelier-primary rounded-full relative inline-flex',
-					sizeClasses[size]
-				)}
+				class={cn('bg-atelier-primary relative inline-flex rounded-full', sizeClasses[size])}
 			></div>
 		</div>
 	{:else if variant === 'shimmer'}
-		<div
-			class={cn(
-				'relative overflow-hidden bg-atelier-muted rounded-lg',
-				sizeClasses[size]
-			)}
-		>
+		<div class={cn('bg-atelier-muted relative overflow-hidden rounded-lg', sizeClasses[size])}>
 			<div
-				class="absolute inset-0 bg-gradient-to-r from-transparent via-atelier-primary/20 to-transparent animate-shimmer"
+				class="via-atelier-primary/20 animate-shimmer absolute inset-0 bg-gradient-to-r from-transparent to-transparent"
 			></div>
 		</div>
 	{/if}

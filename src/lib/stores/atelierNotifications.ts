@@ -25,7 +25,7 @@ function createNotificationStore() {
 			...notification
 		};
 
-		update(notifications => [...notifications, newNotification]);
+		update((notifications) => [...notifications, newNotification]);
 
 		if (newNotification.duration && newNotification.duration > 0) {
 			setTimeout(() => {
@@ -37,7 +37,7 @@ function createNotificationStore() {
 	}
 
 	function remove(id: string) {
-		update(notifications => notifications.filter(n => n.id !== id));
+		update((notifications) => notifications.filter((n) => n.id !== id));
 	}
 
 	function clear() {

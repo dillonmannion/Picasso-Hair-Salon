@@ -52,7 +52,7 @@
 
 	let touched = $state(false);
 	let internalError = $state('');
-	
+
 	const error = $derived(externalError || internalError);
 	const hasError = $derived(!!error && touched);
 	const selectId = $derived(id || `atelier-select-${crypto.randomUUID()}`);
@@ -127,7 +127,7 @@
 		<label
 			for={selectId}
 			class={cn(
-				'block mb-1.5 text-sm font-medium',
+				'mb-1.5 block text-sm font-medium',
 				'text-gray-700 dark:text-gray-300',
 				hasError && 'text-red-600 dark:text-red-400',
 				disabled && 'text-gray-500 dark:text-gray-500',
@@ -136,7 +136,7 @@
 		>
 			{label}
 			{#if required}
-				<span class="text-red-500 ml-0.5">*</span>
+				<span class="ml-0.5 text-red-500">*</span>
 			{/if}
 		</label>
 	{/if}
@@ -165,22 +165,14 @@
 			{/each}
 		</select>
 
-		<div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+		<div class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
 			<svg
-				class={cn(
-					'w-5 h-5',
-					hasError ? 'text-red-500' : 'text-gray-400 dark:text-gray-600'
-				)}
+				class={cn('h-5 w-5', hasError ? 'text-red-500' : 'text-gray-400 dark:text-gray-600')}
 				fill="none"
 				stroke="currentColor"
 				viewBox="0 0 24 24"
 			>
-				<path
-					stroke-linecap="round"
-					stroke-linejoin="round"
-					stroke-width="2"
-					d="M19 9l-7 7-7-7"
-				/>
+				<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
 			</svg>
 		</div>
 	</div>
@@ -188,10 +180,7 @@
 	{#if hasError}
 		<p
 			id={`${selectId}-error`}
-			class={cn(
-				'mt-1.5 text-sm text-red-600 dark:text-red-400',
-				errorClass
-			)}
+			class={cn('mt-1.5 text-sm text-red-600 dark:text-red-400', errorClass)}
 			role="alert"
 		>
 			{error}
@@ -199,10 +188,7 @@
 	{:else if hint}
 		<p
 			id={`${selectId}-hint`}
-			class={cn(
-				'mt-1.5 text-sm text-gray-500 dark:text-gray-400',
-				hintClass
-			)}
+			class={cn('mt-1.5 text-sm text-gray-500 dark:text-gray-400', hintClass)}
 		>
 			{hint}
 		</p>

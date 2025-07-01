@@ -2,7 +2,12 @@ import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/svelte';
 import userEvent from '@testing-library/user-event';
 import { get } from 'svelte/store';
-import { atelierTheme, toggleAtelierTheme, setAtelierTheme, resolvedAtelierTheme } from '$lib/stores/atelierTheme';
+import {
+	atelierTheme,
+	toggleAtelierTheme,
+	setAtelierTheme,
+	resolvedAtelierTheme
+} from '$lib/stores/atelierTheme';
 import { tick } from 'svelte';
 import AtelierThemeProvider from '$lib/components/atelier/AtelierThemeProvider.svelte';
 import AtelierButton from '$lib/components/atelier/AtelierButton.svelte';
@@ -50,13 +55,13 @@ describe('Atelier Theme System', () => {
 		it('should detect light system preference', async () => {
 			// Set up light mode preference
 			mediaQueryMock.updateQuery('(prefers-color-scheme: dark)', false);
-			
+
 			// Force a re-evaluation by toggling away and back
 			setAtelierTheme('light');
 			await tick();
 			setAtelierTheme('system');
 			await tick();
-			
+
 			// The resolved theme should be light when system is light
 			const resolved = get(resolvedAtelierTheme);
 			expect(resolved).toBe('light');
@@ -68,11 +73,11 @@ describe('Atelier Theme System', () => {
 			mediaQueryMock = setupMediaQueryMock({
 				'(prefers-color-scheme: dark)': true
 			});
-			
+
 			// Set to system mode
 			setAtelierTheme('system');
 			await tick();
-			
+
 			// The resolved theme should be dark when system is dark
 			const resolved = get(resolvedAtelierTheme);
 			expect(resolved).toBe('dark');
@@ -110,7 +115,7 @@ describe('Atelier Theme System', () => {
 		it('should load theme from localStorage on initialization', () => {
 			// Set a preference in localStorage
 			localStorage.setItem('atelier-theme-preference', 'dark');
-			
+
 			// Reinitialize the store (simulate page reload)
 			// In real app, this would happen on page load
 			const savedTheme = localStorage.getItem('atelier-theme-preference');
@@ -132,7 +137,7 @@ describe('Atelier Theme System', () => {
 		it('should apply theme classes to document root', async () => {
 			// Test that the resolved theme updates correctly
 			// DOM updates are handled by store subscriptions which may not run in tests
-			
+
 			// Set to light theme
 			setAtelierTheme('light');
 			await tick();
@@ -154,7 +159,7 @@ describe('Atelier Theme System', () => {
 		it('should update CSS custom properties when theme changes', async () => {
 			// Test that theme values update correctly
 			// CSS custom properties require actual CSS to be loaded
-			
+
 			// Set light theme
 			setAtelierTheme('light');
 			await tick();
@@ -194,10 +199,10 @@ describe('Atelier Theme System', () => {
 	});
 
 	describe('Theme Toggle Interaction', () => {
-			it('should toggle theme when button is clicked', async () => {
+		it('should toggle theme when button is clicked', async () => {
 			// Ensure we start from a known state
 			setAtelierTheme('system');
-			
+
 			// Create a button that calls toggleAtelierTheme
 			const button = document.createElement('button');
 			button.setAttribute('data-testid', 'theme-toggle-click');
@@ -231,7 +236,7 @@ describe('Atelier Theme System', () => {
 		it('should handle keyboard navigation for theme toggle', async () => {
 			// Ensure we start from a known state
 			setAtelierTheme('system');
-			
+
 			// Create a button that calls toggleAtelierTheme
 			const button = document.createElement('button');
 			button.setAttribute('data-testid', 'theme-toggle-keyboard');
@@ -277,7 +282,7 @@ describe('Atelier Theme System', () => {
 			await tick();
 			setAtelierTheme('system');
 			await tick();
-			
+
 			expect(get(resolvedAtelierTheme)).toBe('dark');
 
 			// Simulate system changing back to light mode
@@ -290,7 +295,7 @@ describe('Atelier Theme System', () => {
 			await tick();
 			setAtelierTheme('system');
 			await tick();
-			
+
 			expect(get(resolvedAtelierTheme)).toBe('light');
 		});
 
@@ -314,7 +319,7 @@ describe('Atelier Theme System', () => {
 		it('should handle invalid theme values gracefully', () => {
 			// Store the current theme
 			const validTheme = get(atelierTheme);
-			
+
 			// Try to set an invalid theme
 			// @ts-expect-error - Testing invalid input
 			setAtelierTheme('invalid-theme');

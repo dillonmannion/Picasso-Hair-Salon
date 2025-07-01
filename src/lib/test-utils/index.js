@@ -12,7 +12,7 @@ import userEvent from '@testing-library/user-event';
 export function renderWithTheme(Component, props = {}, options = {}) {
 	// Create theme store
 	const theme = writable(options.theme || 'light');
-	
+
 	// Create a wrapper component that provides theme context
 	const TestWrapper = {
 		Component,
@@ -21,10 +21,10 @@ export function renderWithTheme(Component, props = {}, options = {}) {
 	};
 
 	const result = render(TestWrapper, options);
-	
+
 	// Add user event to result
 	const user = userEvent.setup();
-	
+
 	return {
 		...result,
 		user,
@@ -42,7 +42,7 @@ export function renderWithTheme(Component, props = {}, options = {}) {
 export async function waitForElement(callback, options = {}) {
 	const { timeout = 1000 } = options;
 	const startTime = Date.now();
-	
+
 	while (Date.now() - startTime < timeout) {
 		try {
 			const element = callback();
@@ -50,9 +50,9 @@ export async function waitForElement(callback, options = {}) {
 		} catch (e) {
 			// Element not found yet
 		}
-		await new Promise(resolve => setTimeout(resolve, 50));
+		await new Promise((resolve) => setTimeout(resolve, 50));
 	}
-	
+
 	throw new Error(`Element not found within ${timeout}ms`);
 }
 
@@ -66,11 +66,11 @@ export function debugDOM(container, filename = 'dom-snapshot.html') {
 		const fs = require('fs');
 		const path = require('path');
 		const snapshotDir = path.join(process.cwd(), 'test-failures');
-		
+
 		if (!fs.existsSync(snapshotDir)) {
 			fs.mkdirSync(snapshotDir, { recursive: true });
 		}
-		
+
 		const content = container.innerHTML;
 		const filepath = path.join(snapshotDir, filename);
 		fs.writeFileSync(filepath, content);
@@ -108,7 +108,7 @@ export function testId(component, element) {
  * @param {string[]} expectedClasses
  */
 export function assertClasses(element, expectedClasses) {
-	expectedClasses.forEach(className => {
+	expectedClasses.forEach((className) => {
 		expect(element).toHaveClass(className);
 	});
 }

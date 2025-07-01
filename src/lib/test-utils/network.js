@@ -17,11 +17,11 @@ const defaultHandlers = [
 		}
 		return HttpResponse.json({ error: 'Invalid credentials' }, { status: 401 });
 	}),
-	
+
 	http.post('/api/auth/logout', () => {
 		return HttpResponse.json({ success: true });
 	}),
-	
+
 	// Services endpoints
 	http.get('/api/services', () => {
 		return HttpResponse.json({
@@ -31,14 +31,14 @@ const defaultHandlers = [
 			]
 		});
 	}),
-	
+
 	// Appointments endpoints
 	http.get('/api/appointments', () => {
 		return HttpResponse.json({
 			appointments: []
 		});
 	}),
-	
+
 	http.post('/api/appointments', async ({ request }) => {
 		const body = await request.json();
 		return HttpResponse.json({
@@ -76,17 +76,17 @@ afterAll(() => server.close());
  */
 export function mockAPI(method, url, response, options = {}) {
 	const { status = 200, delay = 0, headers = {} } = options;
-	
+
 	server.use(
 		http[method.toLowerCase()](url, async () => {
 			if (delay) {
-				await new Promise(resolve => setTimeout(resolve, delay));
+				await new Promise((resolve) => setTimeout(resolve, delay));
 			}
-			
+
 			if (response instanceof Error) {
 				return HttpResponse.error();
 			}
-			
+
 			return HttpResponse.json(response, { status, headers });
 		})
 	);
@@ -128,21 +128,21 @@ export function mockNetworkError(method, url) {
  */
 export async function waitForAPI(method, url, timeout = 1000) {
 	const calls = [];
-	
+
 	server.events.on('request:match', (req) => {
 		if (req.method === method.toUpperCase() && req.url.pathname === url) {
 			calls.push(req);
 		}
 	});
-	
+
 	const startTime = Date.now();
 	while (Date.now() - startTime < timeout) {
 		if (calls.length > 0) {
 			return calls[0];
 		}
-		await new Promise(resolve => setTimeout(resolve, 50));
+		await new Promise((resolve) => setTimeout(resolve, 50));
 	}
-	
+
 	throw new Error(`API call ${method} ${url} was not made within ${timeout}ms`);
 }
 
@@ -153,12 +153,12 @@ export async function waitForAPI(method, url, timeout = 1000) {
  */
 export function getAPICalls(method, url) {
 	const calls = [];
-	
+
 	server.events.on('request:match', (req) => {
 		if (req.method === method.toUpperCase() && req.url.pathname === url) {
 			calls.push(req);
 		}
 	});
-	
+
 	return calls;
 }

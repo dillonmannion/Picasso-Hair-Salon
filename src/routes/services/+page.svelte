@@ -36,13 +36,15 @@
 </svelte:head>
 
 <!-- Hero Section -->
-<section class="atelier-hero-simple bg-gradient-to-b from-atelier-muted to-atelier-bg mb-atelier-xl">
+<section
+	class="atelier-hero-simple from-atelier-muted to-atelier-bg mb-atelier-xl bg-gradient-to-b"
+>
 	<Container>
 		<div class="py-atelier-2xl text-center">
 			<Typography variant="display" as="h1" align="center" gradient class="mb-atelier-sm">
 				Our Services
 			</Typography>
-			<Typography variant="body" align="center" class="max-w-2xl mx-auto">
+			<Typography variant="body" align="center" class="mx-auto max-w-2xl">
 				Experience luxury hair care with our expert stylists
 			</Typography>
 		</div>
@@ -53,7 +55,7 @@
 <Container>
 	<div class="space-y-atelier-2xl">
 		<!-- Introduction -->
-		<div class="text-center max-w-3xl mx-auto">
+		<div class="mx-auto max-w-3xl text-center">
 			<Typography variant="heading" as="h2" align="center" class="mb-atelier-md">
 				Artistry Meets Excellence
 			</Typography>
@@ -70,13 +72,13 @@
 			</AtelierNotification>
 		{:else if isLoading}
 			<!-- Loading skeleton -->
-			<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-atelier-lg">
+			<div class="gap-atelier-lg grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
 				{#each Array(6) as _, i}
 					<AtelierSkeleton class="h-[300px] rounded-xl" />
 				{/each}
 			</div>
 		{:else if services.length === 0}
-			<div class="text-center py-atelier-2xl">
+			<div class="py-atelier-2xl text-center">
 				<Typography variant="heading" as="h3" align="center" class="mb-atelier-sm">
 					No Services Available
 				</Typography>
@@ -90,20 +92,18 @@
 
 		<!-- Call to Action -->
 		<div
-			class="atelier-cta bg-gradient-to-r from-atelier-champagne/20 to-atelier-gold/10 rounded-2xl p-atelier-xl text-center"
+			class="atelier-cta from-atelier-champagne/20 to-atelier-gold/10 p-atelier-xl rounded-2xl bg-gradient-to-r text-center"
 		>
 			<Typography variant="heading" as="h2" align="center" class="mb-atelier-sm">
 				Ready to Transform Your Look?
 			</Typography>
-			<Typography variant="body" align="center" class="mb-atelier-lg max-w-2xl mx-auto">
+			<Typography variant="body" align="center" class="mb-atelier-lg mx-auto max-w-2xl">
 				Schedule your appointment today and let our experienced stylists create the perfect style
 				for you.
 			</Typography>
-			<div class="flex flex-col sm:flex-row gap-atelier-sm justify-center">
+			<div class="gap-atelier-sm flex flex-col justify-center sm:flex-row">
 				<AtelierButton size="large" href="/appointments">Book Your Appointment</AtelierButton>
-				<AtelierButton variant="outline" size="large">
-					Call Us: (555) 123-4567
-				</AtelierButton>
+				<AtelierButton variant="outline" size="large">Call Us: (555) 123-4567</AtelierButton>
 			</div>
 		</div>
 	</div>
@@ -122,11 +122,7 @@
 		right: -50%;
 		width: 200%;
 		height: 200%;
-		background: radial-gradient(
-			circle,
-			var(--atelier-elegant-gold) 0%,
-			transparent 70%
-		);
+		background: radial-gradient(circle, var(--atelier-elegant-gold) 0%, transparent 70%);
 		opacity: 0.05;
 		animation: atelier-glow 20s ease-in-out infinite;
 	}

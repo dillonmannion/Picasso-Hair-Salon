@@ -23,15 +23,15 @@ export function mockViewport({ width, height }) {
 		configurable: true,
 		value: width
 	});
-	
+
 	Object.defineProperty(window, 'innerHeight', {
 		writable: true,
 		configurable: true,
 		value: height
 	});
-	
+
 	// Update matchMedia to respond to viewport queries
-	window.matchMedia = vi.fn().mockImplementation(query => {
+	window.matchMedia = vi.fn().mockImplementation((query) => {
 		// Parse common media queries
 		const matches = {
 			'(max-width: 640px)': width <= 640,
@@ -43,7 +43,7 @@ export function mockViewport({ width, height }) {
 			'(prefers-color-scheme: dark)': false,
 			'(prefers-reduced-motion)': false
 		};
-		
+
 		return {
 			matches: matches[query] || false,
 			media: query,
@@ -55,7 +55,7 @@ export function mockViewport({ width, height }) {
 			dispatchEvent: vi.fn()
 		};
 	});
-	
+
 	// Trigger resize event
 	window.dispatchEvent(new Event('resize'));
 }
@@ -77,11 +77,11 @@ export function testResponsive(testFn) {
 			beforeEach(() => {
 				mockViewport(size);
 			});
-			
+
 			afterEach(() => {
 				resetViewport();
 			});
-			
+
 			testFn(name, size);
 		});
 	});
@@ -95,7 +95,7 @@ export function mockTouchSupport() {
 		writable: true,
 		value: () => {}
 	});
-	
+
 	Object.defineProperty(navigator, 'maxTouchPoints', {
 		writable: true,
 		value: 5
@@ -108,7 +108,7 @@ export function mockTouchSupport() {
  */
 export function mockOrientation(orientation) {
 	const isPortrait = orientation === 'portrait';
-	
+
 	Object.defineProperty(window.screen, 'orientation', {
 		writable: true,
 		value: {
@@ -116,10 +116,10 @@ export function mockOrientation(orientation) {
 			angle: isPortrait ? 0 : 90
 		}
 	});
-	
+
 	// Update matchMedia for orientation queries
 	const originalMatchMedia = window.matchMedia;
-	window.matchMedia = vi.fn().mockImplementation(query => {
+	window.matchMedia = vi.fn().mockImplementation((query) => {
 		if (query === '(orientation: portrait)') {
 			return { matches: isPortrait };
 		}

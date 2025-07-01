@@ -8,18 +8,14 @@
 		class?: string;
 	}
 
-	let {
-		type = 'card',
-		count = 1,
-		class: className
-	}: LoadingStatesProps = $props();
+	let { type = 'card', count = 1, class: className }: LoadingStatesProps = $props();
 </script>
 
 <div class={cn('atelier-loading-states', className)}>
 	{#if type === 'card'}
 		<div class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
 			{#each Array(count) as _}
-				<div class="p-4 border border-gray-200 dark:border-gray-700 rounded-lg">
+				<div class="rounded-lg border border-gray-200 p-4 dark:border-gray-700">
 					<AtelierSkeleton variant="rectangular" height="160px" />
 					<div class="mt-4 space-y-2">
 						<AtelierSkeleton variant="text" width="75%" />
@@ -32,7 +28,9 @@
 	{:else if type === 'list'}
 		<div class="space-y-4">
 			{#each Array(count) as _}
-				<div class="flex items-center gap-4 p-4 border border-gray-200 dark:border-gray-700 rounded-lg">
+				<div
+					class="flex items-center gap-4 rounded-lg border border-gray-200 p-4 dark:border-gray-700"
+				>
 					<AtelierSkeleton variant="circular" />
 					<div class="flex-1 space-y-2">
 						<AtelierSkeleton variant="text" width="40%" />
@@ -42,8 +40,8 @@
 			{/each}
 		</div>
 	{:else if type === 'table'}
-		<div class="overflow-hidden border border-gray-200 dark:border-gray-700 rounded-lg">
-			<div class="bg-gray-50 dark:bg-gray-800 p-4">
+		<div class="overflow-hidden rounded-lg border border-gray-200 dark:border-gray-700">
+			<div class="bg-gray-50 p-4 dark:bg-gray-800">
 				<AtelierSkeleton variant="text" width="200px" />
 			</div>
 			<div class="divide-y divide-gray-200 dark:divide-gray-700">
@@ -73,7 +71,7 @@
 			<div class="flex-1 space-y-3">
 				<AtelierSkeleton variant="text" width="200px" height="24px" />
 				<AtelierSkeleton variant="text" width="300px" />
-				<div class="flex gap-4 mt-4">
+				<div class="mt-4 flex gap-4">
 					<AtelierSkeleton variant="rectangular" width="100px" height="32px" />
 					<AtelierSkeleton variant="rectangular" width="100px" height="32px" />
 				</div>
