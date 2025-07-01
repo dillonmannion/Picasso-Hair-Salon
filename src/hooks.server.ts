@@ -1,8 +1,9 @@
 import { createServerClient } from '@supabase/ssr';
-import { type Handle, redirect } from '@sveltejs/kit';
+import { type Handle } from '@sveltejs/kit';
 import { sequence } from '@sveltejs/kit/hooks';
 
 import { PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY } from '$env/static/public';
+import { authGuard } from './hooks/authGuard';
 
 const supabase: Handle = async ({ event, resolve }) => {
   /**
@@ -60,22 +61,6 @@ const supabase: Handle = async ({ event, resolve }) => {
       return name === 'content-range' || name === 'x-supabase-api-version';
     }
   });
-};
-
-const authGuard: Handle = async ({ event, resolve }) => {
-  const { session, user } = await event.locals.safeGetSession();
-  event.locals.session = session;
-  event.locals.user = user;
-
-  if (!event.locals.session && event.url.pathname.startsWith('/protected')) {
-    redirect(303, '/auth/login');
-  }
-
-  if (event.locals.session && event.url.pathname === '/auth/login') {
-    redirect(303, '/');
-  }
-
-  return resolve(event);
 };
 
 export const handle: Handle = sequence(supabase, authGuard);
