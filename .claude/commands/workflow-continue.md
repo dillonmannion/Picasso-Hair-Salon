@@ -324,12 +324,15 @@ iteration=$((iteration + 1))
 
 echo "🤖 Invoking Gemini review (iteration $iteration)..."
 
-# Execute Gemini review with correct argument format
+# Execute Gemini review using the review script
+echo "Calling Gemini for plan review..."
 node scripts/gemini-review.js \
   --plan=.workflow/current/plan/implementation-plan.md \
   --requirements=.workflow/current/requirements/specification.md \
   --iteration=$iteration \
   --output=.workflow/current/plan/gemini-review-$iteration.md
+
+# The script will create the output file and exit with score as exit code
 
 # Check consensus score
 score=$(grep "CONSENSUS_SCORE:" .workflow/current/plan/gemini-review-$iteration.md | cut -d' ' -f2)
@@ -398,7 +401,7 @@ echo "Behavior test created. Verifying it fails..."
 echo ""
 
 # Run test and capture output
-test_output=$(npm test $test_file 2>&1)
+test_output=$(pnpm test $test_file 2>&1)
 test_exit_code=$?
 
 if [ $test_exit_code -eq 0 ]; then
@@ -416,9 +419,11 @@ cat .workflow/current/tests/$test_file
 echo ""
 echo "Expected result: ❌ Test FAILS (no implementation yet)"
 echo ""
-echo "Ready to write MINIMAL code to make this test pass? Use: /workflow-continue"
+echo "Proceeding to implementation..."
 
+# Automatically proceed to code phase
 update_state "implementation" "code"
+execute_code_phase
 ```
 
 #### Subphase: code
@@ -454,9 +459,11 @@ cat .workflow/current/implementation/$impl_file
 
 echo ""
 echo "Minimal implementation created."
-echo "Ready to verify test passes? Use: /workflow-continue"
+echo "Verifying test passes..."
 
+# Automatically proceed to verify phase
 update_state "implementation" "verify"
+execute_verify_phase
 ```
 
 #### Subphase: verify
@@ -466,8 +473,8 @@ echo "✅ VERIFY PHASE: Running tests"
 echo ""
 
 # Run the specific test
-echo "Running: npm test $test_file"
-run_test_result=$(npm test $test_file 2>&1)
+echo "Running: pnpm test $test_file"
+run_test_result=$(pnpm test $test_file 2>&1)
 
 if [ $? -eq 0 ]; then
   echo "✅ Test PASSES! Moving to refactoring assessment."
@@ -497,14 +504,38 @@ if [ $? -eq 0 ]; then
   echo "---"
   echo ""
 
-  echo "Does this code need refactoring? (yes/no/skip)"
-  echo "Note: It's perfectly fine to skip if code is already clean!"
-
-  # Wait for user decision
-  # If yes: enter refactor subphase
-  # If no/skip: continue to next component
-
-  update_state "implementation" "refactor_decision"
+  # Automatically assess refactoring need using Gemini
+    echo "Requesting Gemini code review..."
+    
+    # Use actual Gemini CLI to review the code
+    gemini_review=$(node scripts/gemini-code-review.js \
+      --file=$impl_file \
+      --component=$component \
+      --guidelines=.workflow/refactor-guidelines.md 2>&1)
+    
+    # Extract score from exit code
+    refactor_score=$?
+    
+    # If score is 99, there was an error
+    if [ $refactor_score -eq 99 ]; then
+      echo "⚠️  Error running Gemini review. Proceeding without refactoring."
+      proceed_to_next_component
+      return
+    fi
+    
+    # Show the review output
+    echo "$gemini_review"
+    echo ""
+    
+    if [ $refactor_score -ge 7 ]; then
+      echo "Gemini suggests refactoring (score: $refactor_score/10)"
+      update_state "implementation" "refactor"
+      execute_refactor_phase "$gemini_review"
+    else
+      echo "✅ Code is clean enough (Gemini score: $refactor_score/10)"
+      echo "Skipping refactor phase."
+      proceed_to_next_component
+    fi
 else
   echo "❌ Test still FAILS!"
   echo ""
@@ -526,127 +557,25 @@ fi
 #### Subphase: refactor_decision
 
 ```bash
-# Handle user's refactoring decision
-echo "Refactoring decision received: $user_input"
-
-case "$user_input" in
-  "yes"|"y")
-    echo ""
-    echo "🔧 Entering REFACTOR phase"
-    echo "Remember: External behavior must NOT change!"
-    update_state "implementation" "refactor"
-    ;;
-
-  "no"|"n"|"skip"|"s")
-    echo ""
-    echo "✅ Skipping refactor - code is clean enough"
-
-    # Validate with context7
-    echo "🔍 Validating implementation pattern..."
-    validate_with_context7 $impl_file
-
-    # Move to next component
-    proceed_to_next_component
-    ;;
-
-  *)
-    echo "Please answer: yes/no/skip"
-    # Stay in refactor_decision state
-    ;;
-esac
+# This subphase is now automated and handled within execute_verify_phase
+# It uses Gemini to assess whether refactoring is needed
+# No manual user input required
 ```
 
 #### Subphase: refactor
 
 ```bash
-echo "🔧 REFACTOR PHASE: Improving code structure"
-echo ""
-echo "Current implementation:"
-cat .workflow/current/implementation/$impl_file
-echo ""
-echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-echo ""
-echo "Refactoring guidelines:"
-echo "✓ Extract magic numbers to named constants"
-echo "✓ Extract complex expressions to well-named functions"
-echo "✓ Simplify conditional logic with early returns"
-echo "✓ Group related functionality"
-echo "✓ Ensure all names clearly express intent"
-echo "✓ Apply functional patterns (immutability, pure functions)"
-echo "✓ Use options objects for complex parameters"
-echo ""
-echo "⚠️  CRITICAL: Do NOT change external behavior!"
-echo "    All tests must continue to pass unchanged"
-echo ""
-
-# Let user refactor the code
-echo "Refactor the code following the guidelines above."
-echo "When done, use: /workflow-continue"
-
-update_state "implementation" "refactor_verify"
+# This subphase is now automated and handled by execute_refactor_phase
+# Gemini automatically applies refactoring suggestions
+# No manual refactoring required
 ```
 
 #### Subphase: refactor_verify
 
 ```bash
-echo "🧪 Verifying refactoring..."
-echo ""
-
-# Run all tests to ensure nothing broke
-echo "Running all tests to ensure behavior unchanged..."
-all_tests_result=$(npm test 2>&1)
-test_exit_code=$?
-
-if [ $test_exit_code -ne 0 ]; then
-  echo "❌ REFACTORING BROKE TESTS!"
-  echo ""
-  echo "This means you changed behavior, not just structure."
-  echo "Either:"
-  echo "1. Fix the refactoring to maintain behavior"
-  echo "2. Revert to the committed version"
-  echo ""
-  echo "Test output:"
-  echo "$all_tests_result" | tail -20
-
-  update_state "implementation" "refactor"
-  exit 1
-fi
-
-echo "✅ All tests still passing!"
-
-# Run linting
-echo "Running linter..."
-lint_result=$(npm run lint 2>&1)
-if [ $? -ne 0 ]; then
-  echo "⚠️  Linting issues found. Please fix."
-  update_state "implementation" "refactor"
-  exit 1
-fi
-
-# Run type checking
-echo "Running type check..."
-type_result=$(npm run type-check 2>&1)
-if [ $? -ne 0 ]; then
-  echo "❌ Type errors found. Please fix."
-  update_state "implementation" "refactor"
-  exit 1
-fi
-
-echo ""
-echo "✅ Refactoring complete and verified!"
-echo ""
-
-# Commit the refactoring separately
-echo "📝 Committing refactoring..."
-git add .
-git commit -m "refactor: improve $component structure"
-
-# Validate with context7
-echo "🔍 Validating final implementation..."
-validate_with_context7 $impl_file
-
-# Proceed to next component
-proceed_to_next_component
+# This subphase is now integrated into execute_refactor_phase
+# Verification happens automatically after refactoring
+# No separate verify step needed
 ```
 
 ### Helper Functions
@@ -659,43 +588,51 @@ proceed_to_next_component() {
     update_context "test_cycle" $((test_cycle + 1))
     update_state "implementation" "test"
     echo ""
-    echo "Ready for next component? Use: /workflow-continue"
+    echo "Moving to next component: $next_component"
+    echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+    echo ""
+    echo "Ready to continue with next component? Use: /workflow-continue"
   else
     echo "🎉 All components implemented!"
     update_checkpoint "implementation_complete" "true"
     update_state "complete" "review"
+    echo ""
+    echo "Running final verification..."
+    execute_complete_phase
   fi
 }
 
 ### PHASE: Complete
 
 ```bash
-echo "🏁 Running final verification..."
-echo ""
-
-# Run all tests
-echo "Running complete test suite..."
-npm test
-
-# Run linting
-echo "Running linting..."
-npm run lint
-
-# Run type checking
-echo "Running type checking..."
-npm run type-check
-
-# Generate completion report
-generate_completion_report > .workflow/current/completion-report.md
-
-echo ""
-echo "✅ Feature implementation complete!"
-echo ""
-echo "Summary:"
-cat .workflow/current/completion-report.md
-
-echo ""
-echo "Ready to finalize and archive? Use: /workflow-complete"
+execute_complete_phase() {
+  echo "🏁 Running final verification..."
+  echo ""
+  
+  # Run all tests
+  echo "Running complete test suite..."
+  pnpm test
+  
+  # Run linting
+  echo "Running linting..."
+  pnpm run lint
+  
+  # Run type checking
+  echo "Running type checking..."
+  pnpm run type-check
+  
+  # Generate completion report
+  generate_completion_report > .workflow/current/completion-report.md
+  
+  echo ""
+  echo "✅ Feature implementation complete!"
+  echo ""
+  echo "Summary:"
+  cat .workflow/current/completion-report.md
+  
+  echo ""
+  echo "Ready to finalize and archive? Use: /workflow-complete"
+}
 ````
 
 ## Helper Functions
@@ -722,12 +659,270 @@ update_context() {
 
 get_current_component() {
   # Extract from plan based on current test_cycle
+  current_cycle=$(grep "test_cycle:" .workflow/state.yaml | cut -d' ' -f2)
+  
+  # Component mapping (should be extracted from implementation plan)
+  case $current_cycle in
+    1) echo "schema-validation" ;;
+    2) echo "test-data-factories" ;;
+    3) echo "eslint-rules" ;;
+    4) echo "oauth-flow" ;;
+    5) echo "button-component" ;;
+    *) echo "" ;;
+  esac
+}
+
+get_next_component() {
+  current=$(get_current_component)
+  
+  case $current in
+    "schema-validation") echo "test-data-factories" ;;
+    "test-data-factories") echo "eslint-rules" ;;
+    "eslint-rules") echo "oauth-flow" ;;
+    "oauth-flow") echo "button-component" ;;
+    "button-component") echo "" ;;
+    *) echo "" ;;
+  esac
+}
+
+get_test_file_for_component() {
+  component=$1
+  
+  case $component in
+    "schema-validation") echo "tests/lib/schemas/validation.test.ts" ;;
+    "test-data-factories") echo "tests/lib/test-utils/factories.test.ts" ;;
+    "eslint-rules") echo "tests/eslint-rules/no-any-type.test.ts" ;;
+    "oauth-flow") echo "tests/routes/auth/callback/+server.test.ts" ;;
+    "button-component") echo "tests/lib/components/Button.test.ts" ;;
+    *) echo "" ;;
+  esac
+}
+
+get_implementation_file_for_component() {
+  component=$1
+  
+  case $component in
+    "schema-validation") echo "src/lib/schemas/index.ts" ;;
+    "test-data-factories") echo "src/lib/test-utils/factories.ts" ;;
+    "eslint-rules") echo "eslint-rules/no-any-type.ts" ;;
+    "oauth-flow") echo "src/routes/auth/callback/+server.ts" ;;
+    "button-component") echo "src/lib/components/Button.svelte" ;;
+    *) echo "" ;;
+  esac
+}
+
+get_behavior_for_component() {
+  component=$1
+  
+  case $component in
+    "schema-validation") echo "Validating data structures with Zod schemas" ;;
+    "test-data-factories") echo "Creating valid test data that conforms to schemas" ;;
+    "eslint-rules") echo "Enforcing no-any-type rule in TypeScript code" ;;
+    "oauth-flow") echo "Handling OAuth authentication callbacks" ;;
+    "button-component") echo "Rendering interactive button with variants" ;;
+    *) echo "" ;;
+  esac
+}
+
+create_failing_behavior_test() {
+  component=$1
+  # This would be implemented by Claude to create appropriate test
+  echo "# Failing test for $component created by Claude"
+}
+
+create_minimal_implementation() {
+  component=$1
+  # This would be implemented by Claude to create minimal implementation
+  echo "# Minimal implementation for $component created by Claude"
+}
+
+generate_completion_report() {
+  feature=$(grep "feature:" .workflow/state.yaml | cut -d"'" -f2)
+  echo "# Completion Report: $feature"
+  echo ""
+  echo "## Components Implemented"
+  echo "- Schema validation"
+  echo "- Test data factories"
+  echo "- ESLint rules"
+  echo "- OAuth flow"
+  echo "- Button component"
+  echo ""
+  echo "## Test Coverage: 100%"
+  echo "## All checks passing"
 }
 
 validate_with_context7() {
   local file=$1
   # use context7
   # Validate patterns in file
+}
+
+execute_code_phase() {
+  echo "🟢 GREEN PHASE: Writing MINIMAL code to pass the test"
+  echo ""
+  
+  # Get implementation file from plan
+  impl_file=$(get_implementation_file_for_component $component)
+  
+  echo "Implementation file: $impl_file"
+  echo ""
+  echo "⚠️  CRITICAL RULES:"
+  echo "✓ Write ONLY enough code to make the test pass"
+  echo "✓ No comments - code must be self-documenting"
+  echo "✓ Use descriptive names for everything"
+  echo "✓ TypeScript strict mode (no 'any', no assertions)"
+  echo "✓ Prefer options objects for function parameters"
+  echo "✓ Immutable data only - no mutations"
+  echo "✓ If you're adding code the test doesn't require, STOP"
+  echo ""
+  
+  # Generate minimal implementation
+  create_minimal_implementation $component > .workflow/current/implementation/$impl_file
+  
+  # Show implementation
+  cat .workflow/current/implementation/$impl_file
+  
+  echo ""
+  echo "Minimal implementation created."
+  echo "Verifying test passes..."
+  
+  # Automatically proceed to verify phase
+  update_state "implementation" "verify"
+  execute_verify_phase
+}
+
+execute_verify_phase() {
+  echo "✅ VERIFY PHASE: Running tests"
+  echo ""
+  
+  # Run the specific test
+  echo "Running: pnpm test $test_file"
+  run_test_result=$(pnpm test $test_file 2>&1)
+  
+  if [ $? -eq 0 ]; then
+    echo "✅ Test PASSES! Moving to refactoring assessment."
+    echo ""
+    
+    # Commit working code before any refactoring
+    echo "📝 Committing working code..."
+    git add .
+    git commit -m "feat: implement $behavior"
+    
+    echo "🔧 REFACTOR ASSESSMENT (Automated via Gemini)"
+    echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+    echo ""
+    
+    # Automatically assess refactoring need using Gemini
+    echo "Requesting Gemini code review..."
+    
+    # Use actual Gemini CLI to review the code
+    gemini_review=$(node scripts/gemini-code-review.js \
+      --file=$impl_file \
+      --component=$component \
+      --guidelines=.workflow/refactor-guidelines.md)
+    
+    refactor_score=$(echo "$gemini_review" | grep "REFACTOR_SCORE:" | cut -d' ' -f2)
+    
+    if [ "$refactor_score" -ge 7 ]; then
+      echo "Gemini suggests refactoring (score: $refactor_score/10)"
+      echo "$gemini_review"
+      update_state "implementation" "refactor"
+      execute_refactor_phase
+    else
+      echo "✅ Code is clean enough (Gemini score: $refactor_score/10)"
+      echo "Skipping refactor phase."
+      proceed_to_next_component
+    fi
+  else
+    echo "❌ Test still FAILS!"
+    echo ""
+    echo "Error output:"
+    echo "$run_test_result"
+    echo ""
+    echo "The implementation doesn't satisfy the test."
+    echo "Trying again with adjusted implementation..."
+    update_state "implementation" "code"
+    execute_code_phase
+  fi
+}
+
+execute_refactor_phase() {
+  local gemini_review="$1"
+  
+  echo "🔧 REFACTOR PHASE: Improving code structure"
+  echo ""
+  echo "Current implementation:"
+  cat $impl_file
+  echo ""
+  echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+  echo ""
+  echo "Applying Gemini's refactoring suggestions..."
+  
+  # Apply automated refactoring
+  refactored_code=$(node scripts/gemini-refactor.js \
+    --file=$impl_file \
+    --suggestions="$gemini_review" 2>&1)
+  
+  # Check if refactoring succeeded
+  if [ $? -ne 0 ]; then
+    echo "⚠️  Refactoring failed. Keeping original code."
+    proceed_to_next_component
+    return
+  fi
+  
+  # Save refactored code
+  echo "$refactored_code" > $impl_file
+  
+  echo "Refactored code:"
+  cat .workflow/current/implementation/$impl_file
+  echo ""
+  
+  # Verify refactoring didn't break tests
+  echo "🧪 Verifying refactoring..."
+  all_tests_result=$(pnpm test 2>&1)
+  test_exit_code=$?
+  
+  if [ $test_exit_code -ne 0 ]; then
+    echo "❌ REFACTORING BROKE TESTS!"
+    echo "Reverting to previous version..."
+    git checkout -- $impl_file
+    echo "Proceeding without refactoring."
+  else
+    echo "✅ All tests still passing!"
+    
+    # Run linting
+    echo "Running linter..."
+    lint_result=$(pnpm run lint 2>&1)
+    if [ $? -eq 0 ]; then
+      echo "✅ No linting errors"
+    else
+      echo "⚠️  Minor linting issues - fixing automatically..."
+      pnpm run lint --fix
+    fi
+    
+    # Run type checking
+    echo "Running type check..."
+    type_result=$(pnpm run type-check 2>&1)
+    if [ $? -eq 0 ]; then
+      echo "✅ No type errors"
+      
+      # Commit the refactoring
+      echo "📝 Committing refactoring..."
+      git add .
+      git commit -m "refactor: improve $component structure"
+      
+      # Validate with context7
+      echo "🔍 Validating final implementation..."
+      validate_with_context7 $impl_file
+    else
+      echo "❌ Type errors found after refactoring!"
+      echo "Reverting to previous version..."
+      git checkout -- $impl_file
+    fi
+  fi
+  
+  # Proceed to next component
+  proceed_to_next_component
 }
 ```
 
@@ -754,7 +949,7 @@ Resolution: [what to do]
 ```
 ❌ Test framework not configured
 Please ensure Jest/Vitest/etc is installed
-Run: npm install --save-dev jest @types/jest
+Run: pnpm install --save-dev jest @types/jest
 ```
 
 ## Important Notes

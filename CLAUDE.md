@@ -63,6 +63,16 @@ During our collaborative workflow:
 
 I will not provide production code without confirming a failing test exists first.
 
+### Automated Workflow Features
+
+The workflow now includes automation to reduce manual prompting:
+
+- **Continuous RED-GREEN-REFACTOR**: After writing a failing test, the workflow automatically proceeds to implementation, verification, and refactoring assessment
+- **Gemini-Powered Refactoring**: Uses Gemini CLI to assess if refactoring is needed (score 0-10) and automatically applies improvements if score >= 7
+- **Component Completion**: Only prompts for continuation after completing the full cycle for each component
+- **Automatic Progression**: Moves between test → code → verify → refactor phases without manual intervention
+- **Smart Refactoring**: Only refactors when Gemini determines it would add value (not all code needs refactoring)
+
 ## Testing Principles
 
 ### Behavior-Driven Testing
@@ -946,9 +956,9 @@ const validatePaymentAmount = (amount: number): void => {
 
 ```bash
 # After refactoring
-npm test          # All tests must pass
-npm run lint      # All linting must pass
-npm run typecheck # TypeScript must be happy
+pnpm test          # All tests must pass
+pnpm run lint      # All linting must pass
+pnpm run typecheck # TypeScript must be happy
 
 # Only then commit
 git add .

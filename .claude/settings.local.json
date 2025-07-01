@@ -78,7 +78,9 @@
       "Bash(then echo \"In-progress (archived): $dir\")",
       "Bash(p implementation-status:*)",
       "Bash(pnpm:*)",
-      "Bash(tree:*)"
+      "Bash(tree:*)",
+      "Bash(npm test:*)",
+      "Bash(chmod:*)"
     ],
     "deny": []
   }

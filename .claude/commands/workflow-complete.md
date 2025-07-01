@@ -52,7 +52,7 @@ echo "━━━━━━━━━━━━━━━━━━━━━━━━�
 
 # Run all tests
 echo "→ Running all tests..."
-test_result=$(npm test 2>&1)
+test_result=$(pnpm test 2>&1)
 test_exit_code=$?
 
 if [ $test_exit_code -eq 0 ]; then
@@ -67,7 +67,7 @@ fi
 
 # Run coverage
 echo "→ Checking code coverage..."
-coverage_result=$(npm run test:coverage 2>&1)
+coverage_result=$(pnpm run test:coverage 2>&1)
 coverage_percent=$(echo "$coverage_result" | grep "All files" | awk '{print $3}')
 
 echo "📊 Code coverage: $coverage_percent"
@@ -98,7 +98,7 @@ fi
 
 # Run linting
 echo "→ Running linter..."
-lint_result=$(npm run lint 2>&1)
+lint_result=$(pnpm run lint 2>&1)
 lint_exit_code=$?
 
 if [ $lint_exit_code -eq 0 ]; then
@@ -109,7 +109,7 @@ fi
 
 # Run type checking
 echo "→ Running type check..."
-type_result=$(npm run type-check 2>&1)
+type_result=$(pnpm run type-check 2>&1)
 type_exit_code=$?
 
 if [ $type_exit_code -eq 0 ]; then
@@ -286,7 +286,7 @@ cat > "$archive_dir/MANIFEST.md" << EOF
 ## Quick Start
 To use this implementation:
 1. Files have been copied to src/ and tests/
-2. Run \`npm test\` to verify
+2. Run \`pnpm test\` to verify
 3. See implementation-summary.md for details
 
 ## Restoration
