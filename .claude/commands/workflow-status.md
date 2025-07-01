@@ -1,6 +1,6 @@
 # Workflow Status Command
 
-**⚠️ USER-ONLY COMMAND**: This command is designed to be run by users only. Claude should never attempt to execute this command via Bash. When Claude needs to check workflow status, it should read the state files directly.
+**📋 PROMPT COMMAND**: This command prompts Claude to display the current workflow status. When the user runs `/workflow-status`, Claude will be prompted to read workflow files and present a comprehensive status report.
 
 Display comprehensive workflow status with clear next actions.
 
@@ -12,121 +12,99 @@ Display comprehensive workflow status with clear next actions.
 
 Show the current workflow state, progress, and available actions in a clear, actionable format.
 
-## For Claude
+## When User Runs This Command
 
-When working within the TDD workflow:
-- Do NOT attempt to run this command via Bash
-- Instead, read `.workflow/state.yaml` and other workflow files directly
-- Use the information to understand the current phase and component
-- Perform appropriate TDD actions based on the workflow state
-
-## Implementation
+Claude will be prompted to perform the following actions:
 
 ### 1. Check for Active Workflow
 
-```bash
-if [ ! -f ".workflow/state.yaml" ]; then
-  echo "📭 No active workflow."
-  echo "   To start a new workflow, use: /workflow-init <feature-description>"
-  exit 0
-fi
-```
+**Claude Action Required:**
+- Check if `.workflow/state.yaml` exists
+- If not, inform user no active workflow exists and suggest `/workflow-init`
+- If yes, continue to parse and display status
 
 ### 2. Parse and Display Header
 
-```bash
-# Extract state values
-feature=$(grep "^feature:" .workflow/state.yaml | cut -d'"' -f2)
-phase=$(grep "^phase:" .workflow/state.yaml | cut -d'"' -f2)
-started=$(grep "^started:" .workflow/state.yaml | cut -d'"' -f2)
-duration=$(calculate_duration "$started" "$(date -u +%Y-%m-%dT%H:%M:%SZ)")
-
-echo "╔════════════════════════════════════════════════════════════════╗"
-echo "║                        WORKFLOW STATUS                         ║"
-echo "╚════════════════════════════════════════════════════════════════╝"
-echo ""
-echo "Feature: $feature"
-echo "Phase:   $(echo "$phase" | tr '[:lower:]' '[:upper:]')"
-echo "Age:     $duration"
-echo ""
-```
+**Claude Action Required:**
+- Extract from state.yaml:
+  - feature name
+  - current phase
+  - start time
+  - calculate duration since start
+- Display formatted header with this information
 
 ### 3. Display Phase-Specific Details
 
-```bash
-case "$phase" in
-  "requirements")
-    echo "📋 REQUIREMENTS GATHERING"
-    echo "━━━━━━━━━━━━━━━━━━━━━━━"
-    # Logic to show which question is next...
-    echo "The workflow is waiting for answers to discovery questions."
-    ;;
+**Claude Action Required:**
+Based on the current phase, show relevant information:
 
-  "planning")
-    echo "📐 PLANNING & DESIGN"
-    echo "━━━━━━━━━━━━━━━━━━━━━━━"
-    echo "The workflow is ready to generate the implementation plan."
-    ;;
+#### If Phase = "requirements"
+- Show that workflow is gathering requirements
+- Check discovery-questions.md to see which question is next
+- Display progress (e.g., "Question 3 of 5")
 
-  "implementation")
-    echo "🔨 TDD IMPLEMENTATION"
-    echo "━━━━━━━━━━━━━━━━━━━━"
+#### If Phase = "planning"
+- Show that workflow is ready to generate implementation plan
+- Check if specification exists
 
-    if [ -f ".workflow/current/plan/implementation-plan.md" ]; then
-      total=$(grep -c '## COMPONENT' .workflow/current/plan/implementation-plan.md)
-      completed=$(grep -c 'status: "complete"' .workflow/current/plan/implementation-plan.md)
+#### If Phase = "implementation"
+- Read implementation-plan.md
+- Count total components and completed components
+- Show progress (e.g., "3 / 7 components complete")
+- Display name of next pending component
+- If all complete, indicate ready for finalization
 
-      echo "Progress: $completed / $total components complete."
-      draw_progress_bar $completed $total
-      echo ""
-
-      next_component_name=$(awk 'BEGIN{RS="---\n"}/status: "pending"/{print; exit}' .workflow/current/plan/implementation-plan.md | grep 'name:' | cut -d'"' -f2)
-      if [ -n "$next_component_name" ]; then
-        echo "Next up: Implement '$next_component_name'"
-      else
-        echo "All components are implemented!"
-      fi
-    else
-      echo "Waiting for implementation plan to be generated."
-    fi
-    ;;
-
-  "complete")
-    echo "🏁 COMPLETION"
-    echo "━━━━━━━━━━━━━━━━━━━━"
-    echo "Implementation is finished. The workflow is ready for finalization."
-    ;;
-esac
-```
+#### If Phase = "complete"
+- Show that implementation is finished
+- Indicate workflow is ready for archival
 
 ### 4. Display Checkpoints & Next Actions
 
-```bash
-echo ""
-echo "✓ CHECKPOINTS"
-echo "━━━━━━━━━━━━━"
-# Read and display checkpoints from state.yaml...
+**Claude Action Required:**
+- Read checkpoints from state.yaml and display status
+- Based on phase and progress, suggest next action:
+  - Requirements/Planning: `/workflow-continue`
+  - Implementation with pending components: `/workflow-continue`
+  - Implementation with all complete: `/workflow-complete`
+  - Complete phase: `/workflow-complete`
+- Always show `/workflow-abort` as an option
 
-echo ""
-echo "➡️  NEXT ACTIONS"
-echo "━━━━━━━━━━━━━━━"
-case "$phase" in
-  "requirements" | "planning")
-    echo "Continue: /workflow-continue"
-    ;;
-  "implementation")
-    if [ -n "$next_component_name" ]; then
-      echo "Implement next component: /workflow-continue"
-    else
-      echo "Finalize workflow: /workflow-complete"
-    fi
-    ;;
-  "complete")
-    echo "Finalize and archive: /workflow-complete"
-    ;;
-esac
-echo "Abort workflow: /workflow-abort"
-echo "View this status: /workflow-status"
+## Expected Claude Response Pattern
+
+When the user runs `/workflow-status`, Claude should:
+
+1. Check for active workflow
+2. Parse current state
+3. Display formatted status report
+4. Suggest appropriate next actions
+
+## Example Output
+
 ```
+╔════════════════════════════════════════════════════════════════╗
+║                        WORKFLOW STATUS                         ║
+╚════════════════════════════════════════════════════════════════╝
 
----
+Feature: codebase-alignment-with-claude-md
+Phase:   IMPLEMENTATION
+Age:     2 hours 15 minutes
+
+🔨 TDD IMPLEMENTATION
+━━━━━━━━━━━━━━━━━━━━
+Progress: 5 / 8 components complete.
+[■■■■■□□□] 62%
+
+Next up: Implement 'Auth Guard Hook'
+
+✓ CHECKPOINTS
+━━━━━━━━━━━━━
+✅ Requirements complete
+✅ Plan generated
+⏳ Implementation in progress
+
+➡️  NEXT ACTIONS
+━━━━━━━━━━━━━━━
+Implement next component: /workflow-continue
+Abort workflow: /workflow-abort
+View this status: /workflow-status
+```

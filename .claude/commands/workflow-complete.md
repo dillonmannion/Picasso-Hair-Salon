@@ -1,6 +1,6 @@
 # Workflow Complete Command
 
-**⚠️ USER-ONLY COMMAND**: This command is designed to be run by users only. Claude should never attempt to execute this command via Bash. When all components are implemented and tests are passing, inform the user they can run this command to finalize the workflow.
+**📋 PROMPT COMMAND**: This command prompts Claude to perform workflow completion actions step-by-step. When the user runs `/workflow-complete`, Claude will be prompted to execute each action in sequence.
 
 Finalize the workflow, generate reports, and archive all artifacts.
 
@@ -10,98 +10,68 @@ Finalize the workflow, generate reports, and archive all artifacts.
 
 ## Purpose
 
-Formally close a completed workflow by running final validations, generating documentation, and archiving all process artifacts.
+Formally close a completed workflow by having Claude run final validations, generate documentation, and archive all process artifacts.
 
-## For Claude
+## When User Runs This Command
 
-When working within the TDD workflow:
-- Do NOT attempt to run this command via Bash
-- When all components are implemented and tests pass, inform the user they can finalize with this command
-- Focus on completing the TDD cycle for all components first
-- Ensure all tests are passing before suggesting workflow completion
-
-## Implementation
+Claude will be prompted to perform the following actions in sequence:
 
 ### 1. Pre-Completion Validation
 
-```bash
-# Verify the workflow is in the 'complete' phase
-# ... (logic remains the same) ...
-
-# Run final test suite on the entire project
-echo "🧪 Running final validation suite..."
-if ! pnpm test; then
-    echo "❌ Final test suite failed. Please fix tests before completing."
-    exit 1
-fi
-echo "✅ All tests passing."
-
-if ! pnpm run lint; then
-    echo "⚠️  Linting issues found. Please review."
-fi
-echo "✅ Code style check passed."
-```
+**Claude Action Required:**
+- First, verify the workflow is in the 'complete' phase by checking `.workflow/state.yaml`
+- Run the final test suite: `pnpm test`
+  - If tests fail, stop and report the failures to the user
+  - If tests pass, continue to next step
+- Run the linter: `pnpm run lint`
+  - Report any linting issues but continue even if there are warnings
 
 ### 2. Generate Final Summary Report
 
-```bash
-feature=$(grep "^feature:" .workflow/state.yaml | cut -d'"' -f2)
-archive_dir="completed/$(date +%Y-%m-%d-%H%M)-${feature}"
-mkdir -p "$archive_dir"
-
-echo "📝 Generating implementation summary..."
-cat > "$archive_dir/IMPLEMENTATION-SUMMARY.md" << EOF
-# Implementation Summary: $feature
-
-## Overview
-- **Completion Date:** $(date)
-- **Archive Location:** $archive_dir
-
-## Implemented Components
-$(awk -F'"' '/name:/ {print "- "$2}' .workflow/current/plan/implementation-plan.md)
-
-## Files Created/Modified
-$(git status --porcelain | awk '{print "- " $2}')
-
-## Final Validation
-- All project tests: ✅ Passing
-- Linter: ✅ Passing
-EOF
-```
+**Claude Action Required:**
+- Extract the feature name from `.workflow/state.yaml`
+- Create an archive directory with timestamp: `completed/YYYY-MM-DD-HHMM-{feature-name}`
+- Generate an `IMPLEMENTATION-SUMMARY.md` file in the archive directory containing:
+  - Completion date
+  - Archive location
+  - List of implemented components (from implementation plan)
+  - List of files created/modified (from git status)
+  - Final validation status
+  - Context7 Library References:
+    - List all libraries that were looked up via Context7 during the workflow
+    - Include the specific topics/patterns that were referenced
+    - Note any library versions that were consulted
+    - This helps track which documentation versions were used for implementation
 
 ### 3. Archive Workflow Artifacts
 
-```bash
-echo "📦 Archiving workflow artifacts to $archive_dir..."
-
-# The production code is already in src/ and tests/, so we just archive the 'process' files.
-cp -r .workflow/current/* "$archive_dir/"
-cp .workflow/state.yaml "$archive_dir/workflow-state-at-completion.yaml"
-```
+**Claude Action Required:**
+- Copy all files from `.workflow/current/` to the archive directory
+- Copy `.workflow/state.yaml` to the archive directory as `workflow-state-at-completion.yaml`
+- Preserve the directory structure when copying
 
 ### 4. Cleanup and Final Git Commit
 
-```bash
-echo "🧹 Cleaning up working directory..."
-rm -rf .workflow
+**Claude Action Required:**
+- Remove the `.workflow` directory entirely
+- Stage all changes: `git add .`
+- Create a final commit with message:
+  ```
+  feat({feature-name}): complete feature via TDD workflow
+  
+  All components implemented and tests are passing.
+  Workflow artifacts archived to: {archive-location}
+  ```
+- Display completion message to user confirming:
+  - Feature is complete and committed
+  - Archive location
+  - Feature is ready for pull request
 
-# Final commit of all changes
-echo "📝 Committing final feature..."
-git add .
-git commit -m "feat($feature): complete feature via TDD workflow
+## Expected Claude Response Pattern
 
-All components implemented and tests are passing.
-Workflow artifacts archived to: $archive_dir"
+When the user runs `/workflow-complete`, Claude should:
 
-# Final output message
-echo ""
-echo "╔════════════════════════════════════════════════════════════════╗"
-echo "║                 WORKFLOW COMPLETED SUCCESSFULLY                 ║"
-echo "╚════════════════════════════════════════════════════════════════╝"
-echo ""
-echo "✅ Feature '$feature' is complete and committed."
-echo "📦 Process artifacts archived to: $archive_dir"
-echo "🚀 The feature is ready for pull request and deployment."
-echo ""
-echo "Start a new workflow with: /workflow-init <feature>"
-```
+1. Acknowledge the completion request
+2. Execute each action step-by-step, reporting progress
+3. Stop if any validation fails
+4. Confirm successful completion with archive location

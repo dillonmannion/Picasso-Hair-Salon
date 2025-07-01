@@ -68,6 +68,57 @@ My behavior is governed by the following strict protocols to ensure the integrit
 
 ---
 
+## Context7 Integration with TDD Workflow
+
+Context7 provides real-time access to up-to-date library documentation, ensuring that all code generated during the TDD workflow aligns with the latest library APIs and best practices. This integration is **mandatory** at multiple stages of the workflow.
+
+### When Context7 is Used
+
+1. **Workflow Initialization (`/workflow-init`)**
+   - Core framework documentation (Svelte 5, SvelteKit, Vitest) is pre-fetched
+   - Discovery question 6 asks about external library usage to prepare for later lookups
+
+2. **Planning Phase (`/workflow-continue` during planning)**
+   - All libraries mentioned in the specification are identified
+   - Documentation is fetched for each library using:
+     - `mcp__context7__resolve-library-id` to get the correct library ID
+     - `mcp__context7__get-library-docs` to fetch relevant documentation
+   - Library references are cached in `.workflow/current/plan/context7-libraries.md`
+
+3. **Implementation Phase (`/workflow-continue` during implementation)**
+   - Before each component's RED phase, relevant library docs are fetched/refreshed
+   - Special focus on:
+     - **Testing patterns** - Vitest documentation for writing proper tests
+     - **Framework APIs** - Svelte 5 runes, SvelteKit load functions, etc.
+     - **Schema validation** - Zod patterns and best practices
+   - Ensures tests and implementations use the latest, correct library patterns
+
+4. **Workflow Completion (`/workflow-complete`)**
+   - Final summary includes all Context7 library references used
+   - Documents which library versions were consulted during implementation
+
+### Key Libraries Always Checked
+
+- **Svelte** - Component patterns, runes ($state, $derived, etc.), lifecycle
+- **SvelteKit** - Routing, load functions, form actions, hooks
+- **Vitest** - Testing patterns, mocking, assertions
+- **Zod** - Schema definitions, validation patterns
+- **@testing-library/svelte** - Component testing best practices
+
+### Context7 Usage Protocol
+
+When I need to use a library feature during the workflow:
+
+1. **First**, check if documentation is already cached in `.workflow/current/plan/context7-libraries.md`
+2. **If not cached**, use Context7 to fetch the latest documentation
+3. **Focus on** the specific topic relevant to the current component
+4. **Apply** the documented patterns directly in the generated code
+5. **Never assume** library APIs - always verify with Context7
+
+This ensures that every line of code generated follows the most current library documentation, preventing outdated patterns or deprecated API usage.
+
+---
+
 ## Testing Principles
 
 ### Behavior-Driven Testing
