@@ -4,7 +4,6 @@
     "dbaeumer.vscode-eslint",
     "esbenp.prettier-vscode",
     "bradlc.vscode-tailwindcss",
-    "ms-playwright.playwright",
-    "ZixuanChen.vitest-explorer"
+    "ms-playwright.playwright"
   ]
 }
