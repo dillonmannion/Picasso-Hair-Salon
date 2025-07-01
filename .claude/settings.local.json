@@ -80,7 +80,10 @@
       "Bash(pnpm:*)",
       "Bash(tree:*)",
       "Bash(npm test:*)",
-      "Bash(chmod:*)"
+      "Bash(chmod:*)",
+      "Bash(env)",
+      "Bash(echo \"Exit code: $?\")",
+      "Bash(pnpm test:unit tests/eslint-rules/no-any-type.test.ts)"
     ],
     "deny": []
   }
