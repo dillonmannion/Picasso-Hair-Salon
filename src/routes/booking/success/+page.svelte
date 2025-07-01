@@ -2,7 +2,7 @@
 	import { goto } from '$app/navigation';
 	import type { PageData } from './$types';
 
-	export let data: PageData;
+	let { data }: { data: PageData } = $props();
 
 	function viewAppointments() {
 		void goto('/appointments');
@@ -13,7 +13,6 @@
 	}
 
 	function addToCalendar() {
-		// TODO: Implement calendar integration
 		alert('Calendar integration coming soon!');
 	}
 </script>

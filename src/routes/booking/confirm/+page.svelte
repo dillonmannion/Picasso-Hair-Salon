@@ -6,14 +6,14 @@
 	import type { PageData } from './$types';
 	import { cn } from '$lib/utils/cn';
 
-	export let data: PageData;
+	let { data }: { data: PageData } = $props();
 
-	const serviceId = $page.url.searchParams.get('service');
-	const stylistId = $page.url.searchParams.get('stylist');
+	const serviceId = $derived($page.url.searchParams.get('service'));
+	const stylistId = $derived($page.url.searchParams.get('stylist'));
 
-	let notes = '';
-	let agreedToTerms = false;
-	let isSubmitting = false;
+	let notes = $state('');
+	let agreedToTerms = $state(false);
+	let isSubmitting = $state(false);
 
 	function goBack() {
 		const params = new URLSearchParams({

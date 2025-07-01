@@ -1,26 +1,27 @@
 <script lang="ts">
-	import { onMount, onDestroy } from 'svelte';
 	import { loadStripe, type Stripe, type StripeEmbeddedCheckout } from '@stripe/stripe-js';
 	import { PUBLIC_STRIPE_PUBLISHABLE_KEY } from '$env/static/public';
 
-	export let appointmentId: string;
-	export let onComplete: (() => void) | undefined = undefined;
+	interface Props {
+		appointmentId: string;
+		onComplete?: () => void;
+	}
 
-	let checkoutDiv: HTMLDivElement;
-	let stripe: Stripe | null = null;
-	let checkout: StripeEmbeddedCheckout | null = null;
-	let loading = true;
-	let error = '';
+	let { appointmentId, onComplete }: Props = $props();
+
+	let checkoutDiv = $state<HTMLDivElement>();
+	let stripe = $state<Stripe | null>(null);
+	let checkout = $state<StripeEmbeddedCheckout | null>(null);
+	let loading = $state(true);
+	let error = $state('');
 
 	async function initializeCheckout() {
 		try {
-			// Load Stripe
 			stripe = await loadStripe(PUBLIC_STRIPE_PUBLISHABLE_KEY);
 			if (!stripe) {
 				throw new Error('Failed to load Stripe');
 			}
 
-			// Fetch client secret from our backend
 			const response = await fetch('/api/checkout', {
 				method: 'POST',
 				headers: {
@@ -39,13 +40,11 @@
 
 			const { clientSecret } = (await response.json()) as { clientSecret: string };
 
-			// Initialize embedded checkout
 			checkout = await stripe.initEmbeddedCheckout({
 				clientSecret,
 				onComplete
 			});
 
-			// Mount checkout
 			if (checkoutDiv) {
 				checkout.mount(checkoutDiv);
 			}
@@ -58,14 +57,14 @@
 		}
 	}
 
-	onMount(() => {
+	$effect(() => {
 		void initializeCheckout();
-	});
 
-	onDestroy(() => {
-		if (checkout) {
-			checkout.destroy();
-		}
+		return () => {
+			if (checkout) {
+				checkout.destroy();
+			}
+		};
 	});
 </script>
 
@@ -78,7 +77,7 @@
 	{:else if error}
 		<div class="error">
 			<p>Error: {error}</p>
-			<button on:click={() => window.location.reload()}>Try Again</button>
+			<button onclick={() => window.location.reload()}>Try Again</button>
 		</div>
 	{:else}
 		<div bind:this={checkoutDiv} class="stripe-checkout"></div>

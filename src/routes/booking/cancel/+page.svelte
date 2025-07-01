@@ -1,15 +1,13 @@
 <script lang="ts">
 	import { page } from '$app/stores';
 	import { goto } from '$app/navigation';
-	import { onMount } from 'svelte';
 	import PaymentStatus from '$lib/components/custom/PaymentStatus.svelte';
 
-	const appointmentId = $page.url.searchParams.get('appointment_id');
-	const canceled = $page.url.searchParams.get('canceled');
+	const appointmentId = $derived($page.url.searchParams.get('appointment_id'));
+	const canceled = $derived($page.url.searchParams.get('canceled'));
 
-	onMount(() => {
+	$effect(() => {
 		if (!appointmentId && !canceled) {
-			// If no appointment ID or cancel flag, redirect to booking start
 			void goto('/booking');
 		}
 	});

@@ -4,10 +4,10 @@
 	import type { PageData } from './$types';
 	import { cn } from '$lib/utils/cn';
 
-	export let data: PageData;
+	let { data }: { data: PageData } = $props();
 
-	let selectedStylistId: string | null = null;
-	const serviceId = $page.url.searchParams.get('service');
+	let selectedStylistId = $state<string | null>(null);
+	const serviceId = $derived($page.url.searchParams.get('service'));
 
 	function formatRating(rating: number): string {
 		return rating.toFixed(1);
