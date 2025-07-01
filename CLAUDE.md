@@ -24,6 +24,41 @@ I follow Test-Driven Development (TDD) with a strong emphasis on behavior-driven
 - **Testing**: Vitest + @testing-library/svelte
 - **State Management**: Svelte 5 runes and stores (immutable patterns)
 
+## The TDD Workflow System
+
+### Mandatory for New Features
+
+When implementing new features or significant changes, you MUST use the structured workflow system that enforces TDD:
+
+```bash
+# Start a new feature - this is NOT optional
+/workflow-init <feature-description>
+
+# Continue through all phases
+/workflow-continue
+
+# The workflow will enforce:
+# - Behavior-driven requirements gathering
+# - Schema-first design with Zod
+# - Strict RED-GREEN-REFACTOR cycles
+# - 100% behavior coverage
+# - All principles in this document
+```
+
+The workflow enforces all principles in this document automatically. When users request new features, I will remind them to use the workflow system rather than providing direct implementation.
+
+### How I Support the Workflow
+
+When users are using the workflow:
+
+- I provide guidance appropriate to their current phase
+- I generate tests that focus on behavior, not implementation
+- I write minimal code that only satisfies failing tests
+- I assess refactoring opportunities after each GREEN phase
+- I ensure schemas are defined before implementation
+
+I will not provide production code without confirming a failing test exists first.
+
 ## Testing Principles
 
 ### Behavior-Driven Testing
@@ -1025,13 +1060,29 @@ const applyDiscount = (price: number, discountRate: number): number => {
 
 ## Working with Claude
 
+### Supporting the TDD Workflow
+
+When users request new features, I will:
+
+1. **Ask if they're using the workflow** - Remind them to start with `/workflow-init`
+2. **Provide phase-appropriate help** - Only give what the current phase requires
+3. **Refuse to skip ahead** - Won't write implementation before tests
+4. **Enforce behavior testing** - Guide users to test what, not how
+5. **Ensure minimal implementation** - Only code that makes tests pass
+
+I expect users to:
+
+- Use `/workflow-init <feature>` for new features
+- Follow the workflow phases in order
+- Not ask me to bypass TDD principles
+
 ### Expectations
 
 When working with my code:
 
-1. **ALWAYS FOLLOW TDD** - No production code without a failing test. This is not negotiable.
-2. **Think deeply** before making any edits
-3. **Understand the full context** of the code and requirements
+1. **ALWAYS FOLLOW TDD** - I will not provide production code without a failing test
+2. **Support the workflow** - I provide phase-appropriate assistance
+3. **Think deeply** before making any edits
 4. **Ask clarifying questions** when requirements are ambiguous
 5. **Think from first principles** - don't make assumptions
 6. **Assess refactoring after every green** - Look for opportunities to improve code structure, but only refactor if it adds value
@@ -1041,6 +1092,9 @@ When working with my code:
 
 When suggesting or making changes:
 
+- **Verify failing test exists** - I will ask to see the test before providing implementation
+- **Provide phase-appropriate code** - Tests during RED phase, implementation during GREEN
+- **Always assess refactoring** - I will evaluate improvement opportunities after GREEN
 - **Start with a failing test** - always. No exceptions.
 - After making tests pass, always assess refactoring opportunities (but only refactor if it adds value)
 - After refactoring, verify all tests and static analysis pass, then commit
@@ -1051,6 +1105,7 @@ When suggesting or making changes:
 - Provide rationale for significant design decisions
 
 **If you find yourself writing production code without a failing test, STOP immediately and write the test first.**
+**If users ask for production code without showing a failing test, I will remind them to write the test first or use the workflow system.**
 
 ### Communication
 
@@ -1375,6 +1430,27 @@ const processOrder = (order: Order) => {
   return submitOrder(finalOrder);
 };
 ```
+
+### Working Without the Workflow
+
+When users ask for features directly:
+❌ User: "Add a payment processing feature"
+❌ Claude: _provides implementation_
+
+✅ User: "Add a payment processing feature"  
+✅ Claude: "Let's use the TDD workflow. Start with: /workflow-init add payment processing. This will ensure we follow TDD properly."
+
+## Working with the Workflow System
+
+When users are using the TDD workflow, I provide assistance based on their current phase:
+
+- **Requirements Phase**: Help formulate behavior-focused questions
+- **Planning Phase**: Create schema-first, TDD-oriented plans
+- **RED Phase**: Write failing behavior tests
+- **GREEN Phase**: Provide minimal implementation
+- **REFACTOR Phase**: Assess and improve code structure
+
+I will not provide implementation code unless users confirm they have a failing test or are in the appropriate workflow phase.
 
 ## Resources and References
 
