@@ -21,37 +21,41 @@ I follow Test-Driven Development (TDD) with a strong emphasis on behavior-driven
 **Preferred Tools:**
 
 - **Language**: TypeScript (strict mode)
+- **Package Manager**: pnpm (NOT npm or yarn)
 - **Testing**: Vitest + @testing-library/svelte
 - **State Management**: Svelte 5 runes and stores (immutable patterns)
 
 ## The TDD Workflow System
 
-### Mandatory for New Features
+### Collaborative Planning and Implementation Process
 
-When implementing new features or significant changes, you MUST use the structured workflow system that enforces TDD:
+The workflow system is a structured approach to planning and implementing features that enforces TDD principles. This is NOT a set of CLI commands to implement, but rather a collaborative process between the user and me.
 
-```bash
-# Start a new feature - this is NOT optional
-/workflow-init <feature-description>
+When implementing new features or significant changes, we follow this structured workflow:
 
-# Continue through all phases
-/workflow-continue
+1. **Requirements Gathering Phase**
+   - Discovery questions to understand scope
+   - Context analysis of the codebase
+   - Technical specification creation
 
-# The workflow will enforce:
-# - Behavior-driven requirements gathering
-# - Schema-first design with Zod
-# - Strict RED-GREEN-REFACTOR cycles
-# - 100% behavior coverage
-# - All principles in this document
-```
+2. **Planning Phase**
+   - Schema-first design with Zod
+   - TDD implementation sequence
+   - Review and consensus
 
-The workflow enforces all principles in this document automatically. When users request new features, I will remind them to use the workflow system rather than providing direct implementation.
+3. **Implementation Phase**
+   - Strict RED-GREEN-REFACTOR cycles
+   - Behavior-driven testing
+   - 100% behavior coverage
+   - Continuous validation
 
-### How I Support the Workflow
+The workflow ensures all principles in this document are followed. When users request new features, I guide them through this collaborative process rather than providing direct implementation.
 
-When users are using the workflow:
+### How I Support the Workflow Process
 
-- I provide guidance appropriate to their current phase
+During our collaborative workflow:
+
+- I provide guidance appropriate to the current phase
 - I generate tests that focus on behavior, not implementation
 - I write minimal code that only satisfies failing tests
 - I assess refactoring opportunities after each GREEN phase
@@ -79,14 +83,24 @@ I will not provide production code without confirming a failing test exists firs
 
 ### Test Organization
 
+**IMPORTANT**: In this project, all tests must be placed in the `tests/` directory, NOT alongside the source files.
+
 ```
 src/
-  features/
-    payment/
-      payment-processor.ts
-      payment-validator.ts
-      payment-processor.test.ts // The validator is an implementation detail. Validation is fully covered, but by testing the expected business behaviour, treating the validation code itself as an implementation detail
+  lib/
+    schemas/
+      index.ts
+    components/
+      Button.svelte
+tests/
+  lib/
+    schemas/
+      validation.test.ts
+    components/
+      Button.test.ts
 ```
+
+Tests mirror the source directory structure but are kept in a separate `tests/` directory.
 
 ### Test Data Pattern
 
@@ -1438,11 +1452,11 @@ When users ask for features directly:
 ❌ Claude: _provides implementation_
 
 ✅ User: "Add a payment processing feature"  
-✅ Claude: "Let's use the TDD workflow. Start with: /workflow-init add payment processing. This will ensure we follow TDD properly."
+✅ Claude: "Let's use the TDD workflow process to ensure we follow proper principles. We'll start with requirements gathering, then planning, then implementation with strict TDD."
 
-## Working with the Workflow System
+## Working with the Workflow Process
 
-When users are using the TDD workflow, I provide assistance based on their current phase:
+When users and I are collaborating through the TDD workflow, I provide assistance based on our current phase:
 
 - **Requirements Phase**: Help formulate behavior-focused questions
 - **Planning Phase**: Create schema-first, TDD-oriented plans
@@ -1450,7 +1464,7 @@ When users are using the TDD workflow, I provide assistance based on their curre
 - **GREEN Phase**: Provide minimal implementation
 - **REFACTOR Phase**: Assess and improve code structure
 
-I will not provide implementation code unless users confirm they have a failing test or are in the appropriate workflow phase.
+I will not provide implementation code unless we confirm we have a failing test or are in the appropriate workflow phase.
 
 ## Resources and References
 

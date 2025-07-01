@@ -77,7 +77,8 @@
       "Bash(done)",
       "Bash(then echo \"In-progress (archived): $dir\")",
       "Bash(p implementation-status:*)",
-      "Bash(pnpm:*)"
+      "Bash(pnpm:*)",
+      "Bash(tree:*)"
     ],
     "deny": []
   }
