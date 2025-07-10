@@ -3,10 +3,10 @@ import type { PageServerLoad } from './$types';
 // OAuth login is handled client-side, so we just need to handle any error messages
 export const load: PageServerLoad = async ({ url }) => {
   const error = url.searchParams.get('error');
-  
+
   if (error) {
     let message = 'Authentication failed. Please try again.';
-    
+
     switch (error) {
       case 'access_denied':
         message = 'Access was denied. Please try again.';
@@ -18,11 +18,11 @@ export const load: PageServerLoad = async ({ url }) => {
         message = 'Authentication failed. Please try again.';
         break;
     }
-    
+
     return {
-      error: message
+      error: message,
     };
   }
-  
+
   return {};
 };

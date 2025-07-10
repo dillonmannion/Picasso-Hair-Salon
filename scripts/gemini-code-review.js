@@ -42,7 +42,7 @@ async function reviewCode(args) {
   try {
     // Read input files
     const codeContent = await fs.readFile(args.file, 'utf8');
-    const guidelinesContent = args.guidelines 
+    const guidelinesContent = args.guidelines
       ? await fs.readFile(args.guidelines, 'utf8')
       : getDefaultGuidelines();
 
@@ -87,9 +87,9 @@ Remember:
       const geminiProcess = spawn('gemini', ['-p', '-'], {
         env: {
           ...process.env,
-          HOME: os.homedir() // Ensure HOME is set for auth files
+          HOME: os.homedir(), // Ensure HOME is set for auth files
         },
-        stdio: ['pipe', 'pipe', 'pipe']
+        stdio: ['pipe', 'pipe', 'pipe'],
       });
 
       let stdout = '';
@@ -144,7 +144,6 @@ Remember:
       // Clear timeout on successful completion
       geminiProcess.on('close', () => clearTimeout(timeout));
     });
-
   } catch (error) {
     console.error('❌ Error:', error.message);
     process.exit(99);

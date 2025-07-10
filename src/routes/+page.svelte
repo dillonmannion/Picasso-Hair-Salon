@@ -1,13 +1,13 @@
 <script lang="ts">
   import type { PageData } from './$types';
   import Button from '$lib/components/Button.svelte';
-  
+
   let { data } = $props<{ data: PageData }>();
 </script>
 
 <div class="container">
   <h1>Welcome to Picasso Hair Salon</h1>
-  
+
   {#if data.user}
     <p>Hello, {data.user.email}!</p>
     <div class="actions">
@@ -15,9 +15,7 @@
         <a href="/protected">Go to Protected Page</a>
       </Button>
       <form method="POST" action="/auth/logout" style="display: inline;">
-        <Button variant="secondary" type="submit">
-          Logout
-        </Button>
+        <Button variant="secondary" type="submit">Logout</Button>
       </form>
     </div>
   {:else}
@@ -37,14 +35,14 @@
     padding: 2rem;
     text-align: center;
   }
-  
+
   .actions {
     margin-top: 2rem;
     display: flex;
     gap: 1rem;
     justify-content: center;
   }
-  
+
   a {
     color: inherit;
     text-decoration: none;

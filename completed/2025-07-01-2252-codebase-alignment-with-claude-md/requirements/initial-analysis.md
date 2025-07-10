@@ -11,6 +11,7 @@
 ## Current State vs CLAUDE.md Requirements
 
 ### ✅ Already Compliant
+
 - TypeScript strict mode enabled
 - Vitest testing framework configured
 - Svelte 5 runes mode enabled
@@ -58,6 +59,7 @@ Not checked - need to run /mcp status
 ## Preliminary Technology List
 
 For context7 validation:
+
 - TypeScript
 - Svelte 5
 - SvelteKit

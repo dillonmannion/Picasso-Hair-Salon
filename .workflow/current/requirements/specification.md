@@ -1,106 +1,148 @@
-# Security Enhancements Specification
+# Behavior-Driven Specification: Phase 1 Implementation
 
-## Overview
-Implement comprehensive security enhancements for a hair salon website that serves both customers and salon staff/owners, using Supabase Auth as the primary authentication provider with Google OAuth integration.
+## Feature Overview
 
-## Core Requirements
+Implement the first phase of the codebase analysis improvements, focusing on critical security and performance enhancements for the Picasso Hair Salon backend infrastructure. This phase establishes the foundation for a secure, performant, and well-structured application.
 
-### 1. Authentication System
-- **Primary Auth Provider**: Google OAuth via Supabase Auth
-- **Session Management**: Handled by Supabase
-- **User Data**: No local storage of user credentials; only Google-provided information
-- **Account Management**: Users can delete their accounts from the system
+## Core Behaviors
 
-### 2. User Roles & Authorization
+### 1. Enhanced Security Configuration
 
-#### Customer Role
-- View all public website content
-- Book appointments with stylists
-- Purchase hair care products (shampoos, etc.)
-- Manage their own appointments
-- Access their purchase history
+**As a** system administrator  
+**I want** enhanced Content Security Policy (CSP) configuration  
+**So that** the application is protected against XSS and injection attacks
 
-#### Staff Role
-- All customer permissions PLUS:
-- Update personal availability/schedule
-- Submit vacation dates
-- Modify their professional credentials
-- Update their skill sets and specializations
-- View their appointment calendar
+**Acceptance Criteria:**
 
-#### Owner/Admin Role
-- All staff permissions PLUS:
-- Add/remove hair stylists
-- Manage service offerings (haircut options)
-- Create and manage discounts
-- Access administrative controls
-- Near-complete control over business operations
+- CSP directives must be properly configured in svelte.config.js
+- All Supabase domains must be whitelisted appropriately
+- Unsafe inline scripts/styles must be minimized
+- Frame ancestors must be restricted
+- Configuration must auto-upgrade insecure requests
 
-### 3. User Interface Components
-- Login/logout interface integrated with Google OAuth
-- Role-based navigation and UI elements
-- Protected routes based on user roles
-- Session status indicators
-- Account management interface (for account deletion)
+### 2. Supabase Row Level Security (RLS) Optimization
 
-### 4. Security Measures
-- **Rate Limiting**: Implement to prevent brute force attacks
-- **Route Protection**: SvelteKit server-side load functions for auth checks
-- **Input Validation**: Zod schemas for all user inputs
-- **CSRF Protection**: Built into SvelteKit
-- **Secure Headers**: Implement security headers via hooks
+**As a** database administrator  
+**I want** optimized RLS policies with proper indexes  
+**So that** database queries perform efficiently while maintaining security
 
-### 5. Performance Requirements
-- Support up to 25 concurrent users
-- Fast authentication flow (limited by Supabase response times)
-- Efficient session validation
-- Minimal overhead for protected routes
+**Acceptance Criteria:**
 
-### 6. Technical Implementation
+- Database indexes must be created for all RLS-related columns
+- Security definer functions must be implemented for role checks
+- RLS policies must use optimized patterns with explicit roles
+- All database operations must respect the three-tier authorization model:
+  - Non-authenticated users (template/shared views only)
+  - Employees (access to their own stylist data)
+  - Admins (full access to all data)
 
-#### Libraries & Frameworks
-- **SvelteKit**: Core framework with built-in security features
-- **Supabase Auth**: Authentication and session management
-- **Zod**: Input validation and schema definitions
-- **@supabase/auth-helpers-sveltekit**: SvelteKit integration
-- **Rate limiting**: Via SvelteKit middleware/hooks
+### 3. Authentication and Authorization System
 
-#### Security Best Practices
-- Server-side authentication checks in `+page.server.ts` and `+layout.server.ts`
-- Secure cookie handling for sessions
-- Protection against XSS via proper data handling
-- SQL injection prevention via Supabase's prepared statements
+**As a** security engineer  
+**I want** a robust authentication system with rate limiting  
+**So that** the application is protected against brute force attacks
 
-## Behaviors to Implement
+**Acceptance Criteria:**
 
-### Authentication Flow
-1. User clicks "Sign In" → Redirected to Google OAuth
-2. Successful auth → User profile created/updated in Supabase
-3. Session created → User redirected to appropriate dashboard
-4. Failed auth → Error message displayed
+- Rate limiting must be implemented (100 requests per 15 minutes per IP)
+- Session validation must clear invalid sessions automatically
+- Authentication guard must properly protect routes based on user roles
+- Three distinct user roles must be enforced:
+  - Anonymous users
+  - Employees (stylists)
+  - Admins (owners and developer)
 
-### Authorization Checks
-1. Every protected route checks user session
-2. Invalid/expired session → Redirect to login
-3. Insufficient permissions → Show 403 error page
-4. Valid permissions → Load requested content
+### 4. Environment Variable Validation
 
-### Role-Based UI
-1. Navigation menu adapts based on user role
-2. Action buttons show/hide based on permissions
-3. Forms validate permissions before submission
-4. API endpoints verify roles server-side
+**As a** developer  
+**I want** runtime validation of environment variables  
+**So that** configuration errors are caught early
 
-### Security Monitoring
-1. Failed login attempts are rate-limited
-2. Suspicious activity triggers additional checks
-3. Security headers applied to all responses
-4. Input validation prevents malicious data
+**Acceptance Criteria:**
+
+- All environment variables must be validated using Zod schemas
+- Missing required variables must throw clear errors on startup
+- Variable types must be enforced (URLs, strings, enums)
+- A .env.example file must document all required variables
+
+### 5. Optimized Build Configuration
+
+**As a** DevOps engineer  
+**I want** optimized Vite build configuration  
+**So that** the application builds efficiently with proper code splitting
+
+**Acceptance Criteria:**
+
+- Manual chunks must be configured for vendor libraries
+- CSS code splitting must be enabled
+- Build target must be set to esnext
+- Dependency optimization must include core libraries
+- Asset naming must be organized by type
+
+### 6. Vercel Edge Function Optimization
+
+**As a** platform engineer  
+**I want** optimized edge function configuration  
+**So that** the application runs efficiently on Vercel's infrastructure
+
+**Acceptance Criteria:**
+
+- Runtime must be set to 'edge' for better performance
+- Multi-region deployment must be configured
+- Image optimization settings must be implemented
+- Memory and duration limits must be properly set
+
+### 7. Database Type Safety
+
+**As a** backend developer  
+**I want** Zod validation for all database operations  
+**So that** runtime type safety is guaranteed
+
+**Acceptance Criteria:**
+
+- Database schemas must be defined using Zod
+- All database queries must return validated data
+- Type inference must work seamlessly with TypeScript
+- Invalid data from database must throw clear validation errors
+
+### 8. Error Handling Utilities
+
+**As a** developer  
+**I want** consistent error handling across the application  
+**So that** errors are properly logged and user-friendly
+
+**Acceptance Criteria:**
+
+- AppError class must standardize error formats
+- Error handler must properly categorize different error types
+- Zod validation errors must return 400 status codes
+- Unknown errors must be safely handled with 500 status codes
+
+## Technical Constraints
+
+- Backend only - no UI components in Phase 1
+- Database structure can be completely rewritten as needed
+- Supabase is the only external integration
+- Performance is not critical but should be considered for future
+- Must use existing technology stack (SvelteKit, Supabase, Zod, Vitest)
 
 ## Success Criteria
-- All routes properly protected based on roles
-- Google OAuth integration working seamlessly
-- Rate limiting preventing abuse
-- Zero security vulnerabilities in OWASP top 10
-- Sub-100ms overhead for auth checks
-- Clean, maintainable security implementation
+
+Phase 1 is complete when:
+
+1. All security enhancements are implemented and tested
+2. Database has optimized RLS policies with proper indexes
+3. Authentication system supports all three user roles
+4. Environment variables are validated at runtime
+5. Build configuration is optimized for production
+6. All code follows TDD principles with 100% behavior coverage
+7. Type safety is enforced through Zod schemas
+8. Error handling is consistent throughout the application
+
+## Out of Scope
+
+- UI/UX improvements
+- Third-party integrations beyond Supabase
+- Performance optimization beyond basic configuration
+- Monitoring and observability (Phase 3)
+- Documentation updates (Phase 4)

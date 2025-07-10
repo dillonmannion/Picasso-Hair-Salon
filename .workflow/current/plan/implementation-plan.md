@@ -1,152 +1,159 @@
-# TDD Implementation Plan for Security Enhancements
+# TDD Implementation Plan: Phase 1 - Backend Security & Performance
 
 ## Overview
-This plan outlines the Test-Driven Development approach for implementing security enhancements for the Picasso Hair Salon website, focusing on Supabase Auth integration with Google OAuth, role-based access control, and comprehensive security measures.
 
-**Note**: Updated to use `@supabase/ssr` instead of the deprecated `@supabase/auth-helpers-sveltekit` package, following the latest Supabase documentation.
+This plan breaks down Phase 1 into discrete, testable components that will be implemented using strict TDD principles. Each component represents a single behavior that can be tested in isolation.
+
+## Implementation Order
+
+Components are ordered by dependency and criticality. Core infrastructure components come first, followed by features that depend on them.
 
 ## Components
 
-### 1. Supabase Client Configuration
-- **name**: Supabase Client Configuration
-- **status**: complete
-- **test_file**: tests/lib/supabase/client.test.ts
-- **impl_file**: src/lib/supabase/client.ts
-- **behavior**: Must create and export configured Supabase client instances for both server and browser environments, with proper environment variable handling
-- **libraries**: ["@supabase/supabase-js", "@supabase/ssr", "zod"]
+### 1. Environment Variable Validation System
 
-### 2. Authentication Schemas
-- **name**: Authentication Schemas
-- **status**: complete
-- **test_file**: tests/lib/schemas/auth.test.ts
-- **impl_file**: src/lib/schemas/auth.ts
-- **behavior**: Must define and validate Zod schemas for user roles, authentication states, and permission structures
-- **libraries**: ["zod"]
+**Component**: `env-validation`
 
-### 3. Server Hooks - Authentication Setup
-- **name**: Server Hooks - Authentication Setup
-- **status**: pending
-- **test_file**: tests/hooks.server.test.ts
-- **impl_file**: src/hooks.server.ts
-- **behavior**: Must initialize Supabase client in server hooks, provide safeGetSession helper, and set up authentication state management
-- **libraries**: ["@supabase/ssr", "sveltekit"]
+- **Status**: complete
+- **Test File**: `tests/lib/config/env.test.ts`
+- **Implementation File**: `src/lib/config/env.ts`
+- **Behavior**: Validates all required environment variables at runtime using Zod schemas, throwing clear errors for missing or invalid variables
+- **Libraries**: ["zod"]
 
-### 4. Server Hooks - Route Protection
-- **name**: Server Hooks - Route Protection  
-- **status**: pending
-- **test_file**: tests/hooks.server.protection.test.ts
-- **impl_file**: src/hooks.server.ts
-- **behavior**: Must implement route protection logic that checks user sessions and roles for protected paths, redirecting unauthorized users
-- **libraries**: ["sveltekit", "zod"]
+### 2. Supabase Server Client Factory
 
-### 5. Server Hooks - Rate Limiting
-- **name**: Server Hooks - Rate Limiting
-- **status**: pending
-- **test_file**: tests/hooks.server.ratelimit.test.ts
-- **impl_file**: src/hooks.server.ts
-- **behavior**: Must implement rate limiting to prevent brute force attacks, tracking request counts per IP/user and blocking excessive requests
-- **libraries**: ["sveltekit"]
+**Component**: `supabase-server-client`
 
-### 6. Server Hooks - Security Headers
-- **name**: Server Hooks - Security Headers
-- **status**: pending
-- **test_file**: tests/hooks.server.headers.test.ts
-- **impl_file**: src/hooks.server.ts
-- **behavior**: Must add security headers to all responses including CSP, X-Frame-Options, and other OWASP recommended headers
-- **libraries**: ["sveltekit"]
+- **Status**: complete
+- **Test File**: `tests/lib/server/supabase.test.ts`
+- **Implementation File**: `src/lib/server/supabase.ts`
+- **Behavior**: Creates authenticated Supabase server clients with proper cookie handling for server-side operations
+- **Libraries**: ["@supabase/ssr", "zod"]
 
-### 7. OAuth Callback Handler
-- **name**: OAuth Callback Handler
-- **status**: pending
-- **test_file**: tests/routes/auth/callback/server.test.ts
-- **impl_file**: src/routes/auth/callback/+server.ts
-- **behavior**: Must handle OAuth callback from Google, exchange code for session, and redirect users appropriately
-- **libraries**: ["@supabase/ssr", "sveltekit"]
+### 3. Error Handling Utilities
 
-### 8. Authentication API Routes
-- **name**: Authentication API Routes
-- **status**: pending
-- **test_file**: tests/routes/api/auth/server.test.ts
-- **impl_file**: src/routes/api/auth/+server.ts
-- **behavior**: Must provide API endpoints for sign out and account deletion operations with proper session validation
-- **libraries**: ["@supabase/auth-helpers-sveltekit", "sveltekit", "zod"]
+**Component**: `error-handler`
 
-### 9. Login Page Component
-- **name**: Login Page Component
-- **status**: pending
-- **test_file**: tests/routes/login/page.test.ts
-- **impl_file**: src/routes/login/+page.svelte
-- **behavior**: Must display Google OAuth login button and handle authentication flow initiation
-- **libraries**: ["svelte", "@supabase/ssr"]
+- **Status**: pending
+- **Test File**: `tests/lib/utils/errors.test.ts`
+- **Implementation File**: `src/lib/utils/errors.ts`
+- **Behavior**: Provides consistent error handling with AppError class, properly categorizing Zod validation errors (400) and unknown errors (500)
+- **Libraries**: ["zod", "@sveltejs/kit"]
 
-### 10. Protected Layout - Customer Dashboard
-- **name**: Protected Layout - Customer Dashboard
-- **status**: pending
-- **test_file**: tests/routes/dashboard/layout.server.test.ts
-- **impl_file**: src/routes/dashboard/+layout.server.ts
-- **behavior**: Must verify customer role access, redirect unauthorized users, and load user-specific data
-- **libraries**: ["sveltekit", "@supabase/ssr", "zod"]
+### 4. Rate Limiter Implementation
 
-### 11. Protected Layout - Staff Portal
-- **name**: Protected Layout - Staff Portal
-- **status**: pending
-- **test_file**: tests/routes/staff/layout.server.test.ts
-- **impl_file**: src/routes/staff/+layout.server.ts
-- **behavior**: Must verify staff or owner role access, redirect unauthorized users, and load staff-specific data
-- **libraries**: ["sveltekit", "@supabase/ssr", "zod"]
+**Component**: `rate-limiter`
 
-### 12. Protected Layout - Admin Panel
-- **name**: Protected Layout - Admin Panel
-- **status**: pending
-- **test_file**: tests/routes/admin/layout.server.test.ts
-- **impl_file**: src/routes/admin/+layout.server.ts
-- **behavior**: Must verify owner role access only, redirect unauthorized users, and load admin-specific data
-- **libraries**: ["sveltekit", "@supabase/ssr", "zod"]
+- **Status**: pending
+- **Test File**: `tests/lib/security/rate-limiter.test.ts`
+- **Implementation File**: `src/lib/security/rate-limiter.ts`
+- **Behavior**: Implements IP-based rate limiting allowing 100 requests per 15 minutes, returning false when limit exceeded
+- **Libraries**: []
 
-### 13. Navigation Component
-- **name**: Navigation Component
-- **status**: pending
-- **test_file**: tests/lib/components/Navigation.test.ts
-- **impl_file**: src/lib/components/Navigation.svelte
-- **behavior**: Must display role-appropriate navigation links based on user authentication state and permissions
-- **libraries**: ["svelte", "@testing-library/svelte"]
+### 5. Authentication State Manager
 
-### 14. Session Status Component
-- **name**: Session Status Component
-- **status**: pending
-- **test_file**: tests/lib/components/SessionStatus.test.ts
-- **impl_file**: src/lib/components/SessionStatus.svelte
-- **behavior**: Must display current user session information and provide logout functionality
-- **libraries**: ["svelte", "@testing-library/svelte", "@supabase/ssr"]
+**Component**: `auth-state-manager`
 
-### 15. Root Layout Authentication Listener
-- **name**: Root Layout Authentication Listener
-- **status**: pending
-- **test_file**: tests/routes/layout.test.ts
-- **impl_file**: src/routes/+layout.svelte
-- **behavior**: Must set up authentication state listener to invalidate sessions on auth changes
-- **libraries**: ["svelte", "@supabase/ssr"]
+- **Status**: pending
+- **Test File**: `tests/lib/server/auth/session.test.ts`
+- **Implementation File**: `src/lib/server/auth/session.ts`
+- **Behavior**: Manages authentication state by validating sessions, clearing invalid sessions, and populating user data with proper role detection
+- **Libraries**: ["@supabase/ssr", "zod"]
 
-## Implementation Notes
+### 6. CSP Configuration Handler
 
-### Order of Implementation:
-1. Start with schemas and client configuration (foundation)
-2. Implement server hooks in sequence (auth → protection → rate limit → headers)
-3. Create OAuth callback handler
-4. Build authentication API routes
-5. Develop UI components (login, navigation, session status)
-6. Implement protected layouts
-7. Set up root layout listener
+**Component**: `csp-handler`
 
-### Testing Strategy:
-- Each component follows strict TDD: RED → GREEN → REFACTOR
-- Mock Supabase client for unit tests
-- Test security behaviors, not implementation details
-- Ensure 100% behavior coverage
+- **Status**: pending
+- **Test File**: `tests/lib/security/csp.test.ts`
+- **Implementation File**: `src/lib/security/csp.ts`
+- **Behavior**: Generates and applies Content Security Policy headers with proper directives for Supabase domains and security requirements
+- **Libraries**: ["@sveltejs/kit"]
 
-### Security Considerations:
-- All authentication checks server-side
-- No sensitive data in client-side code
-- Rate limiting on all authentication endpoints
-- Proper CSRF protection via SvelteKit
-- Secure session handling with httpOnly cookies
+### 7. Authentication Hook Implementation
+
+**Component**: `auth-hook`
+
+- **Status**: pending
+- **Test File**: `tests/hooks.server.test.ts`
+- **Implementation File**: `src/hooks.server.ts`
+- **Behavior**: Intercepts all requests to apply rate limiting, validate sessions, protect routes based on authentication status, and set CSP headers
+- **Libraries**: ["@sveltejs/kit", "@supabase/ssr"]
+
+### 8. Database Schema Definitions
+
+**Component**: `database-schemas`
+
+- **Status**: pending
+- **Test File**: `tests/lib/schemas/database.test.ts`
+- **Implementation File**: `src/lib/schemas/database.ts`
+- **Behavior**: Defines Zod schemas for all database entities with proper validation rules and type inference
+- **Libraries**: ["zod"]
+
+### 9. Database Query Validators
+
+**Component**: `query-validators`
+
+- **Status**: pending
+- **Test File**: `tests/lib/db/validators.test.ts`
+- **Implementation File**: `src/lib/db/validators.ts`
+- **Behavior**: Wraps database queries with Zod validation to ensure runtime type safety for all database operations
+- **Libraries**: ["zod", "@supabase/supabase-js"]
+
+### 10. Build Configuration Optimizer
+
+**Component**: `build-config`
+
+- **Status**: pending
+- **Test File**: `tests/config/vite.test.ts`
+- **Implementation File**: `vite.config.js`
+- **Behavior**: Configures Vite with manual chunks for vendor libraries, CSS code splitting, and optimized dependency handling
+- **Libraries**: ["vite", "@sveltejs/kit"]
+
+### 11. Edge Function Configuration
+
+**Component**: `edge-config`
+
+- **Status**: pending
+- **Test File**: `tests/config/svelte.test.ts`
+- **Implementation File**: `svelte.config.js`
+- **Behavior**: Configures SvelteKit adapter for edge runtime with multi-region deployment and proper CSP directives
+- **Libraries**: ["@sveltejs/adapter-vercel", "@sveltejs/kit"]
+
+### 12. RLS Policy Migration Scripts
+
+**Component**: `rls-migrations`
+
+- **Status**: pending
+- **Test File**: `tests/supabase/migrations.test.ts`
+- **Implementation File**: `supabase/migrations/00002_rls_optimizations.sql`
+- **Behavior**: Creates optimized RLS policies with proper indexes and security definer functions for role-based access
+- **Libraries**: []
+
+### 13. Environment Example File
+
+**Component**: `env-example`
+
+- **Status**: pending
+- **Test File**: `tests/config/env-example.test.ts`
+- **Implementation File**: `.env.example`
+- **Behavior**: Documents all required environment variables with clear descriptions and example values
+- **Libraries**: []
+
+## Success Metrics
+
+Each component must:
+
+1. Have a failing test before implementation
+2. Pass all tests with minimal implementation
+3. Be refactored for clarity if needed
+4. Integrate seamlessly with other components
+5. Follow all TypeScript strict mode requirements
+6. Use schema-first development where applicable
+
+## Notes
+
+- All file paths are relative to the project root
+- Tests must be in the `tests/` directory mirroring `src/` structure
+- Each component should be committed separately with both test and implementation
+- Components may be re-ordered based on discovered dependencies during implementation

@@ -8,7 +8,7 @@ import { ButtonPropsSchema } from '$lib/schemas';
 describe('Button component behavior', () => {
   it('should render with default props', () => {
     render(Button);
-    
+
     const button = screen.getByRole('button');
     expect(button).toHaveClass('btn-primary', 'btn-medium');
     expect(button).not.toBeDisabled();
@@ -17,11 +17,11 @@ describe('Button component behavior', () => {
   it('should apply variant and size classes', () => {
     const props = createMockButtonProps({
       variant: 'danger',
-      size: 'large'
+      size: 'large',
     });
-    
+
     render(Button, props);
-    
+
     const button = screen.getByRole('button');
     expect(button).toHaveClass('btn-danger', 'btn-large');
   });
@@ -30,20 +30,20 @@ describe('Button component behavior', () => {
     const user = userEvent.setup();
     const onclick = vi.fn();
     const props = createMockButtonProps({ onclick });
-    
+
     render(Button, props);
     const button = screen.getByRole('button');
-    
+
     await user.click(button);
-    
+
     expect(onclick).toHaveBeenCalledOnce();
   });
 
   it('should be disabled when disabled prop is true', () => {
     const props = createMockButtonProps({ disabled: true });
-    
+
     render(Button, props);
-    
+
     const button = screen.getByRole('button');
     expect(button).toBeDisabled();
   });
@@ -51,37 +51,37 @@ describe('Button component behavior', () => {
   it('should not fire click events when disabled', async () => {
     const user = userEvent.setup();
     const onclick = vi.fn();
-    const props = createMockButtonProps({ 
+    const props = createMockButtonProps({
       disabled: true,
-      onclick 
+      onclick,
     });
-    
+
     render(Button, props);
     const button = screen.getByRole('button');
-    
+
     await user.click(button);
-    
+
     expect(onclick).not.toHaveBeenCalled();
   });
 
   it('should apply custom CSS classes', () => {
-    const props = createMockButtonProps({ 
-      class: 'custom-class another-class' 
+    const props = createMockButtonProps({
+      class: 'custom-class another-class',
     });
-    
+
     render(Button, props);
-    
+
     const button = screen.getByRole('button');
     expect(button).toHaveClass('custom-class', 'another-class');
   });
 
   it('should render slot content', async () => {
     const ButtonWithSlot = await import('./ButtonWithSlot.svelte');
-    
+
     render(ButtonWithSlot.default, {
-      props: { buttonProps: createMockButtonProps() }
+      props: { buttonProps: createMockButtonProps() },
     });
-    
+
     const button = screen.getByRole('button');
     expect(button).toHaveTextContent('Click me!');
   });
@@ -89,9 +89,9 @@ describe('Button component behavior', () => {
   it('should validate props with schema at runtime', () => {
     const props = {
       variant: 'primary',
-      size: 'medium'
+      size: 'medium',
     };
-    
+
     const result = ButtonPropsSchema.safeParse(props);
     expect(result.success).toBe(true);
   });
@@ -100,11 +100,11 @@ describe('Button component behavior', () => {
     const props = createMockButtonProps({
       type: 'submit',
       name: 'submitBtn',
-      form: 'myForm'
-    } as any);
-    
+      form: 'myForm',
+    });
+
     render(Button, props);
-    
+
     const button = screen.getByRole('button');
     expect(button).toHaveAttribute('type', 'submit');
     expect(button).toHaveAttribute('name', 'submitBtn');

@@ -24,7 +24,7 @@ export const PermissionSchema = z.enum([
   'staff.manage',
   'reports.view',
   'analytics.view',
-  'settings.manage'
+  'settings.manage',
 ]);
 export type Permission = z.infer<typeof PermissionSchema>;
 
@@ -36,7 +36,7 @@ export const RolePermissionsSchema = {
     'appointments.create',
     'appointments.read',
     'appointments.update',
-    'appointments.delete'
+    'appointments.delete',
   ] as Permission[],
   staff: [
     'appointments.create',
@@ -48,7 +48,7 @@ export const RolePermissionsSchema = {
     'customers.update',
     'services.manage',
     'products.manage',
-    'reports.view'
+    'reports.view',
   ] as Permission[],
   owner: [
     'appointments.create',
@@ -64,8 +64,8 @@ export const RolePermissionsSchema = {
     'staff.manage',
     'reports.view',
     'analytics.view',
-    'settings.manage'
-  ] as Permission[]
+    'settings.manage',
+  ] as Permission[],
 } as const;
 
 // ============================================================================
@@ -75,13 +75,15 @@ export const UserSchema = z.object({
   id: z.string().uuid(),
   email: z.string().email(),
   role: UserRoleSchema,
-  metadata: z.object({
-    firstName: z.string(),
-    lastName: z.string(),
-    phone: z.string()
-  }).optional(),
+  metadata: z
+    .object({
+      firstName: z.string(),
+      lastName: z.string(),
+      phone: z.string(),
+    })
+    .optional(),
   createdAt: z.string(),
-  updatedAt: z.string()
+  updatedAt: z.string(),
 });
 export type User = z.infer<typeof UserSchema>;
 
@@ -92,7 +94,7 @@ export const SessionSchema = z.object({
   expires_in: z.number(),
   expires_at: z.number(),
   refresh_token: z.string(),
-  user: UserSchema
+  user: UserSchema,
 });
 export type Session = z.infer<typeof SessionSchema>;
 
@@ -103,15 +105,15 @@ export const AuthStateSchema = z.discriminatedUnion('status', [
   z.object({
     status: z.literal('authenticated'),
     user: UserSchema,
-    session: SessionSchema
+    session: SessionSchema,
   }),
   z.object({
     status: z.literal('unauthenticated'),
-    redirectTo: z.string().optional()
+    redirectTo: z.string().optional(),
   }),
   z.object({
-    status: z.literal('loading')
-  })
+    status: z.literal('loading'),
+  }),
 ]);
 export type AuthState = z.infer<typeof AuthStateSchema>;
 
@@ -121,7 +123,7 @@ export type AuthState = z.infer<typeof AuthStateSchema>;
 export const LoginRequestSchema = z.object({
   email: z.string().email(),
   password: z.string().min(8),
-  rememberMe: z.boolean().optional().default(false)
+  rememberMe: z.boolean().optional().default(false),
 });
 export type LoginRequest = z.infer<typeof LoginRequestSchema>;
 
@@ -135,7 +137,7 @@ export type OAuthProvider = z.infer<typeof OAuthProviderSchema>;
 export const OAuthCallbackSchema = z.object({
   code: z.string(),
   state: z.string().uuid(),
-  provider: OAuthProviderSchema
+  provider: OAuthProviderSchema,
 });
 export type OAuthCallback = z.infer<typeof OAuthCallbackSchema>;
 

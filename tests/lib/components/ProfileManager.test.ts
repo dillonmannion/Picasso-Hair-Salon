@@ -1,26 +1,26 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/svelte';
 import userEvent from '@testing-library/user-event';
+import type { SupabaseClient } from '@supabase/supabase-js';
 import ProfileManager from '$lib/components/ProfileManager.svelte';
 import { createMockProfile } from '$lib/test-utils/factories';
-import { ProfileSchema } from '$lib/schemas';
 
 // Mock Supabase client
 const mockSupabase = {
   from: vi.fn(() => ({
     select: vi.fn(() => ({
       eq: vi.fn(() => ({
-        single: vi.fn()
-      }))
+        single: vi.fn(),
+      })),
     })),
     update: vi.fn(() => ({
       eq: vi.fn(() => ({
         select: vi.fn(() => ({
-          single: vi.fn()
-        }))
-      }))
-    }))
-  }))
+          single: vi.fn(),
+        })),
+      })),
+    })),
+  })),
 };
 
 describe('ProfileManager behavior', () => {
@@ -35,16 +35,23 @@ describe('ProfileManager behavior', () => {
         eq: vi.fn().mockReturnValueOnce({
           single: vi.fn().mockReturnValueOnce(
             new Promise(() => {}) // Never resolves to keep loading
-          )
-        })
-      })
+          ),
+        }),
+      }),
+      update: vi.fn(() => ({
+        eq: vi.fn(() => ({
+          select: vi.fn(() => ({
+            single: vi.fn(),
+          })),
+        })),
+      })),
     });
 
     render(ProfileManager, {
       props: {
         userId: profile.id,
-        supabase: mockSupabase
-      }
+        supabase: mockSupabase as unknown as SupabaseClient,
+      },
     });
 
     expect(screen.getByText('Loading profile...')).toBeInTheDocument();
@@ -53,7 +60,7 @@ describe('ProfileManager behavior', () => {
   it('should display profile data when loaded successfully', async () => {
     const profile = createMockProfile({
       username: 'johndoe',
-      full_name: 'John Doe'
+      full_name: 'John Doe',
     });
 
     mockSupabase.from.mockReturnValueOnce({
@@ -61,17 +68,24 @@ describe('ProfileManager behavior', () => {
         eq: vi.fn().mockReturnValueOnce({
           single: vi.fn().mockResolvedValueOnce({
             data: profile,
-            error: null
-          })
-        })
-      })
+            error: null,
+          }),
+        }),
+      }),
+      update: vi.fn(() => ({
+        eq: vi.fn(() => ({
+          select: vi.fn(() => ({
+            single: vi.fn(),
+          })),
+        })),
+      })),
     });
 
     render(ProfileManager, {
       props: {
         userId: profile.id,
-        supabase: mockSupabase
-      }
+        supabase: mockSupabase as unknown as SupabaseClient,
+      },
     });
 
     await waitFor(() => {
@@ -86,17 +100,24 @@ describe('ProfileManager behavior', () => {
         eq: vi.fn().mockReturnValueOnce({
           single: vi.fn().mockResolvedValueOnce({
             data: null,
-            error: { message: 'Profile not found' }
-          })
-        })
-      })
+            error: { message: 'Profile not found' },
+          }),
+        }),
+      }),
+      update: vi.fn(() => ({
+        eq: vi.fn(() => ({
+          select: vi.fn(() => ({
+            single: vi.fn(),
+          })),
+        })),
+      })),
     });
 
     render(ProfileManager, {
       props: {
         userId: 'invalid-id',
-        supabase: mockSupabase
-      }
+        supabase: mockSupabase as unknown as SupabaseClient,
+      },
     });
 
     await waitFor(() => {
@@ -108,7 +129,7 @@ describe('ProfileManager behavior', () => {
     const user = userEvent.setup();
     const profile = createMockProfile({
       username: 'johndoe',
-      full_name: 'John Doe'
+      full_name: 'John Doe',
     });
 
     mockSupabase.from.mockReturnValueOnce({
@@ -116,17 +137,24 @@ describe('ProfileManager behavior', () => {
         eq: vi.fn().mockReturnValueOnce({
           single: vi.fn().mockResolvedValueOnce({
             data: profile,
-            error: null
-          })
-        })
-      })
+            error: null,
+          }),
+        }),
+      }),
+      update: vi.fn(() => ({
+        eq: vi.fn(() => ({
+          select: vi.fn(() => ({
+            single: vi.fn(),
+          })),
+        })),
+      })),
     });
 
     render(ProfileManager, {
       props: {
         userId: profile.id,
-        supabase: mockSupabase
-      }
+        supabase: mockSupabase as unknown as SupabaseClient,
+      },
     });
 
     await waitFor(() => {
@@ -143,7 +171,7 @@ describe('ProfileManager behavior', () => {
   it('should validate profile data with schema before saving', async () => {
     const user = userEvent.setup();
     const profile = createMockProfile({
-      username: 'johndoe'
+      username: 'johndoe',
     });
 
     mockSupabase.from.mockReturnValueOnce({
@@ -151,17 +179,24 @@ describe('ProfileManager behavior', () => {
         eq: vi.fn().mockReturnValueOnce({
           single: vi.fn().mockResolvedValueOnce({
             data: profile,
-            error: null
-          })
-        })
-      })
+            error: null,
+          }),
+        }),
+      }),
+      update: vi.fn(() => ({
+        eq: vi.fn(() => ({
+          select: vi.fn(() => ({
+            single: vi.fn(),
+          })),
+        })),
+      })),
     });
 
     render(ProfileManager, {
       props: {
         userId: profile.id,
-        supabase: mockSupabase
-      }
+        supabase: mockSupabase as unknown as SupabaseClient,
+      },
     });
 
     await waitFor(() => {
@@ -183,13 +218,13 @@ describe('ProfileManager behavior', () => {
     const user = userEvent.setup();
     const profile = createMockProfile({
       username: 'johndoe',
-      full_name: 'John Doe'
+      full_name: 'John Doe',
     });
 
     const updatedProfile = {
       ...profile,
       username: 'newusername',
-      updated_at: new Date().toISOString()
+      updated_at: new Date().toISOString(),
     };
 
     mockSupabase.from
@@ -198,29 +233,41 @@ describe('ProfileManager behavior', () => {
           eq: vi.fn().mockReturnValueOnce({
             single: vi.fn().mockResolvedValueOnce({
               data: profile,
-              error: null
-            })
-          })
-        })
+              error: null,
+            }),
+          }),
+        }),
+        update: vi.fn(() => ({
+          eq: vi.fn(() => ({
+            select: vi.fn(() => ({
+              single: vi.fn(),
+            })),
+          })),
+        })),
       })
       .mockReturnValueOnce({
+        select: vi.fn(() => ({
+          eq: vi.fn(() => ({
+            single: vi.fn(),
+          })),
+        })),
         update: vi.fn().mockReturnValueOnce({
           eq: vi.fn().mockReturnValueOnce({
             select: vi.fn().mockReturnValueOnce({
               single: vi.fn().mockResolvedValueOnce({
                 data: updatedProfile,
-                error: null
-              })
-            })
-          })
-        })
+                error: null,
+              }),
+            }),
+          }),
+        }),
       });
 
     render(ProfileManager, {
       props: {
         userId: profile.id,
-        supabase: mockSupabase
-      }
+        supabase: mockSupabase as unknown as SupabaseClient,
+      },
     });
 
     await waitFor(() => {
@@ -251,17 +298,24 @@ describe('ProfileManager behavior', () => {
         eq: vi.fn().mockReturnValueOnce({
           single: vi.fn().mockResolvedValueOnce({
             data: profile,
-            error: null
-          })
-        })
-      })
+            error: null,
+          }),
+        }),
+      }),
+      update: vi.fn(() => ({
+        eq: vi.fn(() => ({
+          select: vi.fn(() => ({
+            single: vi.fn(),
+          })),
+        })),
+      })),
     });
 
     render(ProfileManager, {
       props: {
         userId: profile.id,
-        supabase: mockSupabase
-      }
+        supabase: mockSupabase as unknown as SupabaseClient,
+      },
     });
 
     await waitFor(() => {
@@ -284,7 +338,7 @@ describe('ProfileManager behavior', () => {
     const profile = createMockProfile({
       username: 'johndoe',
       full_name: null,
-      avatar_url: null
+      avatar_url: null,
     });
 
     mockSupabase.from.mockReturnValueOnce({
@@ -292,17 +346,24 @@ describe('ProfileManager behavior', () => {
         eq: vi.fn().mockReturnValueOnce({
           single: vi.fn().mockResolvedValueOnce({
             data: profile,
-            error: null
-          })
-        })
-      })
+            error: null,
+          }),
+        }),
+      }),
+      update: vi.fn(() => ({
+        eq: vi.fn(() => ({
+          select: vi.fn(() => ({
+            single: vi.fn(),
+          })),
+        })),
+      })),
     });
 
     render(ProfileManager, {
       props: {
         userId: profile.id,
-        supabase: mockSupabase
-      }
+        supabase: mockSupabase as unknown as SupabaseClient,
+      },
     });
 
     await waitFor(() => {

@@ -1,23 +1,23 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
-  
+
   "framework": "sveltekit",
-  
+
   "buildCommand": "pnpm build",
   "outputDirectory": ".vercel/output",
   "devCommand": "pnpm dev",
   "installCommand": "pnpm install --frozen-lockfile",
-  
+
   "functions": {
     "src/routes/api/*.js": {
       "maxDuration": 10
     }
   },
-  
+
   "regions": ["iad1"],
-  
+
   "crons": [],
-  
+
   "headers": [
     {
       "source": "/(.*)",
@@ -50,14 +50,14 @@
       ]
     }
   ],
-  
+
   "rewrites": [
     {
       "source": "/api/health",
       "destination": "/api/health-check"
     }
   ],
-  
+
   "cleanUrls": true,
   "trailingSlash": false
 }

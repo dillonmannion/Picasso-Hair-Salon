@@ -16,7 +16,7 @@ const parseSearchParams = (url: URL): Record<string, string> => {
 
 export const GET: RequestHandler = async ({ url, locals: { supabase } }) => {
   const searchParams = parseSearchParams(url);
-  
+
   const errorParseResult = OAuthErrorParamsSchema.safeParse(searchParams);
   if (errorParseResult.success) {
     const { error, error_description } = errorParseResult.data;
@@ -29,10 +29,10 @@ export const GET: RequestHandler = async ({ url, locals: { supabase } }) => {
     buildErrorRedirect('invalid_request', errorMessage);
   }
 
-  const { code, next = '/' } = paramsParseResult.data;
+  const { code, next = '/' } = paramsParseResult.data!;
 
   const { error } = await supabase.auth.exchangeCodeForSession(code);
-  
+
   if (error) {
     buildErrorRedirect('auth_failed', error.message);
   }

@@ -19,6 +19,7 @@ Claude will be prompted to perform the following actions:
 ### 1. Check for Active Workflow
 
 **Claude Action Required:**
+
 - Check if `.workflow/state.yaml` exists
 - If not, inform user no active workflow exists and suggest `/workflow-init`
 - If yes, continue to parse and display status
@@ -26,6 +27,7 @@ Claude will be prompted to perform the following actions:
 ### 2. Parse and Display Header
 
 **Claude Action Required:**
+
 - Extract from state.yaml:
   - feature name
   - current phase
@@ -39,15 +41,18 @@ Claude will be prompted to perform the following actions:
 Based on the current phase, show relevant information:
 
 #### If Phase = "requirements"
+
 - Show that workflow is gathering requirements
 - Check discovery-questions.md to see which question is next
 - Display progress (e.g., "Question 3 of 5")
 
 #### If Phase = "planning"
+
 - Show that workflow is ready to generate implementation plan
 - Check if specification exists
 
 #### If Phase = "implementation"
+
 - Read implementation-plan.md
 - Count total components and completed components
 - Show progress (e.g., "3 / 7 components complete")
@@ -55,12 +60,14 @@ Based on the current phase, show relevant information:
 - If all complete, indicate ready for finalization
 
 #### If Phase = "complete"
+
 - Show that implementation is finished
 - Indicate workflow is ready for archival
 
 ### 4. Display Checkpoints & Next Actions
 
 **Claude Action Required:**
+
 - Read checkpoints from state.yaml and display status
 - Based on phase and progress, suggest next action:
   - Requirements/Planning: `/workflow-continue`

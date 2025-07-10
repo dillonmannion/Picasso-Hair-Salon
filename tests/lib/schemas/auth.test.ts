@@ -9,7 +9,7 @@ import {
   RolePermissionsSchema,
   LoginRequestSchema,
   OAuthProviderSchema,
-  OAuthCallbackSchema
+  OAuthCallbackSchema,
 } from '$lib/schemas/auth';
 
 describe('Authentication Schemas', () => {
@@ -56,10 +56,10 @@ describe('Authentication Schemas', () => {
         'staff.manage',
         'reports.view',
         'analytics.view',
-        'settings.manage'
+        'settings.manage',
       ];
 
-      validPermissions.forEach(permission => {
+      validPermissions.forEach((permission) => {
         expect(() => PermissionSchema.parse(permission)).not.toThrow();
       });
     });
@@ -109,10 +109,10 @@ describe('Authentication Schemas', () => {
         metadata: {
           firstName: 'John',
           lastName: 'Doe',
-          phone: '+1234567890'
+          phone: '+1234567890',
         },
         createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString()
+        updatedAt: new Date().toISOString(),
       };
 
       const result = UserSchema.parse(validUser);
@@ -127,7 +127,7 @@ describe('Authentication Schemas', () => {
         email: 'not-an-email',
         role: 'customer',
         createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString()
+        updatedAt: new Date().toISOString(),
       };
 
       expect(() => UserSchema.parse(invalidUser)).toThrow();
@@ -139,7 +139,7 @@ describe('Authentication Schemas', () => {
         email: 'user@example.com',
         role: 'staff',
         createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString()
+        updatedAt: new Date().toISOString(),
       };
 
       const result = UserSchema.parse(userWithoutMetadata);
@@ -160,8 +160,8 @@ describe('Authentication Schemas', () => {
           email: 'user@example.com',
           role: 'customer',
           createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString()
-        }
+          updatedAt: new Date().toISOString(),
+        },
       };
 
       const result = SessionSchema.parse(validSession);
@@ -181,8 +181,8 @@ describe('Authentication Schemas', () => {
           email: 'user@example.com',
           role: 'staff',
           createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString()
-        }
+          updatedAt: new Date().toISOString(),
+        },
       };
 
       const result = SessionSchema.parse(session);
@@ -199,7 +199,7 @@ describe('Authentication Schemas', () => {
           email: 'user@example.com',
           role: 'customer',
           createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString()
+          updatedAt: new Date().toISOString(),
         },
         session: {
           access_token: 'token',
@@ -212,9 +212,9 @@ describe('Authentication Schemas', () => {
             email: 'user@example.com',
             role: 'customer',
             createdAt: new Date().toISOString(),
-            updatedAt: new Date().toISOString()
-          }
-        }
+            updatedAt: new Date().toISOString(),
+          },
+        },
       };
 
       const result = AuthStateSchema.parse(authState);
@@ -228,7 +228,7 @@ describe('Authentication Schemas', () => {
     it('should validate unauthenticated state', () => {
       const unauthState = {
         status: 'unauthenticated',
-        redirectTo: '/login'
+        redirectTo: '/login',
       };
 
       const result = AuthStateSchema.parse(unauthState);
@@ -240,7 +240,7 @@ describe('Authentication Schemas', () => {
 
     it('should validate loading state', () => {
       const loadingState = {
-        status: 'loading'
+        status: 'loading',
       };
 
       const result = AuthStateSchema.parse(loadingState);
@@ -253,7 +253,7 @@ describe('Authentication Schemas', () => {
       const validLogin = {
         email: 'user@example.com',
         password: 'SecurePass123!',
-        rememberMe: true
+        rememberMe: true,
       };
 
       const result = LoginRequestSchema.parse(validLogin);
@@ -264,7 +264,7 @@ describe('Authentication Schemas', () => {
     it('should provide default for rememberMe', () => {
       const loginWithoutRemember = {
         email: 'user@example.com',
-        password: 'SecurePass123!'
+        password: 'SecurePass123!',
       };
 
       const result = LoginRequestSchema.parse(loginWithoutRemember);
@@ -274,7 +274,7 @@ describe('Authentication Schemas', () => {
     it('should validate password requirements', () => {
       const weakPassword = {
         email: 'user@example.com',
-        password: 'weak'
+        password: 'weak',
       };
 
       expect(() => LoginRequestSchema.parse(weakPassword)).toThrow();
@@ -297,7 +297,7 @@ describe('Authentication Schemas', () => {
       const validCallback = {
         code: 'auth_code_123456',
         state: '123e4567-e89b-12d3-a456-426614174000',
-        provider: 'google'
+        provider: 'google',
       };
 
       const result = OAuthCallbackSchema.parse(validCallback);
@@ -310,7 +310,7 @@ describe('Authentication Schemas', () => {
       const invalidCallback = {
         code: 'auth_code_123456',
         state: 'not-a-uuid',
-        provider: 'google'
+        provider: 'google',
       };
 
       expect(() => OAuthCallbackSchema.parse(invalidCallback)).toThrow();
@@ -321,8 +321,6 @@ describe('Authentication Schemas', () => {
     it('should correctly infer types from schemas', () => {
       type UserRole = z.infer<typeof UserRoleSchema>;
       type User = z.infer<typeof UserSchema>;
-      type Session = z.infer<typeof SessionSchema>;
-      type AuthState = z.infer<typeof AuthStateSchema>;
 
       // These should compile without errors
       const role: UserRole = 'customer';
@@ -331,7 +329,7 @@ describe('Authentication Schemas', () => {
         email: 'test@example.com',
         role: 'customer',
         createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString()
+        updatedAt: new Date().toISOString(),
       };
 
       expect(role).toBe('customer');

@@ -38,7 +38,9 @@ TEST_PATTERN=$(echo "$CODE_FILES" | sed 's/\.(ts|js|svelte|tsx|jsx)$//' | sed 's
 
 if [ -n "$TEST_PATTERN" ]; then
   # Run tests related to changed files
-  pnpm test:unit --run --reporter=verbose --grep="$TEST_PATTERN" || true
+  # Note: Vitest doesn't have a grep option, so we'll just run all tests
+  echo "Running all unit tests (filtering by pattern not supported)"
+  pnpm test:unit --run || true
 fi
 
 echo "✅ All pre-commit checks passed!"

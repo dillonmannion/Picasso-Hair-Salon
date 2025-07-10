@@ -44,6 +44,7 @@ Based on technical questions and context analysis:
 **Then:** The system rejects it with a specific validation error
 
 **Test cases:**
+
 - Happy path: Valid OAuth callback with code parameter
 - Edge case: Missing code parameter
 - Error case: Invalid error parameters in callback
@@ -55,6 +56,7 @@ Based on technical questions and context analysis:
 **Then:** TypeScript compilation fails with clear error
 
 **Test cases:**
+
 - Happy path: Component with properly typed props
 - Edge case: Component with complex generic types
 - Error case: Attempt to use `any` or type assertions
@@ -66,6 +68,7 @@ Based on technical questions and context analysis:
 **Then:** ESLint flags it as an error
 
 **Test cases:**
+
 - Happy path: Clear function names and structure
 - Edge case: Complex logic refactored into named functions
 - Error case: Inline comments detected and flagged
@@ -77,6 +80,7 @@ Based on technical questions and context analysis:
 **Then:** The system enforces immutable update patterns
 
 **Test cases:**
+
 - Happy path: State updated with spread operators
 - Edge case: Deep nested object updates
 - Error case: Direct mutation attempts
@@ -88,6 +92,7 @@ Based on technical questions and context analysis:
 **Then:** The workflow guides them to write tests first
 
 **Test cases:**
+
 - Happy path: Test written, then minimal implementation
 - Edge case: Refactoring after green tests
 - Error case: No test coverage for new code
@@ -97,65 +102,79 @@ Based on technical questions and context analysis:
 Key data structures that need Zod schemas:
 
 ### User/Profile Schemas
+
 ```typescript
-ProfileSchema = z.object({
-  id: z.string().uuid(),
-  username: z.string().min(3).max(20).nullable(),
-  full_name: z.string().max(100).nullable(),
-  avatar_url: z.string().url().nullable(),
-  created_at: z.string().datetime(),
-  updated_at: z.string().datetime()
-}).strict()
+ProfileSchema = z
+  .object({
+    id: z.string().uuid(),
+    username: z.string().min(3).max(20).nullable(),
+    full_name: z.string().max(100).nullable(),
+    avatar_url: z.string().url().nullable(),
+    created_at: z.string().datetime(),
+    updated_at: z.string().datetime(),
+  })
+  .strict();
 ```
 
 ### Authentication Schemas
-```typescript
-OAuthCallbackSchema = z.object({
-  code: z.string().min(1),
-  next: z.string().optional()
-}).strict()
 
-OAuthErrorSchema = z.object({
-  error: z.string(),
-  error_code: z.string().optional(),
-  error_description: z.string().optional()
-}).strict()
+```typescript
+OAuthCallbackSchema = z
+  .object({
+    code: z.string().min(1),
+    next: z.string().optional(),
+  })
+  .strict();
+
+OAuthErrorSchema = z
+  .object({
+    error: z.string(),
+    error_code: z.string().optional(),
+    error_description: z.string().optional(),
+  })
+  .strict();
 ```
 
 ### Component Prop Schemas
+
 ```typescript
-ButtonPropsSchema = z.object({
-  variant: z.enum(['primary', 'secondary', 'danger']).default('primary'),
-  size: z.enum(['small', 'medium', 'large']).default('medium'),
-  disabled: z.boolean().optional(),
-  onclick: z.function().optional()
-}).passthrough() // Allow HTML button attributes
+ButtonPropsSchema = z
+  .object({
+    variant: z.enum(['primary', 'secondary', 'danger']).default('primary'),
+    size: z.enum(['small', 'medium', 'large']).default('medium'),
+    disabled: z.boolean().optional(),
+    onclick: z.function().optional(),
+  })
+  .passthrough(); // Allow HTML button attributes
 ```
 
 ### API Response Schemas
+
 ```typescript
-SupabaseErrorSchema = z.object({
-  message: z.string(),
-  status: z.number().optional(),
-  code: z.string().optional()
-}).strict()
+SupabaseErrorSchema = z
+  .object({
+    message: z.string(),
+    status: z.number().optional(),
+    code: z.string().optional(),
+  })
+  .strict();
 
 AuthResponseSchema = z.discriminatedUnion('error', [
   z.object({
     error: z.null(),
     data: z.object({
       user: UserSchema,
-      session: SessionSchema
-    })
+      session: SessionSchema,
+    }),
   }),
   z.object({
     error: SupabaseErrorSchema,
     data: z.object({
       user: z.null(),
-      session: z.null()
-    })
-  })
-])
+      session: z.null(),
+    }),
+  }),
+]);
 ```
 
 ## Constraints

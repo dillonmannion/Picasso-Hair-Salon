@@ -6,7 +6,7 @@ declare global {
       message: string;
       code?: string;
     }
-    
+
     interface Locals {
       supabase: import('@supabase/supabase-js').SupabaseClient;
       safeGetSession: () => Promise<{
@@ -16,14 +16,16 @@ declare global {
       session: import('@supabase/supabase-js').Session | null;
       user: import('@supabase/supabase-js').User | null;
     }
-    
+
     interface PageData {
       session: import('@supabase/supabase-js').Session | null;
       user: import('@supabase/supabase-js').User | null;
     }
-    
+
+    // eslint-disable-next-line @typescript-eslint/no-empty-object-type
     interface PageState {}
-    
+
+    // eslint-disable-next-line @typescript-eslint/no-empty-object-type
     interface Platform {}
   }
 }

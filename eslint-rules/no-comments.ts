@@ -1,32 +1,34 @@
-import type { Rule } from 'eslint';
-import { TSESTree } from '@typescript-eslint/types';
+import { ESLintUtils } from '@typescript-eslint/utils';
 
-export const noCommentsRule: Rule.RuleModule = {
+export const noCommentsRule = ESLintUtils.RuleCreator(
+  () => 'https://github.com/your-repo/eslint-rules/no-comments'
+)({
+  name: 'no-comments',
   meta: {
     type: 'problem',
     docs: {
       description: 'Disallow comments in code',
-      recommended: true
     },
     messages: {
-      avoidComments: 'Code should be self-documenting. Comments indicate unclear code.'
+      avoidComments: 'Code should be self-documenting. Comments indicate unclear code.',
     },
-    schema: []
+    schema: [],
   },
+  defaultOptions: [],
   create(context) {
-    const sourceCode = context.getSourceCode();
-    
+    const sourceCode = context.sourceCode ?? context.getSourceCode();
+
     return {
       Program() {
         const comments = sourceCode.getAllComments();
-        
-        comments.forEach(comment => {
+
+        comments.forEach((comment) => {
           context.report({
-            node: comment as unknown as TSESTree.Node,
-            messageId: 'avoidComments'
+            loc: comment.loc!,
+            messageId: 'avoidComments',
           });
         });
-      }
+      },
     };
-  }
-};
+  },
+});

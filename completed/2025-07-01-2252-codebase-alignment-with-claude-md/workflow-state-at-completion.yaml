@@ -14,11 +14,36 @@ checkpoints:
   implementation_complete: true
 current_context:
   question_index: 10
-  questions_answered: ['Q1: yes', 'Q2: yes', 'Q3: no (rewrite from scratch)', 'Q4: no', 'Q5: no (workflow is collaborative)', 'TQ1: yes', 'TQ2: yes (OAuth-only)', 'TQ3: yes', 'TQ4: yes', 'TQ5: no']
+  questions_answered:
+    [
+      'Q1: yes',
+      'Q2: yes',
+      'Q3: no (rewrite from scratch)',
+      'Q4: no',
+      'Q5: no (workflow is collaborative)',
+      'TQ1: yes',
+      'TQ2: yes (OAuth-only)',
+      'TQ3: yes',
+      'TQ4: yes',
+      'TQ5: no',
+    ]
   iteration_count: 1
   test_cycle: 3
   current_component: 'all-components-complete'
-  completed_files: ['src/lib/schemas/index.ts', 'src/lib/test-utils/factories.ts', 'eslint-rules/no-any-type.ts', 'eslint-rules/no-comments.ts', 'eslint-rules/no-type-assertions.ts', 'src/routes/auth/callback/server-schema.ts', 'src/lib/components/ButtonSchema.svelte', 'src/lib/components/ProfileManager.svelte', 'src/hooks/authGuard.ts', 'scripts/pre-commit.js', 'scripts/pre-commit-utils.js']
+  completed_files:
+    [
+      'src/lib/schemas/index.ts',
+      'src/lib/test-utils/factories.ts',
+      'eslint-rules/no-any-type.ts',
+      'eslint-rules/no-comments.ts',
+      'eslint-rules/no-type-assertions.ts',
+      'src/routes/auth/callback/server-schema.ts',
+      'src/lib/components/ButtonSchema.svelte',
+      'src/lib/components/ProfileManager.svelte',
+      'src/hooks/authGuard.ts',
+      'scripts/pre-commit.js',
+      'scripts/pre-commit-utils.js',
+    ]
   pending_files: []
 metadata:
   estimated_complexity: 'large'

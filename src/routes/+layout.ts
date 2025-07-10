@@ -6,23 +6,19 @@ import type { Database } from '$types/database.types';
 export const load: LayoutLoad = async ({ fetch, data, depends }) => {
   depends('supabase:auth');
 
-  const supabase = createBrowserClient<Database>(
-    PUBLIC_SUPABASE_URL,
-    PUBLIC_SUPABASE_ANON_KEY,
-    {
-      global: {
-        fetch
-      }
-    }
-  );
+  const supabase = createBrowserClient<Database>(PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY, {
+    global: {
+      fetch,
+    },
+  });
 
   const {
-    data: { session }
+    data: { session },
   } = await supabase.auth.getSession();
 
   return {
     supabase,
     session,
-    user: data.user
+    user: data.user,
   };
 };

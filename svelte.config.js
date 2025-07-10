@@ -11,47 +11,47 @@ const config = {
     adapter: adapter({
       // Enable edge functions for better performance
       runtime: 'edge',
-      
+
       // Configure regions for edge functions
       regions: ['iad1'],
-      
+
       // Split routes for optimal performance
-      split: true
+      split: true,
     }),
-    
+
     // Alias configuration for cleaner imports
     alias: {
       $components: 'src/lib/components',
       $lib: 'src/lib',
       $utils: 'src/lib/utils',
       $stores: 'src/lib/stores',
-      $types: 'src/types'
+      $types: 'src/types',
     },
-    
+
     // CSP configuration for security
     csp: {
       mode: 'auto',
       directives: {
         'script-src': ['self', 'unsafe-inline'],
-        'style-src': ['self', 'unsafe-inline']
-      }
+        'style-src': ['self', 'unsafe-inline'],
+      },
     },
-    
+
     // Environment variable prefix
     env: {
       publicPrefix: 'PUBLIC_',
-      privatePrefix: ''
-    }
+      privatePrefix: '',
+    },
   },
-  
+
   // Compiler options for Svelte 5
   compilerOptions: {
     // Enable runes mode
     runes: true,
-    
+
     // Development mode settings
-    dev: process.env.NODE_ENV !== 'production'
-  }
+    dev: process.env.NODE_ENV !== 'production',
+  },
 };
 
 export default config;

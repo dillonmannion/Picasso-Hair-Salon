@@ -1,9 +1,11 @@
 # Implementation Plan: Codebase Alignment with CLAUDE.md
+
 # Iteration: 1
 
 ## Schema-First Design
 
 ### Define Schemas (Implement First)
+
 Using Zod for runtime validation and TypeScript type derivation:
 
 ```typescript
@@ -12,53 +14,67 @@ import { z } from 'zod';
 
 // Base schemas with custom error messages
 export const UuidSchema = z.string().uuid({
-  message: 'Invalid UUID format'
+  message: 'Invalid UUID format',
 });
 
 export const DateTimeSchema = z.string().datetime({
-  message: 'Invalid datetime format'
+  message: 'Invalid datetime format',
 });
 
 // Profile schema with error messages
-export const ProfileSchema = z.object({
-  id: UuidSchema,
-  username: z.string().min(3, 'Username must be at least 3 characters').max(20, 'Username must be at most 20 characters').nullable(),
-  full_name: z.string().max(100, 'Full name must be at most 100 characters').nullable(),
-  avatar_url: z.string().url('Invalid avatar URL').nullable(),
-  created_at: DateTimeSchema,
-  updated_at: DateTimeSchema
-}).strict();
+export const ProfileSchema = z
+  .object({
+    id: UuidSchema,
+    username: z
+      .string()
+      .min(3, 'Username must be at least 3 characters')
+      .max(20, 'Username must be at most 20 characters')
+      .nullable(),
+    full_name: z.string().max(100, 'Full name must be at most 100 characters').nullable(),
+    avatar_url: z.string().url('Invalid avatar URL').nullable(),
+    created_at: DateTimeSchema,
+    updated_at: DateTimeSchema,
+  })
+  .strict();
 
 // OAuth schemas
-export const OAuthCallbackParamsSchema = z.object({
-  code: z.string().min(1, 'Authorization code is required'),
-  next: z.string().optional()
-}).strict();
+export const OAuthCallbackParamsSchema = z
+  .object({
+    code: z.string().min(1, 'Authorization code is required'),
+    next: z.string().optional(),
+  })
+  .strict();
 
-export const OAuthErrorParamsSchema = z.object({
-  error: z.string().min(1, 'Error type is required'),
-  error_code: z.string().optional(),
-  error_description: z.string().optional()
-}).strict();
+export const OAuthErrorParamsSchema = z
+  .object({
+    error: z.string().min(1, 'Error type is required'),
+    error_code: z.string().optional(),
+    error_description: z.string().optional(),
+  })
+  .strict();
 
 // Component prop schemas
 export const ButtonVariantSchema = z.enum(['primary', 'secondary', 'danger']);
 export const ButtonSizeSchema = z.enum(['small', 'medium', 'large']);
 
-export const ButtonPropsSchema = z.object({
-  variant: ButtonVariantSchema.default('primary'),
-  size: ButtonSizeSchema.default('medium'),
-  disabled: z.boolean().optional(),
-  onclick: z.function().optional(),
-  class: z.string().optional()
-}).passthrough(); // Allow HTML button attributes
+export const ButtonPropsSchema = z
+  .object({
+    variant: ButtonVariantSchema.default('primary'),
+    size: ButtonSizeSchema.default('medium'),
+    disabled: z.boolean().optional(),
+    onclick: z.function().optional(),
+    class: z.string().optional(),
+  })
+  .passthrough(); // Allow HTML button attributes
 
 // Supabase schemas
-export const SupabaseErrorSchema = z.object({
-  message: z.string(),
-  status: z.number().optional(),
-  code: z.string().optional()
-}).strict();
+export const SupabaseErrorSchema = z
+  .object({
+    message: z.string(),
+    status: z.number().optional(),
+    code: z.string().optional(),
+  })
+  .strict();
 
 // Derive types from schemas
 export type Profile = z.infer<typeof ProfileSchema>;
@@ -92,7 +108,7 @@ describe('Schema validation behavior', () => {
         full_name: 'John Doe',
         avatar_url: 'https://example.com/avatar.jpg',
         created_at: '2024-01-01T00:00:00Z',
-        updated_at: '2024-01-01T00:00:00Z'
+        updated_at: '2024-01-01T00:00:00Z',
       };
 
       const result = ProfileSchema.safeParse(validProfile);
@@ -110,7 +126,7 @@ describe('Schema validation behavior', () => {
         full_name: null,
         avatar_url: null,
         created_at: '2024-01-01T00:00:00Z',
-        updated_at: '2024-01-01T00:00:00Z'
+        updated_at: '2024-01-01T00:00:00Z',
       };
 
       const result = ProfileSchema.safeParse(invalidProfile);
@@ -126,7 +142,7 @@ describe('Schema validation behavior', () => {
     it('should accept valid callback params', () => {
       const validParams = {
         code: 'auth_code_123',
-        next: '/dashboard'
+        next: '/dashboard',
       };
 
       const result = OAuthCallbackParamsSchema.safeParse(validParams);
@@ -136,7 +152,7 @@ describe('Schema validation behavior', () => {
 
     it('should reject missing code', () => {
       const invalidParams = {
-        next: '/dashboard'
+        next: '/dashboard',
       };
 
       const result = OAuthCallbackParamsSchema.safeParse(invalidParams);
@@ -168,20 +184,24 @@ describe('Schema validation behavior', () => {
 
 ```typescript
 import { describe, it, expect } from 'vitest';
-import { createMockProfile, createMockOAuthCallback, createMockButtonProps } from '$lib/test-utils/factories';
+import {
+  createMockProfile,
+  createMockOAuthCallback,
+  createMockButtonProps,
+} from '$lib/test-utils/factories';
 import { ProfileSchema, OAuthCallbackParamsSchema, ButtonPropsSchema } from '$lib/schemas';
 
 describe('Test data factory behavior', () => {
   it('should create valid profile with defaults', () => {
     const profile = createMockProfile();
-    
+
     const result = ProfileSchema.safeParse(profile);
     expect(result.success).toBe(true);
   });
 
   it('should allow profile overrides', () => {
     const profile = createMockProfile({ username: 'custom_user' });
-    
+
     expect(profile.username).toBe('custom_user');
     const result = ProfileSchema.safeParse(profile);
     expect(result.success).toBe(true);
@@ -189,7 +209,7 @@ describe('Test data factory behavior', () => {
 
   it('should create valid OAuth callback params', () => {
     const params = createMockOAuthCallback();
-    
+
     const result = OAuthCallbackParamsSchema.safeParse(params);
     expect(result.success).toBe(true);
   });
@@ -221,8 +241,8 @@ const ruleTester = new RuleTester({
   parser: '@typescript-eslint/parser',
   parserOptions: {
     ecmaVersion: 2020,
-    sourceType: 'module'
-  }
+    sourceType: 'module',
+  },
 });
 
 describe('no-any-type rule', () => {
@@ -230,28 +250,30 @@ describe('no-any-type rule', () => {
     valid: [
       'let x: string = "hello"',
       'let y: unknown = getData()',
-      'function process<T>(data: T): T { return data; }'
+      'function process<T>(data: T): T { return data; }',
     ],
     invalid: [
       {
         code: 'let x: any = "hello"',
-        errors: [{ message: 'Use of "any" type is forbidden. Use "unknown" or a specific type instead.' }]
+        errors: [
+          { message: 'Use of "any" type is forbidden. Use "unknown" or a specific type instead.' },
+        ],
       },
       {
         code: 'function process(data: any): any { return data; }',
         errors: [
           { message: 'Use of "any" type is forbidden. Use "unknown" or a specific type instead.' },
-          { message: 'Use of "any" type is forbidden. Use "unknown" or a specific type instead.' }
-        ]
-      }
-    ]
+          { message: 'Use of "any" type is forbidden. Use "unknown" or a specific type instead.' },
+        ],
+      },
+    ],
   });
 });
 ```
 
 #### Step 3.2: Implement Custom Rules
 
-- **Files:** 
+- **Files:**
   - `eslint-rules/no-any-type.ts`
   - `eslint-rules/no-comments.ts`
   - `eslint-rules/no-type-assertions.ts`
@@ -278,10 +300,10 @@ describe('OAuth callback behavior', () => {
         auth: {
           exchangeCodeForSession: vi.fn().mockResolvedValue({
             data: { session: { access_token: 'token' } },
-            error: null
-          })
-        }
-      }
+            error: null,
+          }),
+        },
+      },
     };
 
     const response = await GET({ request: mockRequest, locals: mockLocals });
@@ -292,7 +314,7 @@ describe('OAuth callback behavior', () => {
 
   it('should handle missing code parameter', async () => {
     const mockRequest = new Request('http://localhost/auth/callback');
-    
+
     const response = await GET({ request: mockRequest, locals: {} });
 
     expect(response.status).toBe(303);
@@ -319,7 +341,7 @@ import { createMockButtonProps } from '$lib/test-utils/factories';
 describe('Button component behavior', () => {
   it('should render with default props', () => {
     render(Button);
-    
+
     const button = screen.getByRole('button');
     expect(button).toHaveClass('btn-primary', 'btn-medium');
   });
@@ -327,11 +349,11 @@ describe('Button component behavior', () => {
   it('should apply variant and size classes', () => {
     const props = createMockButtonProps({
       variant: 'danger',
-      size: 'large'
+      size: 'large',
     });
-    
+
     render(Button, props);
-    
+
     const button = screen.getByRole('button');
     expect(button).toHaveClass('btn-danger', 'btn-large');
   });
@@ -339,12 +361,12 @@ describe('Button component behavior', () => {
   it('should handle click events', async () => {
     const onclick = vi.fn();
     const props = createMockButtonProps({ onclick });
-    
+
     const { component } = render(Button, props);
     const button = screen.getByRole('button');
-    
+
     await button.click();
-    
+
     expect(onclick).toHaveBeenCalledOnce();
   });
 });

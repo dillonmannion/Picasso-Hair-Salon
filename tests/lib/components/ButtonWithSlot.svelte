@@ -1,10 +1,15 @@
 <script lang="ts">
   import Button from '$lib/components/ButtonSchema.svelte';
   import type { ButtonProps } from '$lib/schemas';
-  
+
   let { buttonProps = {} }: { buttonProps?: Partial<ButtonProps> } = $props();
+  
+  // Ensure required props have values
+  const mergedProps: ButtonProps = {
+    variant: 'primary',
+    size: 'medium',
+    ...buttonProps
+  };
 </script>
 
-<Button {...buttonProps}>
-  Click me!
-</Button>
+<Button {...mergedProps}>Click me!</Button>

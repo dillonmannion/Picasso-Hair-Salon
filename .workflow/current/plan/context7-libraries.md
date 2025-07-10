@@ -1,104 +1,95 @@
-# Context7 Library Documentation Cache
+# Context7 Library References for Phase 1 Implementation
 
-## Updated: Using @supabase/ssr (Current Recommended Approach)
+This document contains the cached library documentation fetched from Context7 for Phase 1 implementation.
 
-The `@supabase/auth-helpers-sveltekit` package is deprecated. Use `@supabase/ssr` instead.
+## Libraries Documented
 
-## @supabase/ssr - Server & Browser Client Setup
+1. **SvelteKit** - `/sveltejs/kit`
+   - CSP configuration through hooks
+   - Edge function deployment
+   - Authentication patterns
+   - Server hooks for request/response manipulation
 
-### Installation:
-```bash
-npm install @supabase/supabase-js @supabase/ssr
+2. **Supabase SSR** - `/supabase/ssr`
+   - Cookie-based client configuration
+   - Server-side authentication patterns
+   - Session management in SvelteKit
+
+3. **Zod** - `/colinhacks/zod`
+   - Environment variable validation
+   - Request/response validation patterns
+   - Schema-first development with type inference
+   - Runtime validation at API boundaries
+
+4. **Vitest** - `/vitest-dev/vitest`
+   - SvelteKit-specific configuration
+   - Testing hooks and authentication flows
+   - Mocking strategies for Supabase
+
+## Quick Reference
+
+### CSP Configuration (SvelteKit)
+
+```javascript
+// src/hooks.server.js
+export async function handle({ event, resolve }) {
+  const response = await resolve(event);
+  response.headers.set(
+    'Content-Security-Policy',
+    "default-src 'self'; script-src 'self' 'nonce-{CSP_NONCE}';"
+  );
+  return response;
+}
 ```
 
-### Key Patterns:
+### Supabase Server Client (Supabase SSR)
 
-1. **Server Client Creation**:
-   ```typescript
-   import { createServerClient } from '@supabase/ssr'
-   
-   const supabase = createServerClient(url, key, {
-     cookies: {
-       getAll: () => event.cookies.getAll(),
-       setAll: (cookiesToSet) => {
-         cookiesToSet.forEach(({ name, value, options }) => {
-           event.cookies.set(name, value, { ...options, path: '/' })
-         })
-       }
-     }
-   })
-   ```
+```typescript
+import { createServerClient } from '@supabase/ssr';
 
-2. **Browser Client Creation**:
-   ```typescript
-   import { createBrowserClient } from '@supabase/ssr'
-   
-   const supabase = createBrowserClient(url, key, {
-     global: { fetch },
-   })
-   ```
+export function createSupabaseServerClient(cookies) {
+  return createServerClient(supabaseUrl, supabaseAnonKey, {
+    cookies: {
+      getAll() {
+        return cookies.getAll();
+      },
+      setAll(cookiesToSet) {
+        cookiesToSet.forEach(({ name, value, options }) => {
+          cookies.set(name, value, options);
+        });
+      },
+    },
+  });
+}
+```
 
-3. **Safe Session Helper**:
-   ```typescript
-   const safeGetSession = async () => {
-     const { data: { session } } = await supabase.auth.getSession()
-     if (!session) return { session: null, user: null }
-     
-     const { data: { user }, error } = await supabase.auth.getUser()
-     if (error) return { session: null, user: null }
-     
-     return { session, user }
-   }
-   ```
+### Environment Validation (Zod)
 
-## Supabase Auth & SvelteKit Integration (Legacy Patterns)
+```typescript
+const EnvSchema = z.object({
+  PUBLIC_SUPABASE_URL: z.string().url(),
+  PUBLIC_SUPABASE_ANON_KEY: z.string().min(1),
+  NODE_ENV: z.enum(['development', 'production', 'test']),
+});
 
-### Key Patterns:
+export const env = EnvSchema.parse(process.env);
+```
 
-1. **OAuth with Google**: 
-   - Use `supabase.auth.signInWithOAuth({ provider: 'google' })`
-   - Server-side redirect: `throw redirect(303, data.url)`
+### Testing Setup (Vitest)
 
-2. **Session Management**:
-   - Use `safeGetSession()` helper for secure JWT validation
-   - Implement auth state listener with `onAuthStateChange`
+```typescript
+// vitest.config.ts
+export default defineConfig({
+  plugins: [sveltekit()],
+  test: {
+    include: ['tests/**/*.{test,spec}.{js,ts}'],
+    environment: 'jsdom',
+    globals: true,
+    setupFiles: ['./tests/setup.ts'],
+  },
+});
+```
 
-3. **Route Protection**:
-   - Server hooks: `src/hooks.server.ts` with `sequence(supabase, authorization)`
-   - Protected pages: Check session in `+page.server.ts` load functions
-   - Protected API routes: Check session in `+server.ts` handlers
+## Full Documentation
 
-4. **Role-Based Access**:
-   - Custom claims for roles ('customer', 'staff', 'owner')
-   - SQL schema with `user_roles` and `role_permissions` tables
-
-## Zod Validation
-
-### Key Patterns:
-
-1. **Schema Definition**:
-   ```typescript
-   const UserSchema = z.object({
-     email: z.string().email(),
-     role: z.enum(['customer', 'staff', 'owner'])
-   });
-   ```
-
-2. **Input Validation**:
-   - Use `.parse()` for synchronous validation
-   - Use `.safeParse()` for error handling without try/catch
-
-3. **Form Validation**:
-   - Validate request bodies and form data
-   - Create schemas for all user inputs
-
-## SvelteKit Security
-
-### Built-in Features:
-- CSRF protection (automatic)
-- Secure headers via hooks
-- Server-side validation in load functions
-
-### Rate Limiting:
-- Implement in hooks.server.ts
-- Use middleware pattern for API endpoints
+See `/home/fourclovr/projects/Picasso-Hair-Salon/CONTEXT7_LIBRARY_SUMMARY.md` for comprehensive examples and patterns.

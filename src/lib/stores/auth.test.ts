@@ -18,7 +18,7 @@ describe('Auth Store', () => {
       email: 'user@gmail.com',
       app_metadata: {
         provider: 'google',
-        providers: ['google']
+        providers: ['google'],
       },
       user_metadata: {
         avatar_url: 'https://lh3.googleusercontent.com/...',
@@ -29,9 +29,9 @@ describe('Auth Store', () => {
         name: 'Test User',
         picture: 'https://lh3.googleusercontent.com/...',
         provider_id: '1234567890',
-        sub: '1234567890'
+        sub: '1234567890',
       },
-      created_at: new Date().toISOString()
+      created_at: new Date().toISOString(),
     };
 
     setUser(oauthUser as User);
@@ -43,13 +43,13 @@ describe('Auth Store', () => {
       id: 'oauth-no-email-123',
       app_metadata: {
         provider: 'google',
-        providers: ['google']
+        providers: ['google'],
       },
       user_metadata: {
         name: 'Test User',
-        provider_id: '1234567890'
+        provider_id: '1234567890',
       },
-      created_at: new Date().toISOString()
+      created_at: new Date().toISOString(),
     };
 
     setUser(oauthUser as User);
@@ -63,13 +63,13 @@ describe('Auth Store', () => {
       id: 'google-oauth-123',
       email: 'user@gmail.com',
       app_metadata: {
-        provider: 'google'
-      }
+        provider: 'google',
+      },
     };
 
     setUser(oauthUser as User);
     expect(get(currentUser)).toEqual(oauthUser);
-    
+
     clearUser();
     expect(get(currentUser)).toBeNull();
   });
@@ -79,8 +79,8 @@ describe('Auth Store', () => {
       id: 'google-oauth-123',
       email: 'user@gmail.com',
       user_metadata: {
-        name: 'Initial Name'
-      }
+        name: 'Initial Name',
+      },
     };
 
     const updatedUser: Partial<User> = {
@@ -88,8 +88,8 @@ describe('Auth Store', () => {
       email: 'user@gmail.com',
       user_metadata: {
         name: 'Updated Name',
-        avatar_url: 'https://new-avatar.com/image.jpg'
-      }
+        avatar_url: 'https://new-avatar.com/image.jpg',
+      },
     };
 
     setUser(initialUser as User);

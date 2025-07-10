@@ -11,13 +11,13 @@ export const createSupabaseServerClient = (event: RequestEvent): SupabaseClient 
         cookiesToSet.forEach(({ name, value, options }) => {
           event.cookies.set(name, value, { ...options, path: '/' });
         });
-      }
-    }
+      },
+    },
   });
 };
 
 export const createSupabaseBrowserClient = (fetch?: typeof window.fetch): SupabaseClient => {
   const options = fetch ? { global: { fetch } } : {};
-  
+
   return createBrowserClient(PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY, options);
 };

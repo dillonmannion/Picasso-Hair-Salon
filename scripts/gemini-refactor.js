@@ -20,9 +20,7 @@ function parseArgs() {
 
   // Validate required args
   if (!args.file || !args.suggestions) {
-    console.error(
-      'Usage: gemini-refactor.js --file=<file> --suggestions=<review-output>'
-    );
+    console.error('Usage: gemini-refactor.js --file=<file> --suggestions=<review-output>');
     process.exit(1);
   }
 
@@ -89,7 +87,7 @@ Return ONLY the refactored code, no explanations or comments. The code should be
 
       // Extract code from response (remove any markdown code blocks if present)
       let refactoredCode = stdout;
-      
+
       // Remove markdown code blocks if present
       refactoredCode = refactoredCode.replace(/```typescript\n/g, '');
       refactoredCode = refactoredCode.replace(/```\n/g, '');
@@ -119,7 +117,7 @@ async function mockRefactor(args, codeContent) {
   if (magicNumbers) {
     const uniqueNumbers = [...new Set(magicNumbers)];
     let constants = '';
-    
+
     uniqueNumbers.forEach((num) => {
       if (num.length === 4 && num.startsWith('20')) {
         // Likely a year

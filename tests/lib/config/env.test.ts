@@ -1,5 +1,4 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import type { z } from 'zod';
 
 describe('Environment Variable Validation', () => {
   let originalEnv: NodeJS.ProcessEnv;
@@ -8,7 +7,7 @@ describe('Environment Variable Validation', () => {
     // Save original environment
     originalEnv = { ...process.env };
     // Clear all env vars for clean slate
-    Object.keys(process.env).forEach(key => {
+    Object.keys(process.env).forEach((key) => {
       delete process.env[key];
     });
   });
@@ -39,7 +38,7 @@ describe('Environment Variable Validation', () => {
         PUBLIC_SUPABASE_ANON_KEY: 'test-anon-key-1234567890',
         SUPABASE_SERVICE_KEY: 'test-service-key-1234567890',
         DATABASE_URL: 'postgresql://test:test@localhost:5432/test',
-        NODE_ENV: 'test'
+        NODE_ENV: 'test',
       });
     });
 
@@ -154,7 +153,7 @@ describe('Environment Variable Validation', () => {
         PUBLIC_SUPABASE_ANON_KEY: 'test-anon-key-1234567890',
         SUPABASE_SERVICE_KEY: 'test-service-key-1234567890',
         DATABASE_URL: 'postgresql://test:test@localhost:5432/test',
-        NODE_ENV: 'test'
+        NODE_ENV: 'test',
       });
     });
 
@@ -182,7 +181,7 @@ describe('Environment Variable Validation', () => {
       // Assert
       expect(parsed).toMatchObject({
         PUBLIC_SUPABASE_URL: 'https://test.supabase.co',
-        NODE_ENV: 'test'
+        NODE_ENV: 'test',
       });
     });
   });

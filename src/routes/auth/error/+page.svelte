@@ -1,7 +1,5 @@
 <script lang="ts">
-  import type { PageData } from './$types';
-  
-  let { data } = $props<{ data: PageData }>();
+  // Page doesn't need any props
 </script>
 
 <div class="error-container">
@@ -17,12 +15,12 @@
     padding: 2rem;
     text-align: center;
   }
-  
+
   a {
     color: #007bff;
     text-decoration: none;
   }
-  
+
   a:hover {
     text-decoration: underline;
   }

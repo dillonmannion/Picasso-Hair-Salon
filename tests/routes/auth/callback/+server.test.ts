@@ -1,20 +1,25 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { GET } from '../../../../src/routes/auth/callback/+server';
 import { redirect } from '@sveltejs/kit';
+import type { SupabaseClient } from '@supabase/supabase-js';
 
 // Mock @sveltejs/kit
 vi.mock('@sveltejs/kit', () => ({
   redirect: vi.fn((status, location) => {
     throw { status, location };
-  })
+  }),
 }));
 
 // Mock Supabase client
+const mockExchangeCodeForSession = vi.fn();
 const mockSupabase = {
   auth: {
-    exchangeCodeForSession: vi.fn()
-  }
-};
+    exchangeCodeForSession: mockExchangeCodeForSession,
+  },
+} as unknown as SupabaseClient;
+
+// Type for mock request event - use the parameter type of GET
+type MockRequestEvent = Parameters<typeof GET>[0];
 
 describe('OAuth Callback Handler', () => {
   beforeEach(() => {
@@ -26,30 +31,30 @@ describe('OAuth Callback Handler', () => {
     const mockSession = {
       user: { id: 'user-123', email: 'test@example.com' },
       access_token: 'token-123',
-      refresh_token: 'refresh-123'
+      refresh_token: 'refresh-123',
     };
 
-    mockSupabase.auth.exchangeCodeForSession.mockResolvedValueOnce({
-      data: { 
+    mockExchangeCodeForSession.mockResolvedValueOnce({
+      data: {
         session: mockSession,
-        user: mockSession.user 
+        user: mockSession.user,
       },
-      error: null
+      error: null,
     });
 
     const mockEvent = {
       url: new URL(`http://localhost:5173/auth/callback?code=${mockCode}`),
       locals: {
-        supabase: mockSupabase
-      }
+        supabase: mockSupabase,
+      },
     };
 
-    await expect(GET(mockEvent as any)).rejects.toEqual({
+    await expect(GET(mockEvent as unknown as MockRequestEvent)).rejects.toEqual({
       status: 303,
-      location: '/'
+      location: '/',
     });
 
-    expect(mockSupabase.auth.exchangeCodeForSession).toHaveBeenCalledWith(mockCode);
+    expect(mockExchangeCodeForSession).toHaveBeenCalledWith(mockCode);
     expect(redirect).toHaveBeenCalledWith(303, '/');
   });
 
@@ -59,30 +64,32 @@ describe('OAuth Callback Handler', () => {
     const mockSession = {
       user: { id: 'user-123', email: 'test@example.com' },
       access_token: 'token-123',
-      refresh_token: 'refresh-123'
+      refresh_token: 'refresh-123',
     };
 
-    mockSupabase.auth.exchangeCodeForSession.mockResolvedValueOnce({
-      data: { 
+    mockExchangeCodeForSession.mockResolvedValueOnce({
+      data: {
         session: mockSession,
-        user: mockSession.user 
+        user: mockSession.user,
       },
-      error: null
+      error: null,
     });
 
     const mockEvent = {
-      url: new URL(`http://localhost:5173/auth/callback?code=${mockCode}&next=${encodeURIComponent(nextPath)}`),
+      url: new URL(
+        `http://localhost:5173/auth/callback?code=${mockCode}&next=${encodeURIComponent(nextPath)}`
+      ),
       locals: {
-        supabase: mockSupabase
-      }
+        supabase: mockSupabase,
+      },
     };
 
-    await expect(GET(mockEvent as any)).rejects.toEqual({
+    await expect(GET(mockEvent as unknown as MockRequestEvent)).rejects.toEqual({
       status: 303,
-      location: nextPath
+      location: nextPath,
     });
 
-    expect(mockSupabase.auth.exchangeCodeForSession).toHaveBeenCalledWith(mockCode);
+    expect(mockExchangeCodeForSession).toHaveBeenCalledWith(mockCode);
     expect(redirect).toHaveBeenCalledWith(303, nextPath);
   });
 
@@ -90,55 +97,57 @@ describe('OAuth Callback Handler', () => {
     const mockEvent = {
       url: new URL('http://localhost:5173/auth/callback'),
       locals: {
-        supabase: mockSupabase
-      }
+        supabase: mockSupabase,
+      },
     };
 
-    await expect(GET(mockEvent as any)).rejects.toEqual({
+    await expect(GET(mockEvent as unknown as MockRequestEvent)).rejects.toEqual({
       status: 303,
-      location: '/auth/login?error=no_code'
+      location: '/auth/login?error=no_code',
     });
 
-    expect(mockSupabase.auth.exchangeCodeForSession).not.toHaveBeenCalled();
+    expect(mockExchangeCodeForSession).not.toHaveBeenCalled();
   });
 
   it('should redirect to login with error when exchange fails', async () => {
     const mockCode = 'test-auth-code';
-    
-    mockSupabase.auth.exchangeCodeForSession.mockResolvedValueOnce({
+
+    mockExchangeCodeForSession.mockResolvedValueOnce({
       data: { session: null },
-      error: new Error('Invalid authorization code')
+      error: new Error('Invalid authorization code'),
     });
 
     const mockEvent = {
       url: new URL(`http://localhost:5173/auth/callback?code=${mockCode}`),
       locals: {
-        supabase: mockSupabase
-      }
+        supabase: mockSupabase,
+      },
     };
 
-    await expect(GET(mockEvent as any)).rejects.toEqual({
+    await expect(GET(mockEvent as unknown as MockRequestEvent)).rejects.toEqual({
       status: 303,
-      location: '/auth/login?error=auth_failed'
+      location: '/auth/login?error=auth_failed',
     });
 
-    expect(mockSupabase.auth.exchangeCodeForSession).toHaveBeenCalledWith(mockCode);
+    expect(mockExchangeCodeForSession).toHaveBeenCalledWith(mockCode);
   });
 
   it('should handle OAuth errors from provider', async () => {
     const mockEvent = {
-      url: new URL('http://localhost:5173/auth/callback?error=access_denied&error_description=User+denied+access'),
+      url: new URL(
+        'http://localhost:5173/auth/callback?error=access_denied&error_description=User+denied+access'
+      ),
       locals: {
-        supabase: mockSupabase
-      }
+        supabase: mockSupabase,
+      },
     };
 
-    await expect(GET(mockEvent as any)).rejects.toEqual({
+    await expect(GET(mockEvent as unknown as MockRequestEvent)).rejects.toEqual({
       status: 303,
-      location: '/auth/login?error=access_denied'
+      location: '/auth/login?error=access_denied',
     });
 
-    expect(mockSupabase.auth.exchangeCodeForSession).not.toHaveBeenCalled();
+    expect(mockExchangeCodeForSession).not.toHaveBeenCalled();
   });
 
   it('should validate and sanitize next parameter to prevent open redirects', async () => {
@@ -147,27 +156,29 @@ describe('OAuth Callback Handler', () => {
     const mockSession = {
       user: { id: 'user-123', email: 'test@example.com' },
       access_token: 'token-123',
-      refresh_token: 'refresh-123'
+      refresh_token: 'refresh-123',
     };
 
-    mockSupabase.auth.exchangeCodeForSession.mockResolvedValueOnce({
-      data: { 
+    mockExchangeCodeForSession.mockResolvedValueOnce({
+      data: {
         session: mockSession,
-        user: mockSession.user 
+        user: mockSession.user,
       },
-      error: null
+      error: null,
     });
 
     const mockEvent = {
-      url: new URL(`http://localhost:5173/auth/callback?code=${mockCode}&next=${encodeURIComponent(maliciousNext)}`),
+      url: new URL(
+        `http://localhost:5173/auth/callback?code=${mockCode}&next=${encodeURIComponent(maliciousNext)}`
+      ),
       locals: {
-        supabase: mockSupabase
-      }
+        supabase: mockSupabase,
+      },
     };
 
-    await expect(GET(mockEvent as any)).rejects.toEqual({
+    await expect(GET(mockEvent as unknown as MockRequestEvent)).rejects.toEqual({
       status: 303,
-      location: '/' // Should redirect to home instead of malicious URL
+      location: '/', // Should redirect to home instead of malicious URL
     });
   });
 });

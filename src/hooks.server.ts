@@ -21,10 +21,10 @@ const supabase: Handle = async ({ event, resolve }) => {
        */
       setAll: (cookiesToSet) => {
         cookiesToSet.forEach(({ name, value, options }) => {
-          event.cookies.set(name, value, { ...options, path: '/' })
-        })
-      }
-    }
+          event.cookies.set(name, value, { ...options, path: '/' });
+        });
+      },
+    },
   });
 
   /**
@@ -34,7 +34,7 @@ const supabase: Handle = async ({ event, resolve }) => {
    */
   event.locals.safeGetSession = async () => {
     const {
-      data: { session }
+      data: { session },
     } = await event.locals.supabase.auth.getSession();
     if (!session) {
       return { session: null, user: null };
@@ -42,7 +42,7 @@ const supabase: Handle = async ({ event, resolve }) => {
 
     const {
       data: { user },
-      error
+      error,
     } = await event.locals.supabase.auth.getUser();
     if (error) {
       // JWT validation has failed
@@ -59,7 +59,7 @@ const supabase: Handle = async ({ event, resolve }) => {
        * headers, so we need to tell SvelteKit to pass it through.
        */
       return name === 'content-range' || name === 'x-supabase-api-version';
-    }
+    },
   });
 };
 

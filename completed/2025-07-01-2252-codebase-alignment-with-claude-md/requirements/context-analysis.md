@@ -76,6 +76,7 @@
 Based on the codebase analysis, here are the schemas we need to create:
 
 ### 1. User/Profile Schemas
+
 ```typescript
 // Current database types that need Zod schemas:
 - Profile (id, username, full_name, avatar_url, created_at, updated_at)
@@ -83,42 +84,46 @@ Based on the codebase analysis, here are the schemas we need to create:
 ```
 
 ### 2. Authentication Schemas
+
 ```typescript
 // OAuth callback validation
-- OAuthCallbackParams (code, next)
-- OAuthErrorParams (error, error_code, error_description)
+-OAuthCallbackParams(code, next) - OAuthErrorParams(error, error_code, error_description);
 ```
 
 ### 3. Component Prop Schemas
+
 ```typescript
 // Button component props
-- ButtonProps (variant, size, HTMLButtonAttributes)
+-ButtonProps(variant, size, HTMLButtonAttributes);
 ```
 
 ### 4. API Response Schemas
+
 ```typescript
 // Supabase responses
-- AuthResponse
-- ProfileResponse
-- ErrorResponse
+-AuthResponse - ProfileResponse - ErrorResponse;
 ```
 
 ## TDD Implementation Strategy
 
 ### Phase 1: Foundation Setup
+
 1. **Install Zod and update dependencies**
 2. **Create base schema definitions**
 3. **Set up test factories using schemas**
 4. **Configure linting rules for CLAUDE.md compliance**
 
 ### Phase 2: Test Infrastructure
+
 1. **Remove existing test files (as per Q3 answer)**
 2. **Create behavior-driven test structure**
 3. **Implement test data factories with Zod schemas**
 4. **Set up coverage configuration for 100% behavior coverage**
 
 ### Phase 3: Feature Migration
+
 Following strict TDD for each feature:
+
 1. **Authentication Flow**
    - Write behavior tests for login/logout
    - Implement with minimal code
@@ -135,6 +140,7 @@ Following strict TDD for each feature:
    - Refactor for reusability
 
 ### Phase 4: Automation & Enforcement
+
 1. **ESLint Rules**
    - No `any` types
    - No type assertions
@@ -154,6 +160,7 @@ Following strict TDD for each feature:
 ## Migration Risks and Mitigations
 
 ### Risks
+
 1. **Breaking existing functionality during refactor**
    - Mitigation: Incremental migration with feature flags
 
@@ -164,6 +171,7 @@ Following strict TDD for each feature:
    - Mitigation: Profile and optimize hot paths
 
 ### Benefits
+
 1. **Type safety at runtime with Zod**
 2. **Confidence from 100% behavior coverage**
 3. **Maintainable, self-documenting code**

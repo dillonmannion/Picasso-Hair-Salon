@@ -63,11 +63,11 @@ CONSENSUS_SCORE: X
 [Your feedback]`;
 
     console.log('⏳ Calling Gemini CLI...');
-    
+
     return new Promise((resolve, _reject) => {
       const gemini = spawn('gemini', ['-p', prompt], {
         stdio: ['pipe', 'pipe', 'pipe'],
-        timeout: 60000 // 60 second timeout
+        timeout: 60000, // 60 second timeout
       });
 
       let output = '';
@@ -85,18 +85,19 @@ CONSENSUS_SCORE: X
         if (code !== 0) {
           console.error('❌ Gemini CLI error, exit code:', code);
           if (errorOutput) console.error('Stderr:', errorOutput);
-          
+
           // Fall back to mock
           console.log('⚠️  Falling back to mock mode...');
           await mockReview(args);
           resolve();
         } else {
           // Save response
-          const outputPath = args.output || `.workflow/current/plan/gemini-review-${args.iteration}.md`;
-          
+          const outputPath =
+            args.output || `.workflow/current/plan/gemini-review-${args.iteration}.md`;
+
           await fs.writeFile(outputPath, output);
           console.log(`✅ Review saved to: ${outputPath}`);
-          
+
           // Extract consensus score
           const scoreMatch = output.match(/CONSENSUS_SCORE:\s*(\d+)/);
           if (scoreMatch) {
@@ -120,7 +121,6 @@ CONSENSUS_SCORE: X
       // Send EOF to stdin to indicate we're done
       gemini.stdin.end();
     });
-
   } catch (error) {
     console.error('❌ Error:', error.message);
     process.exit(99);
@@ -144,11 +144,11 @@ ${args.iteration === 1 ? 'Plan needs more focus on behavior testing.' : 'Plan lo
 
   const outputPath = args.output || `.workflow/current/plan/gemini-review-${args.iteration}.md`;
   await fs.writeFile(outputPath, mockResponse);
-  
+
   const score = args.iteration >= 3 ? 9 : 7;
   console.log(`✅ Mock review saved to: ${outputPath}`);
   console.log(`📊 Consensus Score: ${score}/10`);
-  
+
   process.exit(10 - score);
 }
 

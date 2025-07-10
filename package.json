@@ -30,7 +30,7 @@
     "db:types": "supabase gen types typescript --local > src/types/database.types.ts",
     "lint": "eslint .",
     "format": "prettier --write .",
-    "prepare": "svelte-kit sync && husky install",
+    "prepare": "husky",
     "preinstall": "npx only-allow pnpm"
   },
   "devDependencies": {
@@ -60,6 +60,7 @@
     "svelte": "^5.34.9",
     "svelte-check": "^4.2.2",
     "typescript": "^5.8.3",
+    "typescript-eslint": "^8.36.0",
     "vite": "^7.0.0",
     "vitest": "^3.2.4"
   },

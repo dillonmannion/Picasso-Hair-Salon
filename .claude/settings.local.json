@@ -86,7 +86,11 @@
       "Bash(pnpm test:unit tests/eslint-rules/no-any-type.test.ts)",
       "Bash(npx vitest run:*)",
       "Bash(HUSKY=0 git commit -m \"feat(pre-commit-hooks): implement pre-commit hooks via TDD engine\n\n- Comprehensive pre-commit checks: linting, type checking, and tests\n- Runs checks in parallel for better performance  \n- Enforces custom ESLint rules (no-any, no-comments, no-type-assertions)\n- Only checks staged code files, skips non-code files\n- Integrated with husky for automatic git hook installation\")",
-      "Bash(HUSKY=0 git commit -m \"fix: resolve linting and type errors\n\n- Fix type-only imports in ESLint rules\n- Remove unused imports in scripts\n- Fix unused parameter warnings  \n- Temporarily ignore Svelte component linting (parser issue with Svelte 5)\")"
+      "Bash(HUSKY=0 git commit -m \"fix: resolve linting and type errors\n\n- Fix type-only imports in ESLint rules\n- Remove unused imports in scripts\n- Fix unused parameter warnings  \n- Temporarily ignore Svelte component linting (parser issue with Svelte 5)\")",
+      "Bash(NODE_ENV=test pnpm vitest run tests/lib/config/env.test.ts -t \"should throw clear error when PUBLIC_SUPABASE_URL is missing\" --reporter=tap 2 >& 1)",
+      "Bash(NODE_ENV=test pnpm vitest run tests/lib/config/env.test.ts 2 >& 1)",
+      "Bash(NODE_OPTIONS=\"--no-deprecation\" pnpm vitest run tests/lib/config/env.test.ts -t \"should throw clear error when PUBLIC_SUPABASE_URL is missing\" 2>&1)",
+      "mcp__ide__getDiagnostics"
     ],
     "deny": []
   }

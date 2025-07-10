@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { ProfileSchema, OAuthCallbackParamsSchema, ButtonPropsSchema } from '$lib/schemas';
+import { ProfileSchema, OAuthCallbackParamsSchema } from '$lib/schemas';
 
 describe('Schema validation behavior', () => {
   describe('Profile validation', () => {
@@ -10,7 +10,7 @@ describe('Schema validation behavior', () => {
         full_name: 'John Doe',
         avatar_url: 'https://example.com/avatar.jpg',
         created_at: '2024-01-01T00:00:00Z',
-        updated_at: '2024-01-01T00:00:00Z'
+        updated_at: '2024-01-01T00:00:00Z',
       };
 
       const result = ProfileSchema.safeParse(validProfile);
@@ -28,7 +28,7 @@ describe('Schema validation behavior', () => {
         full_name: null,
         avatar_url: null,
         created_at: '2024-01-01T00:00:00Z',
-        updated_at: '2024-01-01T00:00:00Z'
+        updated_at: '2024-01-01T00:00:00Z',
       };
 
       const result = ProfileSchema.safeParse(invalidProfile);
@@ -44,7 +44,7 @@ describe('Schema validation behavior', () => {
     it('should accept valid callback params', () => {
       const validParams = {
         code: 'auth_code_123',
-        next: '/dashboard'
+        next: '/dashboard',
       };
 
       const result = OAuthCallbackParamsSchema.safeParse(validParams);
@@ -54,7 +54,7 @@ describe('Schema validation behavior', () => {
 
     it('should reject missing code', () => {
       const invalidParams = {
-        next: '/dashboard'
+        next: '/dashboard',
       };
 
       const result = OAuthCallbackParamsSchema.safeParse(invalidParams);

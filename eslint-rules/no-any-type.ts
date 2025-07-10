@@ -1,26 +1,28 @@
-import type { Rule } from 'eslint';
-import { TSESTree } from '@typescript-eslint/types';
+import { ESLintUtils } from '@typescript-eslint/utils';
 
-export const noAnyTypeRule: Rule.RuleModule = {
+export const noAnyTypeRule = ESLintUtils.RuleCreator(
+  () => 'https://github.com/your-repo/eslint-rules/no-any-type'
+)({
+  name: 'no-any-type',
   meta: {
     type: 'problem',
     docs: {
       description: 'Disallow the use of the any type',
-      recommended: true
     },
     messages: {
-      avoidAny: 'Use of "any" type is forbidden. Use "unknown" or a specific type instead.'
+      avoidAny: 'Use of "any" type is forbidden. Use "unknown" or a specific type instead.',
     },
-    schema: []
+    schema: [],
   },
+  defaultOptions: [],
   create(context) {
     return {
-      TSAnyKeyword(node: TSESTree.TSAnyKeyword) {
+      TSAnyKeyword(node) {
         context.report({
           node,
-          messageId: 'avoidAny'
+          messageId: 'avoidAny',
         });
-      }
+      },
     };
-  }
-};
+  },
+});
