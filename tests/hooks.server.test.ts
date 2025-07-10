@@ -27,6 +27,19 @@ vi.mock('../src/hooks/authGuard', () => ({
   authGuard: vi.fn(async ({ event, resolve }) => resolve(event)),
 }));
 
+// Mock the new dependencies
+vi.mock('$lib/security/rate-limiter', () => ({
+  checkRateLimit: vi.fn(() => true)
+}));
+
+vi.mock('$lib/security/csp', () => ({
+  applyCSPHeaders: vi.fn((response: Response) => response)
+}));
+
+vi.mock('$lib/server/auth/session', () => ({
+  validateAndPopulateSession: vi.fn()
+}));
+
 describe('Server Hooks - Authentication Setup', () => {
   let mockEvent: RequestEvent;
 

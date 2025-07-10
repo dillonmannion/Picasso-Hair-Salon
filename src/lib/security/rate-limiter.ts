@@ -55,3 +55,9 @@ export class RateLimiter {
     }
   }
 }
+
+const rateLimiterInstance = new RateLimiter();
+
+export const checkRateLimit = (ip: string): boolean => {
+  return rateLimiterInstance.checkLimit(ip);
+};

@@ -1,9 +1,11 @@
 import { createServerClient } from '@supabase/ssr';
-import { type Handle } from '@sveltejs/kit';
+import { type Handle, redirect } from '@sveltejs/kit';
 import { sequence } from '@sveltejs/kit/hooks';
 
 import { PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY } from '$env/static/public';
-import { authGuard } from './hooks/authGuard';
+import { checkRateLimit } from '$lib/security/rate-limiter';
+import { applyCSPHeaders } from '$lib/security/csp';
+import { validateAndPopulateSession } from '$lib/server/auth/session';
 
 const supabase: Handle = async ({ event, resolve }) => {
   /**
@@ -63,4 +65,73 @@ const supabase: Handle = async ({ event, resolve }) => {
   });
 };
 
-export const handle: Handle = sequence(supabase, authGuard);
+const RATE_LIMIT_RETRY_AFTER_SECONDS = '900';
+
+const rateLimiter: Handle = async ({ event, resolve }) => {
+  const clientIp = event.getClientAddress();
+  
+  if (!checkRateLimit(clientIp)) {
+    return new Response('Too many requests. Please try again later.', { 
+      status: 429,
+      headers: {
+        'Retry-After': RATE_LIMIT_RETRY_AFTER_SECONDS
+      }
+    });
+  }
+  
+  return resolve(event);
+};
+
+const sessionValidator: Handle = async ({ event, resolve }) => {
+  await validateAndPopulateSession(event);
+  return resolve(event);
+};
+
+const ROUTE_CONFIG = {
+  PUBLIC_ROUTES: ['/', '/about', '/contact', '/auth/login', '/auth/register'],
+  PUBLIC_PREFIXES: ['/auth/'],
+  PROTECTED_PREFIXES: ['/dashboard', '/profile', '/settings'],
+  ADMIN_PREFIXES: ['/admin']
+} as const;
+
+
+const isProtectedRoute = (pathname: string): boolean => {
+  return ROUTE_CONFIG.PROTECTED_PREFIXES.some(prefix => pathname.startsWith(prefix));
+};
+
+const isAdminRoute = (pathname: string): boolean => {
+  return ROUTE_CONFIG.ADMIN_PREFIXES.some(prefix => pathname.startsWith(prefix));
+};
+
+const createLoginRedirect = (pathname: string) => {
+  return `/auth/login?redirectTo=${encodeURIComponent(pathname)}`;
+};
+
+const routeProtection: Handle = async ({ event, resolve }) => {
+  const { url, locals } = event;
+  const path = url.pathname;
+  
+  if (isProtectedRoute(path) && !locals.user) {
+    throw redirect(303, createLoginRedirect(path));
+  }
+  
+  if (isAdminRoute(path)) {
+    if (!locals.user) {
+      throw redirect(303, createLoginRedirect(path));
+    }
+    if (locals.user.role !== 'admin') {
+      return new Response('Forbidden', { status: 403 });
+    }
+  }
+  
+  return resolve(event);
+};
+
+const cspHandler: Handle = async ({ event, resolve }) => {
+  const response = await resolve(event);
+  const isDevelopment = process.env.NODE_ENV === 'development';
+  
+  return applyCSPHeaders(response, { isDevelopment });
+};
+
+export const handle: Handle = sequence(rateLimiter, supabase, sessionValidator, routeProtection, cspHandler);

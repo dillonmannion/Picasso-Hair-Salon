@@ -1,4 +1,5 @@
 import type { SupabaseClient, Session, User } from '@supabase/supabase-js';
+import type { RequestEvent } from '@sveltejs/kit';
 
 export type UserRole = 'admin' | 'stylist' | 'customer';
 
@@ -80,4 +81,19 @@ export const getUserWithRole = async (
     ...user,
     role
   };
+};
+
+export const validateAndPopulateSession = async (event: RequestEvent): Promise<void> => {
+  const validation = await validateSession(event.locals.supabase);
+  
+  if (!validation.isValid || !validation.user) {
+    event.locals.user = null;
+    event.locals.session = null;
+    return;
+  }
+  
+  const userWithRole = await getUserWithRole(event.locals.supabase, validation.user);
+  
+  event.locals.user = userWithRole;
+  event.locals.session = validation.session;
 };
