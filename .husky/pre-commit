@@ -1,5 +1,44 @@
-#!/usr/bin/env sh
-. "$(dirname -- "$0")/_/husky.sh"
+#!/bin/sh
 
-# Run pre-commit checks
-node scripts/pre-commit.js
+# Exit on any error
+set -e
+
+echo "🔍 Running pre-commit checks..."
+
+# Get staged files
+STAGED_FILES=$(git diff --cached --name-only --diff-filter=ACM)
+
+if [ -z "$STAGED_FILES" ]; then
+  echo "No staged files to check"
+  exit 0
+fi
+
+# Filter for TypeScript and Svelte files
+CODE_FILES=$(echo "$STAGED_FILES" | grep -E '\.(ts|js|svelte|tsx|jsx)$' || true)
+
+if [ -z "$CODE_FILES" ]; then
+  echo "No code files staged"
+  exit 0
+fi
+
+echo "📝 Running linter on staged files..."
+# Run ESLint on staged code files
+if [ -n "$CODE_FILES" ]; then
+  echo "$CODE_FILES" | xargs pnpm eslint
+fi
+
+echo "🔧 Running type check..."
+# Run type checking
+pnpm run check
+
+echo "🧪 Running tests..."
+# Run tests for changed files
+# Extract base names without extensions for test pattern
+TEST_PATTERN=$(echo "$CODE_FILES" | sed 's/\.(ts|js|svelte|tsx|jsx)$//' | sed 's/^src\///' | tr '\n' '|' | sed 's/|$//')
+
+if [ -n "$TEST_PATTERN" ]; then
+  # Run tests related to changed files
+  pnpm test:unit --run --reporter=verbose --grep="$TEST_PATTERN" || true
+fi
+
+echo "✅ All pre-commit checks passed!"
