@@ -4,7 +4,7 @@ import { vitePreprocess } from '@sveltejs/vite-plugin-svelte';
 /** @type {import('@sveltejs/kit').Config} */
 const config = {
   // Enable preprocessing for TypeScript, PostCSS, etc.
-  preprocess: vitePreprocess(),
+  preprocess: [vitePreprocess()],
 
   kit: {
     // Vercel adapter for deployment
@@ -13,28 +13,34 @@ const config = {
       runtime: 'edge',
 
       // Configure regions for edge functions
-      regions: ['iad1'],
+      regions: ['iad1', 'sfo1', 'pdx1', 'cle1', 'gru1', 'hnd1', 'lhr1', 'syd1'],
 
       // Split routes for optimal performance
-      split: true,
+      split: false,
     }),
 
     // Alias configuration for cleaner imports
     alias: {
-      $components: 'src/lib/components',
       $lib: 'src/lib',
-      $utils: 'src/lib/utils',
-      $stores: 'src/lib/stores',
-      $types: 'src/types',
+      $lib$: 'src/lib',
+      $types: 'src/types'
     },
 
     // CSP configuration for security
     csp: {
-      mode: 'auto',
+      mode: 'hash',
       directives: {
-        'script-src': ['self', 'unsafe-inline'],
+        'script-src': ['self', 'https://*.supabase.co'],
         'style-src': ['self', 'unsafe-inline'],
+        'object-src': ['none'],
+        'base-uri': ['self'],
+        'frame-ancestors': ['none']
       },
+    },
+
+    // Service worker configuration
+    serviceWorker: {
+      register: false
     },
 
     // Environment variable prefix
