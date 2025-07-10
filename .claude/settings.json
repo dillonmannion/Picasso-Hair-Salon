@@ -1,0 +1,89 @@
+{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Write|Edit|MultiEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 ~/.claude/scripts/check-tdd-compliance.py"
+          },
+          {
+            "type": "command",
+            "command": "python3 ~/.claude/scripts/no-comments-validator.py"
+          },
+          {
+            "type": "command",
+            "command": "node ~/.claude/scripts/validate-schema-first.js"
+          },
+          {
+            "type": "command",
+            "command": "node ~/.claude/scripts/prevent-test-schema-duplication.js"
+          },
+          {
+            "type": "command",
+            "command": "bash -c 'if [[ \"$(jq -r .tool_input.file_path)\" == *\".workflow/\"* ]]; then echo \"Direct edits to workflow files are forbidden. Use workflow commands instead.\" >&2; exit 2; fi'"
+          }
+        ]
+      },
+      {
+        "matcher": "Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 ~/.claude/scripts/enforce-test-location.py"
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Write|Edit|MultiEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash ~/.claude/scripts/auto-test-runner.sh"
+          },
+          {
+            "type": "command",
+            "command": "bash ~/.claude/scripts/format-typescript.sh",
+            "timeout": 10
+          },
+          {
+            "type": "command",
+            "command": "bash ~/.claude/scripts/workflow-progress-notify.sh"
+          }
+        ]
+      },
+      {
+        "matcher": "mcp__context7__get-library-docs",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash ~/.claude/scripts/cache-context7-docs.sh"
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 ~/.claude/scripts/check-tests-passing.py"
+          }
+        ]
+      }
+    ],
+    "Notification": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 ~/.claude/scripts/tdd-workflow-notifier.py"
+          }
+        ]
+      }
+    ]
+  }
+}

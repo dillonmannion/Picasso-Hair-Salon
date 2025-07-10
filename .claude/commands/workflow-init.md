@@ -19,6 +19,7 @@ Claude will be prompted to perform the following actions in sequence:
 ### 0. Context7 Documentation Preparation
 
 **Claude Action Required:**
+
 - Use Context7 to pre-fetch documentation for core frameworks:
   - `mcp__context7__resolve-library-id` for "svelte" → `mcp__context7__get-library-docs` for Svelte 5 runes and components
   - `mcp__context7__resolve-library-id` for "sveltekit" → `mcp__context7__get-library-docs` for SvelteKit routing and server-side features
@@ -28,6 +29,7 @@ Claude will be prompted to perform the following actions in sequence:
 ### 1. Validate Environment
 
 **Claude Action Required:**
+
 - Check if `.workflow/state.yaml` exists
   - If it exists, inform user that an active workflow already exists
   - Suggest they use `/workflow-status` to check state or `/workflow-abort` to terminate
@@ -38,6 +40,7 @@ Claude will be prompted to perform the following actions in sequence:
 ### 2. Setup Workflow Structure
 
 **Claude Action Required:**
+
 - Create directory structure:
   - `.workflow/current/requirements/`
   - `.workflow/current/plan/`
@@ -47,20 +50,22 @@ Claude will be prompted to perform the following actions in sequence:
 ### 3. Initialize State File
 
 **Claude Action Required:**
+
 - Create `.workflow/state.yaml` with:
+
   ```yaml
-  feature: "{feature-slug}"
-  description: "{original-description}"
-  phase: "requirements"
-  status: "active"
-  started: "{current-timestamp}"
-  last_updated: "{current-timestamp}"
-  
+  feature: '{feature-slug}'
+  description: '{original-description}'
+  phase: 'requirements'
+  status: 'active'
+  started: '{current-timestamp}'
+  last_updated: '{current-timestamp}'
+
   checkpoints:
     requirements_complete: false
     plan_generated: false
     implementation_complete: false
-  
+
   current_context:
     question_index: 1
   ```
@@ -68,6 +73,7 @@ Claude will be prompted to perform the following actions in sequence:
 ### 4. Create Discovery Questions
 
 **Claude Action Required:**
+
 - Create `.workflow/current/requirements/discovery-questions.md` with the standard 6 discovery questions:
   1. Will this feature have a user-facing interface?
   2. Does this feature need to store new data or modify existing data structures?
@@ -79,10 +85,26 @@ Claude will be prompted to perform the following actions in sequence:
 ### 5. Confirm Initialization
 
 **Claude Action Required:**
+
 - Display confirmation message to user:
   - Feature name (slug)
   - Current phase (Requirements Gathering)
   - Next step instruction (run `/workflow-continue`)
+
+### 6. Hook Integration Notice
+
+**Claude Action Required:**
+
+- Inform user about active TDD enforcement hooks:
+  📋 TDD Enforcement Active
+  ━━━━━━━━━━━━━━━━━━━━━━━
+  The following automated checks are enforcing our TDD workflow:
+  ✓ Cannot write implementation without tests
+  ✓ Tests must be in /tests/ directory
+  ✓ Auto-formatting on save
+  ✓ Schema-first validation
+  ✓ Automatic test execution
+  These hooks ensure TDD compliance throughout the workflow.
 
 ## Expected Claude Response Pattern
 

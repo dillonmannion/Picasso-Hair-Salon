@@ -19,6 +19,7 @@ Claude will be prompted to perform actions based on the current workflow phase:
 ### 1. First, Check Workflow State
 
 **Claude Action Required:**
+
 - Read `.workflow/state.yaml` to determine current phase
 - If no workflow exists, inform user to run `/workflow-init` first
 - Based on the phase, perform the appropriate actions below
@@ -28,6 +29,7 @@ Claude will be prompted to perform actions based on the current workflow phase:
 #### If Phase = "requirements"
 
 **Claude Action Required:**
+
 - Read `.workflow/current/requirements/discovery-questions.md`
 - Find the next unanswered question (marked with `[pending]`)
 - Present the question to the user with its context
@@ -42,6 +44,7 @@ Claude will be prompted to perform actions based on the current workflow phase:
 #### If Phase = "planning"
 
 **Claude Action Required:**
+
 - Read `.workflow/current/requirements/specification.md`
 - **Context7 Library Documentation Fetch:**
   - Analyze the specification for any mentioned libraries/frameworks
@@ -65,6 +68,56 @@ Claude will be prompted to perform actions based on the current workflow phase:
 #### If Phase = "implementation"
 
 **Claude Action Required:**
+
+- Read `.workflow/current/plan/implementation-plan.md`
+- Find the next pending component
+- If no pending components:
+  - Update phase to "complete"
+  - Inform user they can run `/workflow-complete`
+- Otherwise, for the pending component:
+
+  **📚 Context7 Pre-Implementation Documentation:**
+  [... existing Context7 section ...]
+
+  **🔴 RED Phase:**
+  - Generate a comprehensive failing test based on the behavior
+  - Ensure test follows the latest library patterns from Context7 docs
+  - Save to the specified test_file path
+  - Run the test to confirm it fails
+  - If test passes without implementation, report error
+  - **Note**: The `enforce-test-location.py` hook will ensure proper test placement
+
+  **🟢 GREEN Phase:**
+  - Write minimal implementation code to make the test pass
+  - Save to the specified impl_file path
+  - **Note**: The `check-tdd-compliance.py` hook verifies test exists
+  - **Note**: The `validate-schema-first.js` hook ensures schema-first development
+  - Run the test again (also triggered by `auto-test-runner.sh` hook)
+  - If still failing, iterate (max 3 attempts)
+
+  **🔧 REFACTOR Phase:**
+  - Evaluate if the passing code needs improvement
+  - If yes, refactor for clarity/maintainability
+  - **Note**: The `format-typescript.sh` hook auto-formats the code
+  - **Note**: The `no-comments-validator.py` hook ensures self-documenting code
+  - Run test to ensure it still passes
+  - If refactoring breaks test, revert changes
+
+  **📝 Finalization:**
+  - Commit both test and implementation files
+  - Update component status to "complete" in plan
+  - Update state.yaml with completed files
+  - Prompt user to run `/workflow-continue` for next component
+
+**🛡️ Automated Validations:**
+The following hooks run automatically during implementation:
+
+- **Pre-write**: TDD compliance, schema validation, comment checking
+- **Post-write**: Auto-formatting, test execution, progress notification
+- **Protection**: Workflow files cannot be edited directly
+
+**Claude Action Required:**
+
 - Read `.workflow/current/plan/implementation-plan.md`
 - Find the next pending component
 - If no pending components:
@@ -95,7 +148,7 @@ Claude will be prompted to perform actions based on the current workflow phase:
   - Save to the specified impl_file path
   - Run the test again
   - If still failing, iterate (max 3 attempts)
-  
+
   **🔧 REFACTOR Phase:**
   - Evaluate if the passing code needs improvement
   - If yes, refactor for clarity/maintainability
@@ -111,12 +164,14 @@ Claude will be prompted to perform actions based on the current workflow phase:
 #### If Phase = "complete"
 
 **Claude Action Required:**
+
 - Inform user that implementation is complete
 - Suggest running `/workflow-complete` to finalize and archive
 
 ### 3. Update Timestamp
 
 **Claude Action Required:**
+
 - After any successful action, update `last_updated` in state.yaml
 
 ## Expected Claude Response Pattern
@@ -131,6 +186,7 @@ When the user runs `/workflow-continue`, Claude should:
 ## Example Interactions
 
 ### Requirements Phase:
+
 ```
 User: /workflow-continue
 
@@ -145,6 +201,7 @@ Please answer with: yes, no, or idk
 ```
 
 ### Implementation Phase:
+
 ```
 User: /workflow-continue
 

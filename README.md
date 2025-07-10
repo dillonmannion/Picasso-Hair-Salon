@@ -4,7 +4,7 @@ A modern web application built with SvelteKit 5, Supabase, and Vercel using Test
 
 ## Tech Stack
 
-- **Framework**: SvelteKit 5 with Svelte 5 (Runes mode enabled)
+- **Framework**: SvelteKit with Svelte 5 (Runes mode enabled)
 - **Database & Auth**: Supabase (PostgreSQL + Auth)
 - **Deployment**: Vercel Edge Functions
 - **Package Manager**: pnpm v10.12.1
@@ -61,11 +61,13 @@ Visit [http://localhost:5173](http://localhost:5173)
 ## Available Scripts
 
 ### Development
+
 - `pnpm dev` - Start development server
 - `pnpm build` - Build for production
 - `pnpm preview` - Preview production build locally
 
 ### Testing
+
 - `pnpm test` - Run all tests
 - `pnpm test:unit` - Run unit tests
 - `pnpm test:unit:watch` - Run unit tests in watch mode (TDD workflow)
@@ -73,6 +75,7 @@ Visit [http://localhost:5173](http://localhost:5173)
 - `pnpm test:coverage` - Generate test coverage report
 
 ### Database
+
 - `pnpm db:start` - Start Supabase locally
 - `pnpm db:stop` - Stop local Supabase
 - `pnpm db:reset` - Reset database to initial state
@@ -80,6 +83,7 @@ Visit [http://localhost:5173](http://localhost:5173)
 - `pnpm db:types` - Generate TypeScript types from Supabase
 
 ### Code Quality
+
 - `pnpm lint` - Run ESLint
 - `pnpm format` - Format code with Prettier
 - `pnpm check` - Type check with TypeScript
@@ -122,6 +126,7 @@ This project follows TDD practices:
 4. **Watch mode** for rapid feedback: `pnpm test:unit:watch`
 
 ### Testing Stack
+
 - **Vitest**: Fast unit testing with jsdom environment
 - **Playwright**: E2E testing across browsers
 - **Coverage**: Configured to exclude config files and focus on application code

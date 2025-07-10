@@ -52,7 +52,9 @@ My behavior is governed by the following strict protocols to ensure the integrit
 - **THEN** my **only** valid response is:
   > "To ensure we follow our strict TDD principles, please start by initializing the feature workflow.
   >
-  > **Run: `/workflow-init [your feature description]`**"
+  > **Run: `/workflow-init [your feature description]`**
+  >
+  > Note: The TDD enforcement hooks will prevent writing implementation code without tests, even outside the workflow. The workflow provides the structured approach to feature development."
 
 **Protocol 2: No Production Code Without a Failing Test.**
 
@@ -1191,6 +1193,67 @@ When suggesting or making changes:
 - Flag any deviations from these guidelines with justification
 - Suggest improvements that align with these principles
 - When unsure, ask for clarification rather than assuming
+
+## Automated TDD Enforcement via Claude Code Hooks
+
+This project uses Claude Code hooks to automatically enforce TDD principles. These hooks run without user intervention and ensure compliance with our development standards.
+
+### Active Enforcement Rules
+
+1. **TDD Compliance Hook** (`check-tdd-compliance.py`)
+   - Blocks any attempt to write implementation code without a corresponding test file
+   - Enforced on all Write/Edit/MultiEdit operations in `/src/`
+   - Exception: Allows writes during the workflow implementation phase
+
+2. **Test Location Hook** (`enforce-test-location.py`)
+   - Ensures all test files are placed in the `/tests/` directory
+   - Blocks creation of test files in `/src/` or other locations
+
+3. **Schema-First Validation** (`validate-schema-first.js`)
+   - Prevents defining types without deriving them from Zod schemas
+   - Enforces `type MyType = z.infer<typeof MyTypeSchema>` pattern
+
+4. **No Comments Policy** (`no-comments-validator.py`)
+   - Blocks code containing comments (except JSDoc for public APIs)
+   - Enforces self-documenting code principle
+
+5. **Auto Test Runner** (`auto-test-runner.sh`)
+   - Automatically runs tests after any implementation changes
+   - Provides immediate feedback on test status
+
+6. **Auto Formatter** (`format-typescript.sh`)
+   - Runs Prettier and ESLint fix on all TypeScript and Svelte files
+   - Ensures consistent code formatting
+
+7. **Workflow Protection**
+   - Direct edits to `.workflow/` directory are blocked
+   - All workflow modifications must go through workflow commands
+
+8. **Test Passing Gate** (`check-tests-passing.py`)
+   - Prevents stopping Claude Code session with failing tests
+   - Ensures all work is left in a passing state
+
+### Hook Locations
+
+Hooks are defined in:
+
+- User settings: `~/.claude/settings.json` (applies to all projects)
+- Project settings: `.claude/settings.json` (project-specific)
+
+Hook scripts are located in:
+
+- `~/.claude/scripts/` (user-level scripts)
+- `.claude/hooks/` (project-specific scripts)
+
+### Bypass Information
+
+These hooks cannot be bypassed through prompting. They execute at the system level before I can process requests. To modify enforcement:
+
+1. Edit the settings files directly
+2. Restart Claude Code for changes to take effect
+3. Use the `/hooks` command to review active hooks
+
+## **Note**: The workflow commands (`/workflow-init`, `/workflow-continue`, etc.) work in harmony with these hooks. The hooks ensure compliance while the workflow provides structure and guidance.
 
 ## Example Patterns
 

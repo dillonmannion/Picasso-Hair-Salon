@@ -19,6 +19,7 @@ Claude will be prompted to perform the following actions:
 ### 1. Confirm Workflow Exists
 
 **Claude Action Required:**
+
 - Check if `.workflow/state.yaml` exists
 - If not, inform user there's no active workflow to abort
 - If yes, extract feature name and current phase
@@ -26,6 +27,7 @@ Claude will be prompted to perform the following actions:
 ### 2. Present Abort Options
 
 **Claude Action Required:**
+
 - Display current workflow information:
   - Feature name
   - Current phase
@@ -41,6 +43,7 @@ Claude will be prompted to perform the following actions:
 #### If User Chooses "Archive and abort"
 
 **Claude Action Required:**
+
 - Create archive directory: `completed/.aborted/YYYY-MM-DD-HHMM-{feature}/`
 - Copy all files from `.workflow/current/` to archive
 - Copy `.workflow/state.yaml` as `state-at-abort.yaml`
@@ -56,6 +59,7 @@ Claude will be prompted to perform the following actions:
 #### If User Chooses "Discard and abort"
 
 **Claude Action Required:**
+
 - Ask for final confirmation (require "yes" response)
 - If confirmed:
   - Log abort to `.workflow/abort.log` (create if needed)
@@ -66,6 +70,7 @@ Claude will be prompted to perform the following actions:
 #### If User Chooses "Cancel"
 
 **Claude Action Required:**
+
 - Inform user the abort was cancelled
 - Suggest next actions (`/workflow-continue` or `/workflow-status`)
 - Leave workflow intact
@@ -78,11 +83,22 @@ Check for these conditions and warn user if applicable:
 - **Uncommitted changes**: Run `git status` and warn if uncommitted files exist
 - **Implementation in progress**: Show count of completed vs total components
 - **Context analysis running**: Warn if aborting during autonomous phases
+- **Hook validations**: Inform user that aborting will not disable TDD enforcement hooks
+  - Future work outside the workflow will still require tests first
+  - Suggest disabling hooks in `~/.claude/settings.json` if needed
+
+**Claude Action Required:**
+Check for these conditions and warn user if applicable:
+
+- **Uncommitted changes**: Run `git status` and warn if uncommitted files exist
+- **Implementation in progress**: Show count of completed vs total components
+- **Context analysis running**: Warn if aborting during autonomous phases
 
 ### 5. Post-Abort Summary
 
 **Claude Action Required:**
 Display final summary based on action taken:
+
 - If archived: Show archive location
 - If discarded: Confirm complete removal
 - Always suggest `/workflow-init` for starting new workflow
@@ -92,6 +108,7 @@ Display final summary based on action taken:
 If user runs `/workflow-abort --force`:
 
 **Claude Action Required:**
+
 - Skip confirmation dialogs
 - Quick archive to `completed/.aborted/YYYY-MM-DD-HHMM-{feature}-FORCE/`
 - Immediately remove `.workflow/` directory
