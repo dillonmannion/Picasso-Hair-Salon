@@ -1,5 +1,4 @@
 import { z } from 'zod';
-import crypto from 'crypto';
 
 const CSPDirectivesSchema = z.object({
   'default-src': z.array(z.string()).optional(),
@@ -70,7 +69,13 @@ export const developmentCSP: CSPDirectives = freezeCSP({
 });
 
 export function generateNonce(): string {
-  return crypto.randomBytes(24).toString('base64');
+  // Use Web Crypto API which is available in Edge Runtime
+  const randomValues = new Uint8Array(24);
+  crypto.getRandomValues(randomValues);
+  
+  // Convert to base64
+  const binaryString = Array.from(randomValues, byte => String.fromCharCode(byte)).join('');
+  return btoa(binaryString);
 }
 
 export function createCSPHeader(directives: CSPDirectives): string {
