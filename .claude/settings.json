@@ -6,19 +6,19 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python3 ~/.claude/scripts/check-tdd-compliance.py"
+            "command": "python3 .claude/scripts/check-tdd-compliance.py"
           },
           {
             "type": "command",
-            "command": "python3 ~/.claude/scripts/no-comments-validator.py"
+            "command": "python3 .claude/scripts/no-comments-validator.py"
           },
           {
             "type": "command",
-            "command": "node ~/.claude/scripts/validate-schema-first.js"
+            "command": "node .claude/scripts/validate-schema-first.js"
           },
           {
             "type": "command",
-            "command": "node ~/.claude/scripts/prevent-test-schema-duplication.js"
+            "command": "node .claude/scripts/prevent-test-schema-duplication.js"
           },
           {
             "type": "command",
@@ -31,7 +31,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python3 ~/.claude/scripts/enforce-test-location.py"
+            "command": "python3 .claude/scripts/enforce-test-location.py"
           }
         ]
       }
@@ -42,16 +42,16 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash ~/.claude/scripts/auto-test-runner.sh"
+            "command": "bash .claude/scripts/auto-test-runner.sh"
           },
           {
             "type": "command",
-            "command": "bash ~/.claude/scripts/format-typescript.sh",
+            "command": "bash .claude/scripts/format-typescript.sh",
             "timeout": 10
           },
           {
             "type": "command",
-            "command": "bash ~/.claude/scripts/workflow-progress-notify.sh"
+            "command": "bash .claude/scripts/workflow-progress-notify.sh"
           }
         ]
       },
@@ -60,7 +60,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash ~/.claude/scripts/cache-context7-docs.sh"
+            "command": "bash .claude/scripts/cache-context7-docs.sh"
           }
         ]
       }
@@ -70,7 +70,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python3 ~/.claude/scripts/check-tests-passing.py"
+            "command": "python3 .claude/scripts/check-tests-passing.py"
           }
         ]
       }
@@ -80,7 +80,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python3 ~/.claude/scripts/tdd-workflow-notifier.py"
+            "command": "python3 .claude/scripts/tdd-workflow-notifier.py"
           }
         ]
       }
