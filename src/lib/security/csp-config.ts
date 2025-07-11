@@ -55,17 +55,17 @@ const freezeCSP = (directives: CSPDirectives): CSPDirectives => {
 
 export const productionCSP: CSPDirectives = freezeCSP({
   ...baseCSP,
-  'script-src': ["'self'"],
+  'script-src': ["'self'", 'https://vercel.live'],
   'style-src': ["'self'", 'https://fonts.googleapis.com'],
-  'connect-src': ["'self'"],
+  'connect-src': ["'self'", 'https://vercel.live', 'wss://vercel.live'],
   'upgrade-insecure-requests': true
 });
 
 export const developmentCSP: CSPDirectives = freezeCSP({
   ...baseCSP,
-  'script-src': ["'self'", "'unsafe-inline'", "'unsafe-eval'"],
+  'script-src': ["'self'", "'unsafe-inline'", "'unsafe-eval'", 'https://vercel.live'],
   'style-src': ["'self'", "'unsafe-inline'", 'https://fonts.googleapis.com'],
-  'connect-src': ["'self'", 'ws://localhost:*', 'http://localhost:*']
+  'connect-src': ["'self'", 'ws://localhost:*', 'http://localhost:*', 'https://vercel.live', 'wss://vercel.live']
 });
 
 export function generateNonce(): string {
@@ -91,17 +91,24 @@ export function createCSPHeader(directives: CSPDirectives): string {
 }
 
 export function getCSPConfig(): CSPDirectives {
-  return process.env.NODE_ENV === 'production' ? productionCSP : developmentCSP;
+  // Use Vercel's environment detection or fallback to NODE_ENV
+  const isProduction = 
+    (typeof process !== 'undefined' && process.env?.NODE_ENV === 'production') ||
+    (typeof process !== 'undefined' && process.env?.VERCEL_ENV === 'production');
+  
+  return isProduction ? productionCSP : developmentCSP;
 }
 
 export function addNonceToDirectives(directives: CSPDirectives, nonce: string): CSPDirectives {
   const result = { ...directives };
   
-  if (result['script-src']) {
+  // Only add nonces if 'unsafe-inline' is not present
+  // When nonce is present, browsers ignore 'unsafe-inline' for security
+  if (result['script-src'] && !result['script-src'].includes("'unsafe-inline'")) {
     result['script-src'] = [...result['script-src'], `'nonce-${nonce}'`];
   }
   
-  if (result['style-src']) {
+  if (result['style-src'] && !result['style-src'].includes("'unsafe-inline'")) {
     result['style-src'] = [...result['style-src'], `'nonce-${nonce}'`];
   }
   
