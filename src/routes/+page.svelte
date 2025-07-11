@@ -6,7 +6,7 @@
 </script>
 
 <div class="container">
-  <h1>Welcome to Picasso Hair Salon</h1>
+  <h1 class="text-4xl font-bold text-blue-600">Welcome to Picasso Hair Salon</h1>
 
   {#if data.user}
     <p>Hello, {data.user.email}!</p>

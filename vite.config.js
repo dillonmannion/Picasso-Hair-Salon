@@ -1,5 +1,6 @@
 import { sveltekit } from '@sveltejs/kit/vite';
 import { defineConfig } from 'vite';
+import tailwindcss from '@tailwindcss/vite';
 
 const VENDOR_CHUNK_MAPPING = {
   '@supabase': 'supabase',
@@ -27,7 +28,7 @@ const determineChunkId = (id) => {
 };
 
 export default defineConfig({
-  plugins: [sveltekit()],
+  plugins: [tailwindcss(), sveltekit()],
 
   // Test configuration
   test: {
