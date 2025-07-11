@@ -1,6 +1,7 @@
 <script lang="ts">
   import type { PageData } from './$types';
   import { supabase } from '$lib/supabase';
+  import { getAuthCallbackUrl } from '$lib/utils/auth-urls';
 
   let { data } = $props<{ data: PageData }>();
 
@@ -15,7 +16,7 @@
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: `${window.location.origin}/auth/callback`,
+          redirectTo: getAuthCallbackUrl(),
         },
       });
 

@@ -58,6 +58,26 @@ pnpm dev
 
 Visit [http://localhost:5173](http://localhost:5173)
 
+## Deployment to Vercel
+
+To deploy this application to Vercel with working authentication:
+
+1. **Configure Supabase**:
+   - Add your Vercel URLs to Supabase > Authentication > URL Configuration
+   - See `DEPLOYMENT_AUTH_SETUP.md` for detailed instructions
+
+2. **Set Environment Variables in Vercel**:
+   - `PUBLIC_SUPABASE_URL`
+   - `PUBLIC_SUPABASE_ANON_KEY`
+   - `KV_*` variables (for rate limiting with Vercel KV)
+
+3. **Deploy**:
+   ```bash
+   vercel
+   ```
+
+The authentication system automatically adapts to the deployment URL, so no code changes are needed between environments.
+
 ## Available Scripts
 
 ### Development
