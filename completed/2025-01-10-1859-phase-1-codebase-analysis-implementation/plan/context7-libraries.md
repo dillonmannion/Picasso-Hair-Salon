@@ -90,6 +90,55 @@ export default defineConfig({
 });
 ```
 
+## Vite - `/vitejs/vite`
+
+### Build Configuration
+
+```javascript
+// vite.config.js
+export default defineConfig({
+  build: {
+    // CSS code splitting
+    cssCodeSplit: true,
+    
+    // Chunk size warning limit (in kB)
+    chunkSizeWarningLimit: 500,
+    
+    // Manual chunks configuration
+    rollupOptions: {
+      output: {
+        manualChunks(id) {
+          // Vendor library chunking
+          if (id.includes('node_modules')) {
+            if (id.includes('react')) {
+              return 'react-vendor';
+            }
+            if (id.includes('lodash')) {
+              return 'lodash-vendor';
+            }
+            // Other vendor libraries
+            return 'vendor';
+          }
+        }
+      }
+    },
+    
+    // CSS minification
+    cssMinify: 'esbuild',
+    
+    // Assets inline limit (4kb default)
+    assetsInlineLimit: 4096
+  },
+  
+  // Dependency optimization
+  optimizeDeps: {
+    include: ['some-dep'],
+    entries: ['src/main.js'],
+    force: false
+  }
+});
+```
+
 ## Full Documentation
 
 See `/home/fourclovr/projects/Picasso-Hair-Salon/CONTEXT7_LIBRARY_SUMMARY.md` for comprehensive examples and patterns.
