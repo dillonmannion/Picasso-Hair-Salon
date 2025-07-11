@@ -1,6 +1,5 @@
 {
   "npm.packageManager": "pnpm",
-  "eslint.packageManager": "pnpm",
   "editor.codeActionsOnSave": {
     "source.fixAll.eslint": "explicit"
   },
