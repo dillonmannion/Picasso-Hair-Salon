@@ -16,7 +16,7 @@ const config = {
       regions: ['iad1', 'sfo1', 'pdx1', 'cle1', 'gru1', 'hnd1', 'lhr1', 'syd1'],
 
       // Split routes for optimal performance
-      split: false,
+      split: true,
     }),
 
     // Alias configuration for cleaner imports
