@@ -46,12 +46,12 @@ export default defineConfig({
       ],
       // Only include actual business logic files
       include: ['src/lib/**/*.{js,ts,svelte}', 'src/routes/**/*.{js,ts,svelte}'],
-      // Remove thresholds for now - focus on getting started
+      // Set coverage thresholds to 80% for all metrics
       thresholds: {
-        lines: 0,
-        functions: 0,
-        branches: 0,
-        statements: 0,
+        lines: 80,
+        functions: 80,
+        branches: 80,
+        statements: 80,
       },
     },
 
