@@ -5,7 +5,7 @@ import { kv } from '@vercel/kv';
 import { EdgeRateLimiter } from '$lib/security/edge-rate-limiter';
 
 import { PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY } from '$env/static/public';
-import { applyCSPHeaders } from '$lib/security/csp';
+import { generateNonce, getCSPHeader } from '$lib/security/csp-config';
 import { validateAndPopulateSession } from '$lib/server/auth/session';
 
 const supabase: Handle = async ({ event, resolve }) => {
@@ -175,12 +175,17 @@ const routeProtection: Handle = async ({ event, resolve }) => {
 };
 
 const cspHandler: Handle = async ({ event, resolve }) => {
-  const response = await resolve(event);
-  const isDevelopment = process.env.NODE_ENV === 'development';
+  const nonce = generateNonce();
+  event.locals.cspNonce = nonce;
   
-  return applyCSPHeaders(response, { isDevelopment });
+  const response = await resolve(event);
+  const cspHeader = getCSPHeader(nonce);
+  
+  response.headers.set('Content-Security-Policy', cspHeader);
+  
+  return response;
 };
 
 export const handle: Handle = sequence(rateLimiter, supabase, sessionValidator, routeProtection, cspHandler);
 
-export { rateLimiter };
+export { rateLimiter, cspHandler };

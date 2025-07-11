@@ -21,6 +21,7 @@ declare global {
         limit: number;
         resetAt: Date;
       };
+      cspNonce?: string;
     }
 
     interface PageData {

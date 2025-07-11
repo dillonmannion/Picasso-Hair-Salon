@@ -102,3 +102,9 @@ export function addNonceToDirectives(directives: CSPDirectives, nonce: string): 
   
   return result;
 }
+
+export function getCSPHeader(nonce: string): string {
+  const config = getCSPConfig();
+  const directivesWithNonce = addNonceToDirectives(config, nonce);
+  return createCSPHeader(directivesWithNonce);
+}
