@@ -76,7 +76,7 @@ describe('Button component behavior', () => {
   });
 
   it('should render slot content', async () => {
-    const ButtonWithSlot = await import('./ButtonWithSlot.svelte');
+    const ButtonWithSlot = await import('../test-helpers/ButtonWithSlot.svelte');
 
     render(ButtonWithSlot.default, {
       props: { buttonProps: createMockButtonProps() },

@@ -7,7 +7,7 @@ import {
   AppointmentSchema,
   AppointmentServiceSchema,
   type UserProfile,
-  type Service
+  type Service,
 } from '$lib/schemas/database';
 
 describe('Database Schemas', () => {
@@ -18,7 +18,7 @@ describe('Database Schemas', () => {
         email: 'test@example.com',
         role: 'customer',
         created_at: '2024-01-01T00:00:00.000Z',
-        updated_at: '2024-01-01T00:00:00.000Z'
+        updated_at: '2024-01-01T00:00:00.000Z',
       };
 
       const result = UserProfileSchema.safeParse(validProfile);
@@ -35,7 +35,7 @@ describe('Database Schemas', () => {
         email: 'not-an-email',
         role: 'customer',
         created_at: '2024-01-01T00:00:00.000Z',
-        updated_at: '2024-01-01T00:00:00.000Z'
+        updated_at: '2024-01-01T00:00:00.000Z',
       };
 
       const result = UserProfileSchema.safeParse(invalidProfile);
@@ -48,7 +48,7 @@ describe('Database Schemas', () => {
         email: 'test@example.com',
         role: 'invalid-role',
         created_at: '2024-01-01T00:00:00.000Z',
-        updated_at: '2024-01-01T00:00:00.000Z'
+        updated_at: '2024-01-01T00:00:00.000Z',
       };
 
       const result = UserProfileSchema.safeParse(invalidProfile);
@@ -61,7 +61,7 @@ describe('Database Schemas', () => {
         email: 'test@example.com',
         role: 'customer',
         created_at: '2024-01-01T00:00:00.000Z',
-        updated_at: '2024-01-01T00:00:00.000Z'
+        updated_at: '2024-01-01T00:00:00.000Z',
       };
 
       const result = UserProfileSchema.safeParse(invalidProfile);
@@ -75,17 +75,17 @@ describe('Database Schemas', () => {
         id: '550e8400-e29b-41d4-a716-446655440001',
         name: 'Haircut',
         description: 'Standard haircut service',
-        price: 25.50,
+        price: 25.5,
         duration_minutes: 30,
         created_at: '2024-01-01T00:00:00.000Z',
-        updated_at: '2024-01-01T00:00:00.000Z'
+        updated_at: '2024-01-01T00:00:00.000Z',
       };
 
       const result = ServiceSchema.safeParse(validService);
       expect(result.success).toBe(true);
       if (result.success) {
         expect(result.data.name).toBe('Haircut');
-        expect(result.data.price).toBe(25.50);
+        expect(result.data.price).toBe(25.5);
         expect(result.data.duration_minutes).toBe(30);
       }
     });
@@ -95,10 +95,10 @@ describe('Database Schemas', () => {
         id: '550e8400-e29b-41d4-a716-446655440001',
         name: 'Quick Trim',
         description: null,
-        price: 15.00,
+        price: 15.0,
         duration_minutes: 15,
         created_at: '2024-01-01T00:00:00.000Z',
-        updated_at: '2024-01-01T00:00:00.000Z'
+        updated_at: '2024-01-01T00:00:00.000Z',
       };
 
       const result = ServiceSchema.safeParse(serviceWithNullDescription);
@@ -113,7 +113,7 @@ describe('Database Schemas', () => {
         price: -10,
         duration_minutes: 30,
         created_at: '2024-01-01T00:00:00.000Z',
-        updated_at: '2024-01-01T00:00:00.000Z'
+        updated_at: '2024-01-01T00:00:00.000Z',
       };
 
       const result = ServiceSchema.safeParse(invalidService);
@@ -125,10 +125,10 @@ describe('Database Schemas', () => {
         id: '550e8400-e29b-41d4-a716-446655440001',
         name: 'Haircut',
         description: 'Standard haircut',
-        price: 25.00,
+        price: 25.0,
         duration_minutes: 0,
         created_at: '2024-01-01T00:00:00.000Z',
-        updated_at: '2024-01-01T00:00:00.000Z'
+        updated_at: '2024-01-01T00:00:00.000Z',
       };
 
       const result = ServiceSchema.safeParse(invalidService);
@@ -150,10 +150,10 @@ describe('Database Schemas', () => {
           thursday: { start: '09:00', end: '17:00' },
           friday: { start: '09:00', end: '17:00' },
           saturday: { start: '10:00', end: '15:00' },
-          sunday: null
+          sunday: null,
         },
         created_at: '2024-01-01T00:00:00.000Z',
-        updated_at: '2024-01-01T00:00:00.000Z'
+        updated_at: '2024-01-01T00:00:00.000Z',
       };
 
       const result = BarberProfileSchema.safeParse(validBarber);
@@ -173,7 +173,7 @@ describe('Database Schemas', () => {
         specialties: [],
         working_hours: {},
         created_at: '2024-01-01T00:00:00.000Z',
-        updated_at: '2024-01-01T00:00:00.000Z'
+        updated_at: '2024-01-01T00:00:00.000Z',
       };
 
       const result = BarberProfileSchema.safeParse(barberNoSpecialties);
@@ -187,10 +187,10 @@ describe('Database Schemas', () => {
         last_name: 'Doe',
         specialties: [],
         working_hours: {
-          monday: { start: '25:00', end: '17:00' }
+          monday: { start: '25:00', end: '17:00' },
         },
         created_at: '2024-01-01T00:00:00.000Z',
-        updated_at: '2024-01-01T00:00:00.000Z'
+        updated_at: '2024-01-01T00:00:00.000Z',
       };
 
       const result = BarberProfileSchema.safeParse(invalidBarber);
@@ -206,7 +206,7 @@ describe('Database Schemas', () => {
         last_name: 'Johnson',
         phone: '+1234567890',
         created_at: '2024-01-01T00:00:00.000Z',
-        updated_at: '2024-01-01T00:00:00.000Z'
+        updated_at: '2024-01-01T00:00:00.000Z',
       };
 
       const result = CustomerProfileSchema.safeParse(validCustomer);
@@ -224,7 +224,7 @@ describe('Database Schemas', () => {
         last_name: 'Williams',
         phone: null,
         created_at: '2024-01-01T00:00:00.000Z',
-        updated_at: '2024-01-01T00:00:00.000Z'
+        updated_at: '2024-01-01T00:00:00.000Z',
       };
 
       const result = CustomerProfileSchema.safeParse(customerNoPhone);
@@ -241,17 +241,17 @@ describe('Database Schemas', () => {
         start_time: '2024-01-15T10:00:00.000Z',
         end_time: '2024-01-15T10:30:00.000Z',
         status: 'confirmed',
-        total_price: 25.50,
+        total_price: 25.5,
         notes: 'Regular haircut',
         created_at: '2024-01-01T00:00:00.000Z',
-        updated_at: '2024-01-01T00:00:00.000Z'
+        updated_at: '2024-01-01T00:00:00.000Z',
       };
 
       const result = AppointmentSchema.safeParse(validAppointment);
       expect(result.success).toBe(true);
       if (result.success) {
         expect(result.data.status).toBe('confirmed');
-        expect(result.data.total_price).toBe(25.50);
+        expect(result.data.total_price).toBe(25.5);
       }
     });
 
@@ -263,10 +263,10 @@ describe('Database Schemas', () => {
         start_time: '2024-01-15T10:00:00.000Z',
         end_time: '2024-01-15T10:30:00.000Z',
         status: 'pending',
-        total_price: 25.50,
+        total_price: 25.5,
         notes: null,
         created_at: '2024-01-01T00:00:00.000Z',
-        updated_at: '2024-01-01T00:00:00.000Z'
+        updated_at: '2024-01-01T00:00:00.000Z',
       };
 
       const result = AppointmentSchema.safeParse(appointmentNoNotes);
@@ -281,10 +281,10 @@ describe('Database Schemas', () => {
         start_time: '2024-01-15T10:00:00.000Z',
         end_time: '2024-01-15T10:30:00.000Z',
         status: 'invalid-status',
-        total_price: 25.50,
+        total_price: 25.5,
         notes: null,
         created_at: '2024-01-01T00:00:00.000Z',
-        updated_at: '2024-01-01T00:00:00.000Z'
+        updated_at: '2024-01-01T00:00:00.000Z',
       };
 
       const result = AppointmentSchema.safeParse(invalidAppointment);
@@ -302,7 +302,7 @@ describe('Database Schemas', () => {
         total_price: -50,
         notes: null,
         created_at: '2024-01-01T00:00:00.000Z',
-        updated_at: '2024-01-01T00:00:00.000Z'
+        updated_at: '2024-01-01T00:00:00.000Z',
       };
 
       const result = AppointmentSchema.safeParse(invalidAppointment);
@@ -315,14 +315,14 @@ describe('Database Schemas', () => {
       const validRelation = {
         appointment_id: '550e8400-e29b-41d4-a716-446655440004',
         service_id: '550e8400-e29b-41d4-a716-446655440001',
-        price: 25.50,
-        created_at: '2024-01-01T00:00:00.000Z'
+        price: 25.5,
+        created_at: '2024-01-01T00:00:00.000Z',
       };
 
       const result = AppointmentServiceSchema.safeParse(validRelation);
       expect(result.success).toBe(true);
       if (result.success) {
-        expect(result.data.price).toBe(25.50);
+        expect(result.data.price).toBe(25.5);
       }
     });
 
@@ -331,7 +331,7 @@ describe('Database Schemas', () => {
         appointment_id: '550e8400-e29b-41d4-a716-446655440004',
         service_id: '550e8400-e29b-41d4-a716-446655440001',
         price: -10,
-        created_at: '2024-01-01T00:00:00.000Z'
+        created_at: '2024-01-01T00:00:00.000Z',
       };
 
       const result = AppointmentServiceSchema.safeParse(invalidRelation);
@@ -346,21 +346,21 @@ describe('Database Schemas', () => {
         email: 'test@example.com',
         role: 'admin',
         created_at: '2024-01-01T00:00:00.000Z',
-        updated_at: '2024-01-01T00:00:00.000Z'
+        updated_at: '2024-01-01T00:00:00.000Z',
       };
 
       const service: Service = {
         id: '550e8400-e29b-41d4-a716-446655440001',
         name: 'Haircut',
         description: 'Standard haircut',
-        price: 25.50,
+        price: 25.5,
         duration_minutes: 30,
         created_at: '2024-01-01T00:00:00.000Z',
-        updated_at: '2024-01-01T00:00:00.000Z'
+        updated_at: '2024-01-01T00:00:00.000Z',
       };
 
       expect(user.role).toBe('admin');
-      expect(service.price).toBe(25.50);
+      expect(service.price).toBe(25.5);
     });
   });
 });

@@ -23,7 +23,7 @@ const config = {
     alias: {
       $lib: 'src/lib',
       $lib$: 'src/lib',
-      $types: 'src/types'
+      $types: 'src/types',
     },
 
     // CSP configuration for security
@@ -34,13 +34,13 @@ const config = {
         'style-src': ['self', 'unsafe-inline'],
         'object-src': ['none'],
         'base-uri': ['self'],
-        'frame-ancestors': ['none']
+        'frame-ancestors': ['none'],
       },
     },
 
     // Service worker configuration
     serviceWorker: {
-      register: false
+      register: false,
     },
 
     // Environment variable prefix

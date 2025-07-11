@@ -43,3 +43,12 @@ supabase/.temp
 
 # Misc
 .vercel
+
+# Markdown
+!CLAUDE.md
+!README.md
+!.claude/commands/*
+!.claude/scripts/*
+!.claude/.setttings.json
+.claude/.settings.local.json
+*.md

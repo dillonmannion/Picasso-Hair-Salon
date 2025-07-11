@@ -1,6 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import type { RequestEvent } from '@sveltejs/kit';
-import type { Session } from '@supabase/supabase-js';
 
 // Mock modules
 const mockGetSession = vi.fn();
@@ -29,36 +28,31 @@ vi.stubGlobal('process', {
   },
 });
 
-// Mock authGuard to prevent it from interfering with our tests
-vi.mock('../src/hooks/authGuard', () => ({
-  authGuard: vi.fn(async ({ event, resolve }) => resolve(event)),
-}));
-
 // Mock the new dependencies
 vi.mock('@vercel/kv', () => ({
   kv: {
     incr: vi.fn(),
     expire: vi.fn(),
-  }
+  },
 }));
 
 // Create a mock instance with the methods we need
 const mockEdgeRateLimiterInstance = {
   checkLimit: vi.fn(),
-  getConfig: vi.fn()
+  getConfig: vi.fn(),
 };
 
 // Mock the EdgeRateLimiter constructor to return our instance
 vi.mock('$lib/security/edge-rate-limiter', () => ({
-  EdgeRateLimiter: vi.fn(() => mockEdgeRateLimiterInstance)
+  EdgeRateLimiter: vi.fn(() => mockEdgeRateLimiterInstance),
 }));
 
 vi.mock('$lib/security/csp', () => ({
-  applyCSPHeaders: vi.fn((response: Response) => response)
+  applyCSPHeaders: vi.fn((response: Response) => response),
 }));
 
 vi.mock('$lib/server/auth/session', () => ({
-  validateAndPopulateSession: vi.fn()
+  validateAndPopulateSession: vi.fn(),
 }));
 
 // Import handle after all mocks are set up
@@ -69,16 +63,16 @@ describe('Server Hooks - Authentication Setup', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
-    
+
     // Reset mock return values for each test
-    mockEdgeRateLimiterInstance.checkLimit.mockResolvedValue({ 
-      allowed: true, 
-      remaining: 5, 
-      resetAt: new Date() 
+    mockEdgeRateLimiterInstance.checkLimit.mockResolvedValue({
+      allowed: true,
+      remaining: 5,
+      resetAt: new Date(),
     });
-    mockEdgeRateLimiterInstance.getConfig.mockReturnValue({ 
-      maxAttempts: 5, 
-      windowSeconds: 900 
+    mockEdgeRateLimiterInstance.getConfig.mockReturnValue({
+      maxAttempts: 5,
+      windowSeconds: 900,
     });
 
     // Create a minimal mock event
@@ -114,98 +108,6 @@ describe('Server Hooks - Authentication Setup', () => {
     expect(mockEvent.locals).toHaveProperty('supabase');
     expect(typeof mockEvent.locals.supabase).toBe('object');
     expect(mockEvent.locals.supabase).toHaveProperty('auth');
-  });
-
-  it('should provide a safeGetSession helper in event.locals', async () => {
-    const mockResolve = vi.fn(async (_event) => new Response('OK'));
-
-    await handle({ event: mockEvent, resolve: mockResolve });
-
-    expect(mockEvent.locals).toHaveProperty('safeGetSession');
-    expect(typeof mockEvent.locals.safeGetSession).toBe('function');
-  });
-
-  it('should return null session when no auth session exists', async () => {
-    const mockResolve = vi.fn(async (_event) => new Response('OK'));
-
-    await handle({ event: mockEvent, resolve: mockResolve });
-
-    // Mock no session
-    mockGetSession.mockResolvedValue({
-      data: { session: null },
-      error: null,
-    });
-
-    const result = await mockEvent.locals.safeGetSession();
-
-    expect(result).toEqual({ session: null, user: null });
-  });
-
-  it('should validate session with getUser when session exists', async () => {
-    const mockResolve = vi.fn(async (_event) => new Response('OK'));
-
-    await handle({ event: mockEvent, resolve: mockResolve });
-
-    const mockSession: Session = {
-      access_token: 'test-token',
-      refresh_token: 'test-refresh',
-      expires_in: 3600,
-      token_type: 'bearer',
-      user: { id: 'user-123', email: 'test@example.com' },
-    } as Session;
-
-    const mockUser = {
-      id: 'user-123',
-      email: 'test@example.com',
-      app_metadata: { role: 'customer' },
-    };
-
-    // Mock session exists
-    mockGetSession.mockResolvedValue({
-      data: { session: mockSession },
-      error: null,
-    });
-
-    // Mock user validation
-    mockGetUser.mockResolvedValue({
-      data: { user: mockUser },
-      error: null,
-    });
-
-    const result = await mockEvent.locals.safeGetSession();
-
-    expect(result).toEqual({ session: mockSession, user: mockUser });
-    expect(mockGetUser).toHaveBeenCalled();
-  });
-
-  it('should return null when getUser fails even with valid session', async () => {
-    const mockResolve = vi.fn(async (_event) => new Response('OK'));
-
-    await handle({ event: mockEvent, resolve: mockResolve });
-
-    const mockSession: Session = {
-      access_token: 'test-token',
-      refresh_token: 'test-refresh',
-      expires_in: 3600,
-      token_type: 'bearer',
-      user: { id: 'user-123', email: 'test@example.com' },
-    } as Session;
-
-    // Mock session exists
-    mockGetSession.mockResolvedValue({
-      data: { session: mockSession },
-      error: null,
-    });
-
-    // Mock user validation fails
-    mockGetUser.mockResolvedValue({
-      data: { user: null },
-      error: new Error('Invalid token'),
-    });
-
-    const result = await mockEvent.locals.safeGetSession();
-
-    expect(result).toEqual({ session: null, user: null });
   });
 
   it('should properly handle cookies with Supabase client', async () => {

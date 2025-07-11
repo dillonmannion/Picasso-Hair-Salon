@@ -90,7 +90,8 @@
       "Bash(NODE_ENV=test pnpm vitest run tests/lib/config/env.test.ts -t \"should throw clear error when PUBLIC_SUPABASE_URL is missing\" --reporter=tap 2 >& 1)",
       "Bash(NODE_ENV=test pnpm vitest run tests/lib/config/env.test.ts 2 >& 1)",
       "Bash(NODE_OPTIONS=\"--no-deprecation\" pnpm vitest run tests/lib/config/env.test.ts -t \"should throw clear error when PUBLIC_SUPABASE_URL is missing\" 2>&1)",
-      "mcp__ide__getDiagnostics"
+      "mcp__ide__getDiagnostics",
+      "Bash(test:*)"
     ],
     "deny": []
   }

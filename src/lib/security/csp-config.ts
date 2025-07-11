@@ -19,15 +19,19 @@ const CSPDirectivesSchema = z.object({
   'plugin-types': z.array(z.string()).optional(),
   'manifest-src': z.array(z.string()).optional(),
   'upgrade-insecure-requests': z.boolean().optional(),
-  'block-all-mixed-content': z.boolean().optional()
+  'block-all-mixed-content': z.boolean().optional(),
 });
 
 export const CSPConfigSchema = z.object({
-  directives: CSPDirectivesSchema
+  directives: CSPDirectivesSchema,
 });
 
 export type CSPDirectives = z.infer<typeof CSPDirectivesSchema>;
 export type CSPConfig = z.infer<typeof CSPConfigSchema>;
+
+const SUPABASE_DOMAINS = ['https://*.supabase.co', 'https://*.supabase.com'];
+
+const SUPABASE_WEBSOCKET = 'wss://*.supabase.co';
 
 const baseCSP: CSPDirectives = {
   'default-src': ["'self'"],
@@ -36,7 +40,7 @@ const baseCSP: CSPDirectives = {
   'object-src': ["'none'"],
   'base-uri': ["'self'"],
   'form-action': ["'self'"],
-  'frame-ancestors': ["'none'"]
+  'frame-ancestors': ["'none'"],
 };
 
 const freezeCSP = (directives: CSPDirectives): CSPDirectives => {
@@ -57,24 +61,42 @@ export const productionCSP: CSPDirectives = freezeCSP({
   ...baseCSP,
   'script-src': ["'self'", 'https://vercel.live'],
   'style-src': ["'self'", 'https://fonts.googleapis.com'],
-  'connect-src': ["'self'", 'https://vercel.live', 'wss://vercel.live'],
-  'upgrade-insecure-requests': true
+  'connect-src': [
+    "'self'",
+    'https://vercel.live',
+    'wss://vercel.live',
+    ...SUPABASE_DOMAINS,
+    SUPABASE_WEBSOCKET,
+  ],
+  'img-src': ["'self'", 'data:', 'https:', ...SUPABASE_DOMAINS],
+  'frame-src': ["'self'", ...SUPABASE_DOMAINS],
+  'upgrade-insecure-requests': true,
 });
 
 export const developmentCSP: CSPDirectives = freezeCSP({
   ...baseCSP,
   'script-src': ["'self'", "'unsafe-inline'", "'unsafe-eval'", 'https://vercel.live'],
   'style-src': ["'self'", "'unsafe-inline'", 'https://fonts.googleapis.com'],
-  'connect-src': ["'self'", 'ws://localhost:*', 'http://localhost:*', 'https://vercel.live', 'wss://vercel.live']
+  'connect-src': [
+    "'self'",
+    'ws://localhost:*',
+    'http://localhost:*',
+    'https://vercel.live',
+    'wss://vercel.live',
+    ...SUPABASE_DOMAINS,
+    SUPABASE_WEBSOCKET,
+  ],
+  'img-src': ["'self'", 'data:', 'https:', ...SUPABASE_DOMAINS],
+  'frame-src': ["'self'", ...SUPABASE_DOMAINS],
 });
 
 export function generateNonce(): string {
   // Use Web Crypto API which is available in Edge Runtime
   const randomValues = new Uint8Array(24);
   crypto.getRandomValues(randomValues);
-  
+
   // Convert to base64
-  const binaryString = Array.from(randomValues, byte => String.fromCharCode(byte)).join('');
+  const binaryString = Array.from(randomValues, (byte) => String.fromCharCode(byte)).join('');
   return btoa(binaryString);
 }
 
@@ -92,26 +114,26 @@ export function createCSPHeader(directives: CSPDirectives): string {
 
 export function getCSPConfig(): CSPDirectives {
   // Use Vercel's environment detection or fallback to NODE_ENV
-  const isProduction = 
+  const isProduction =
     (typeof process !== 'undefined' && process.env?.NODE_ENV === 'production') ||
     (typeof process !== 'undefined' && process.env?.VERCEL_ENV === 'production');
-  
+
   return isProduction ? productionCSP : developmentCSP;
 }
 
 export function addNonceToDirectives(directives: CSPDirectives, nonce: string): CSPDirectives {
   const result = { ...directives };
-  
+
   // Only add nonces if 'unsafe-inline' is not present
   // When nonce is present, browsers ignore 'unsafe-inline' for security
   if (result['script-src'] && !result['script-src'].includes("'unsafe-inline'")) {
     result['script-src'] = [...result['script-src'], `'nonce-${nonce}'`];
   }
-  
+
   if (result['style-src'] && !result['style-src'].includes("'unsafe-inline'")) {
     result['style-src'] = [...result['style-src'], `'nonce-${nonce}'`];
   }
-  
+
   return result;
 }
 

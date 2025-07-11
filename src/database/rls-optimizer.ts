@@ -55,7 +55,11 @@ TO authenticated
 USING (${using});`;
 };
 
-const generateIndexSQL = (indexName: string, tableName: string, columns: string | string[]): string => {
+const generateIndexSQL = (
+  indexName: string,
+  tableName: string,
+  columns: string | string[]
+): string => {
   const columnList = Array.isArray(columns) ? columns.join(', ') : columns;
   return `CREATE INDEX CONCURRENTLY IF NOT EXISTS ${indexName}
 ON ${tableName} USING btree (${columnList})
@@ -99,7 +103,7 @@ export const generateRLSOptimizationMigration = (config: MigrationConfig): Optim
 
   const migrationSections: string[] = [];
   const rollbackStatements: string[] = [];
-  
+
   // Header
   migrationSections.push(`-- RLS Policy Optimization Migration
 -- Generated: ${new Date().toISOString()}
@@ -110,9 +114,9 @@ BEGIN;
   // JWT claim-based policies
   if (config.userIdColumn && config.roleCheckFunction && config.jwtRoleClaim) {
     const policyName = `optimized_${config.tableName}_staff_access`;
-    
+
     rollbackStatements.push(generateDropPolicySQL(policyName, config.tableName!));
-    
+
     migrationSections.push(`-- Drop existing policy
 ${generateDropPolicySQL(policyName, config.tableName!)}
 
@@ -127,8 +131,8 @@ ${generatePolicySQL(
   // Composite indexes
   if (config.indexes?.length) {
     migrationSections.push('-- Create composite indexes');
-    
-    config.indexes.forEach(index => {
+
+    config.indexes.forEach((index) => {
       migrationSections.push(`-- Index for ${index.tableName}
 ${generateIndexSQL(index.indexName, index.tableName, index.columns)}
 `);
@@ -138,9 +142,9 @@ ${generateIndexSQL(index.indexName, index.tableName, index.columns)}
 
   // Optimized policies
   if (config.policies?.length) {
-    config.policies.forEach(policy => {
+    config.policies.forEach((policy) => {
       rollbackStatements.push(generateDropPolicySQL(policy.policyName, policy.tableName));
-      
+
       migrationSections.push(`${generatePolicySQL(
         policy.policyName,
         policy.tableName,
@@ -153,7 +157,7 @@ ${generateIndexSQL(index.indexName, index.tableName, index.columns)}
   // Team access optimization
   if (config.teamAccess) {
     const { tableName, teamIdColumn, userTeamTable } = config.teamAccess;
-    
+
     migrationSections.push(`-- Optimize team access queries
 CREATE POLICY "team_member_access"
 ON ${tableName}
@@ -169,7 +173,7 @@ USING (
 
   // Security definer functions
   if (config.securityFunctions?.length) {
-    config.securityFunctions.forEach(func => {
+    config.securityFunctions.forEach((func) => {
       migrationSections.push(`${generateSecurityDefinerFunction(func)}
 `);
     });
@@ -178,12 +182,12 @@ USING (
   // RLS column indexes
   if (config.rlsIndexes) {
     const { tableName, rlsColumns } = config.rlsIndexes;
-    
+
     migrationSections.push('-- Create indexes for RLS columns');
-    
-    rlsColumns.forEach(column => {
+
+    rlsColumns.forEach((column) => {
       const indexName = `idx_${tableName}_${column}`;
-      
+
       migrationSections.push(`-- Index for ${column}
 ${generateIndexSQL(indexName, tableName, column)}
 `);
@@ -200,13 +204,14 @@ ${generateIndexSQL(indexName, tableName, column)}
   migrationSections.push('COMMIT;');
 
   const migration = migrationSections.join('\n');
-  const rollback = rollbackStatements.length > 0 
-    ? `-- Rollback migration\n\nBEGIN;\n\n${rollbackStatements.join('\n')}\n\nCOMMIT;`
-    : '';
+  const rollback =
+    rollbackStatements.length > 0
+      ? `-- Rollback migration\n\nBEGIN;\n\n${rollbackStatements.join('\n')}\n\nCOMMIT;`
+      : '';
 
   return {
     migration,
     rollback,
-    filename: MIGRATION_FILENAME
+    filename: MIGRATION_FILENAME,
   };
 };

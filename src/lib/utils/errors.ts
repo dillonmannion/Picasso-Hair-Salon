@@ -8,7 +8,7 @@ export class AppError extends Error {
     super(message);
     this.name = 'AppError';
     this.status = status;
-    
+
     if (additionalProperties) {
       Object.assign(this, additionalProperties);
     }
@@ -26,13 +26,13 @@ export const handleError = (error: unknown): AppError => {
 
   if (error instanceof z.ZodError) {
     return new AppError(400, 'Validation error', {
-      errors: error.errors
+      errors: error.errors,
     });
   }
 
   if (error instanceof Error) {
     return new AppError(500, 'Internal server error', {
-      originalMessage: error.message
+      originalMessage: error.message,
     });
   }
 

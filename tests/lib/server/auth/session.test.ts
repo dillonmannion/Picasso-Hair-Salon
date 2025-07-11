@@ -26,8 +26,8 @@ describe('Authentication State Manager', () => {
         app_metadata: { provider: 'email', providers: ['email'] },
         user_metadata: { name: 'Test User' },
         created_at: '2024-01-01T00:00:00Z',
-        updated_at: '2024-01-10T00:00:00Z'
-      }
+        updated_at: '2024-01-10T00:00:00Z',
+      },
     };
 
     mockUser = {
@@ -42,15 +42,15 @@ describe('Authentication State Manager', () => {
       app_metadata: { provider: 'email', providers: ['email'] },
       user_metadata: { name: 'Test User' },
       created_at: '2024-01-01T00:00:00Z',
-      updated_at: '2024-01-10T00:00:00Z'
+      updated_at: '2024-01-10T00:00:00Z',
     };
 
     mockSupabaseClient = {
       auth: {
         getSession: vi.fn(),
         getUser: vi.fn(),
-        signOut: vi.fn()
-      }
+        signOut: vi.fn(),
+      },
     } as unknown as SupabaseClient;
   });
 
@@ -58,12 +58,12 @@ describe('Authentication State Manager', () => {
     it('should return valid session and user when JWT is valid', async () => {
       vi.mocked(mockSupabaseClient.auth.getSession).mockResolvedValue({
         data: { session: mockSession },
-        error: null
+        error: null,
       });
 
       vi.mocked(mockSupabaseClient.auth.getUser).mockResolvedValue({
         data: { user: mockUser },
-        error: null
+        error: null,
       });
 
       const result = await validateSession(mockSupabaseClient);
@@ -71,7 +71,7 @@ describe('Authentication State Manager', () => {
       expect(result).toEqual({
         session: mockSession,
         user: mockUser,
-        isValid: true
+        isValid: true,
       });
       expect(mockSupabaseClient.auth.getSession).toHaveBeenCalledOnce();
       expect(mockSupabaseClient.auth.getUser).toHaveBeenCalledOnce();
@@ -80,7 +80,7 @@ describe('Authentication State Manager', () => {
     it('should return null session when no session exists', async () => {
       vi.mocked(mockSupabaseClient.auth.getSession).mockResolvedValue({
         data: { session: null },
-        error: null
+        error: null,
       });
 
       const result = await validateSession(mockSupabaseClient);
@@ -88,7 +88,7 @@ describe('Authentication State Manager', () => {
       expect(result).toEqual({
         session: null,
         user: null,
-        isValid: false
+        isValid: false,
       });
       expect(mockSupabaseClient.auth.getUser).not.toHaveBeenCalled();
     });
@@ -96,12 +96,12 @@ describe('Authentication State Manager', () => {
     it('should return null when JWT validation fails', async () => {
       vi.mocked(mockSupabaseClient.auth.getSession).mockResolvedValue({
         data: { session: mockSession },
-        error: null
+        error: null,
       });
 
       vi.mocked(mockSupabaseClient.auth.getUser).mockResolvedValue({
         data: { user: null },
-        error: { name: 'AuthApiError', message: 'Invalid JWT' } as unknown as AuthError
+        error: { name: 'AuthApiError', message: 'Invalid JWT' } as unknown as AuthError,
       });
 
       const result = await validateSession(mockSupabaseClient);
@@ -109,14 +109,14 @@ describe('Authentication State Manager', () => {
       expect(result).toEqual({
         session: null,
         user: null,
-        isValid: false
+        isValid: false,
       });
     });
 
     it('should handle getSession errors gracefully', async () => {
       vi.mocked(mockSupabaseClient.auth.getSession).mockResolvedValue({
         data: { session: null },
-        error: { name: 'AuthError', message: 'Failed to get session' } as unknown as AuthError
+        error: { name: 'AuthError', message: 'Failed to get session' } as unknown as AuthError,
       });
 
       const result = await validateSession(mockSupabaseClient);
@@ -124,7 +124,7 @@ describe('Authentication State Manager', () => {
       expect(result).toEqual({
         session: null,
         user: null,
-        isValid: false
+        isValid: false,
       });
     });
   });
@@ -132,7 +132,7 @@ describe('Authentication State Manager', () => {
   describe('clearInvalidSession', () => {
     it('should sign out the user when called', async () => {
       vi.mocked(mockSupabaseClient.auth.signOut).mockResolvedValue({
-        error: null
+        error: null,
       });
 
       await clearInvalidSession(mockSupabaseClient);
@@ -142,7 +142,7 @@ describe('Authentication State Manager', () => {
 
     it('should handle sign out errors gracefully', async () => {
       vi.mocked(mockSupabaseClient.auth.signOut).mockResolvedValue({
-        error: { name: 'AuthError', message: 'Sign out failed' } as unknown as AuthError
+        error: { name: 'AuthError', message: 'Sign out failed' } as unknown as AuthError,
       });
 
       await expect(clearInvalidSession(mockSupabaseClient)).resolves.not.toThrow();
@@ -153,20 +153,20 @@ describe('Authentication State Manager', () => {
   describe('getUserWithRole', () => {
     it('should return user with standard role when no profile exists', async () => {
       const mockProfileData = { data: null, error: null };
-      
+
       mockSupabaseClient.from = vi.fn().mockReturnValue({
         select: vi.fn().mockReturnValue({
           eq: vi.fn().mockReturnValue({
-            single: vi.fn().mockResolvedValue(mockProfileData)
-          })
-        })
+            single: vi.fn().mockResolvedValue(mockProfileData),
+          }),
+        }),
       });
 
       const result = await getUserWithRole(mockSupabaseClient, mockUser);
 
       expect(result).toEqual({
         ...mockUser,
-        role: 'customer'
+        role: 'customer',
       });
       expect(mockSupabaseClient.from).toHaveBeenCalledWith('profiles');
     });
@@ -174,66 +174,66 @@ describe('Authentication State Manager', () => {
     it('should return user with admin role when profile indicates admin', async () => {
       const mockProfileData = {
         data: { id: 'user-123', is_admin: true, role: 'admin' },
-        error: null
+        error: null,
       };
-      
+
       mockSupabaseClient.from = vi.fn().mockReturnValue({
         select: vi.fn().mockReturnValue({
           eq: vi.fn().mockReturnValue({
-            single: vi.fn().mockResolvedValue(mockProfileData)
-          })
-        })
+            single: vi.fn().mockResolvedValue(mockProfileData),
+          }),
+        }),
       });
 
       const result = await getUserWithRole(mockSupabaseClient, mockUser);
 
       expect(result).toEqual({
         ...mockUser,
-        role: 'admin'
+        role: 'admin',
       });
     });
 
     it('should return user with stylist role when profile indicates stylist', async () => {
       const mockProfileData = {
         data: { id: 'user-123', is_admin: false, role: 'stylist' },
-        error: null
+        error: null,
       };
-      
+
       mockSupabaseClient.from = vi.fn().mockReturnValue({
         select: vi.fn().mockReturnValue({
           eq: vi.fn().mockReturnValue({
-            single: vi.fn().mockResolvedValue(mockProfileData)
-          })
-        })
+            single: vi.fn().mockResolvedValue(mockProfileData),
+          }),
+        }),
       });
 
       const result = await getUserWithRole(mockSupabaseClient, mockUser);
 
       expect(result).toEqual({
         ...mockUser,
-        role: 'stylist'
+        role: 'stylist',
       });
     });
 
     it('should return customer role when profile query fails', async () => {
       const mockProfileData = {
         data: null,
-        error: { code: 'PGRST116', message: 'Profile not found' }
+        error: { code: 'PGRST116', message: 'Profile not found' },
       };
-      
+
       mockSupabaseClient.from = vi.fn().mockReturnValue({
         select: vi.fn().mockReturnValue({
           eq: vi.fn().mockReturnValue({
-            single: vi.fn().mockResolvedValue(mockProfileData)
-          })
-        })
+            single: vi.fn().mockResolvedValue(mockProfileData),
+          }),
+        }),
       });
 
       const result = await getUserWithRole(mockSupabaseClient, mockUser);
 
       expect(result).toEqual({
         ...mockUser,
-        role: 'customer'
+        role: 'customer',
       });
     });
 

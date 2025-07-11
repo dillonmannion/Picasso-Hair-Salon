@@ -3,14 +3,10 @@ import { defineConfig } from 'vite';
 
 const VENDOR_CHUNK_MAPPING = {
   '@supabase': 'supabase',
-  'zod': 'zod',
+  zod: 'zod',
 };
 
-const DEPENDENCY_PRE_BUNDLE_LIST = [
-  '@supabase/supabase-js',
-  '@supabase/ssr',
-  'zod',
-];
+const DEPENDENCY_PRE_BUNDLE_LIST = ['@supabase/supabase-js', '@supabase/ssr', 'zod'];
 
 /**
  * @param {string} id

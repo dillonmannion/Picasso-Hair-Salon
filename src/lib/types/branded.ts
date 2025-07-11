@@ -68,16 +68,18 @@ export const isProfileId = (value: unknown): value is ProfileId => {
   return typeof value === 'string';
 };
 
-export const UserIdSchema = z.string().uuid().transform((val): UserId => createUserId(val));
+export const UserIdSchema = z.string().transform((val): UserId => createUserId(val));
 
-export const ServiceIdSchema = z.string().uuid().transform((val): ServiceId => createServiceId(val));
+export const ServiceIdSchema = z.string().transform((val): ServiceId => createServiceId(val));
 
-export const StaffIdSchema = z.string().uuid().transform((val): StaffId => createStaffId(val));
+export const StaffIdSchema = z.string().transform((val): StaffId => createStaffId(val));
 
-export const AppointmentIdSchema = z.string().uuid().transform((val): AppointmentId => createAppointmentId(val));
+export const AppointmentIdSchema = z
+  .string()
+  .transform((val): AppointmentId => createAppointmentId(val));
 
-export const CustomerIdSchema = z.string().uuid().transform((val): CustomerId => createCustomerId(val));
+export const CustomerIdSchema = z.string().transform((val): CustomerId => createCustomerId(val));
 
-export const BarberIdSchema = z.string().uuid().transform((val): BarberId => createBarberId(val));
+export const BarberIdSchema = z.string().transform((val): BarberId => createBarberId(val));
 
-export const ProfileIdSchema = z.string().uuid().transform((val): ProfileId => createProfileId(val));
+export const ProfileIdSchema = z.string().transform((val): ProfileId => createProfileId(val));

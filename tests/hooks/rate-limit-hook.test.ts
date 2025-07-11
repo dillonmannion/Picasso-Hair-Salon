@@ -66,10 +66,11 @@ const createMockEvent = (overrides?: Partial<RequestEvent>): RequestEvent => {
   } as unknown as RequestEvent;
 };
 
-const createMockResolve = () => vi.fn().mockImplementation(async () => {
-  const response = new Response('OK', { status: 200 });
-  return response;
-});
+const createMockResolve = () =>
+  vi.fn().mockImplementation(async () => {
+    const response = new Response('OK', { status: 200 });
+    return response;
+  });
 
 describe('Rate Limiter Hook with Edge-Compatible KV', () => {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -108,21 +109,21 @@ describe('Rate Limiter Hook with Edge-Compatible KV', () => {
     expect(response.headers.get('X-RateLimit-Limit')).toBe('5');
     expect(response.headers.get('X-RateLimit-Remaining')).toBe('0');
     expect(response.headers.get('X-RateLimit-Reset')).toMatch(/^\d+$/);
-    
+
     const body = await response.text();
     expect(body).toBe('Too many requests. Please try again later.');
   });
 
   it('should handle different client IPs separately', async () => {
     mockKV.incr.mockResolvedValueOnce(1).mockResolvedValueOnce(1);
-    
+
     const event1 = createMockEvent();
     const event2 = createMockEvent();
     event2.getClientAddress = vi.fn().mockReturnValue('192.168.1.2');
 
     const mockResolve1 = createMockResolve();
     const mockResolve2 = createMockResolve();
-    
+
     await rateLimiter({ event: event1, resolve: mockResolve1 });
     await rateLimiter({ event: event2, resolve: mockResolve2 });
 

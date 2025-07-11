@@ -35,25 +35,6 @@ const supabase: Handle = async ({ event, resolve }) => {
    * validating the JWT, this function also calls `getUser()` to validate the
    * JWT before returning the session.
    */
-  event.locals.safeGetSession = async () => {
-    const {
-      data: { session },
-    } = await event.locals.supabase.auth.getSession();
-    if (!session) {
-      return { session: null, user: null };
-    }
-
-    const {
-      data: { user },
-      error,
-    } = await event.locals.supabase.auth.getUser();
-    if (error) {
-      // JWT validation has failed
-      return { session: null, user: null };
-    }
-
-    return { session, user };
-  };
 
   return resolve(event, {
     filterSerializedResponseHeaders(name) {
@@ -97,57 +78,67 @@ const rateLimiter: Handle = async ({ event, resolve }) => {
   const clientIp = extractClientIp(event);
   const result = await edgeRateLimiter.checkLimit(clientIp);
   const config = edgeRateLimiter.getConfig();
-  
+
   event.locals.rateLimit = {
     allowed: result.allowed,
     remaining: result.remaining,
     limit: config.maxAttempts,
     resetAt: result.resetAt,
   };
-  
+
   if (!result.allowed) {
-    return new Response('Too many requests. Please try again later.', { 
+    return new Response('Too many requests. Please try again later.', {
       status: 429,
       headers: {
         'Retry-After': String(config.windowSeconds),
         ...buildRateLimitHeaders(config, result),
-      }
+      },
     });
   }
-  
+
   const response = await resolve(event);
-  
+
   if (!response || !response.headers) {
     throw new Error('Invalid response from resolve function');
   }
-  
+
   const rateLimitHeaders = buildRateLimitHeaders(config, result);
   Object.entries(rateLimitHeaders).forEach(([key, value]) => {
     response.headers.set(key, value);
   });
-  
+
   return response;
 };
 
 const sessionValidator: Handle = async ({ event, resolve }) => {
   await validateAndPopulateSession(event);
+
+  // Check session expiration
+  if (event.locals.session?.expires_at) {
+    const expiresAt = new Date(event.locals.session.expires_at).getTime();
+    if (expiresAt < Date.now()) {
+      // Clear invalid session
+      event.locals.session = null;
+      event.locals.user = null;
+    }
+  }
+
   return resolve(event);
 };
 
 const ROUTE_CONFIG = {
   PUBLIC_ROUTES: ['/', '/about', '/contact', '/auth/login', '/auth/register'],
   PUBLIC_PREFIXES: ['/auth/'],
-  PROTECTED_PREFIXES: ['/dashboard', '/profile', '/settings'],
-  ADMIN_PREFIXES: ['/admin']
+  PROTECTED_PREFIXES: ['/dashboard', '/profile', '/settings', '/protected'],
+  ADMIN_PREFIXES: ['/admin'],
 } as const;
 
-
 const isProtectedRoute = (pathname: string): boolean => {
-  return ROUTE_CONFIG.PROTECTED_PREFIXES.some(prefix => pathname.startsWith(prefix));
+  return ROUTE_CONFIG.PROTECTED_PREFIXES.some((prefix) => pathname.startsWith(prefix));
 };
 
 const isAdminRoute = (pathname: string): boolean => {
-  return ROUTE_CONFIG.ADMIN_PREFIXES.some(prefix => pathname.startsWith(prefix));
+  return ROUTE_CONFIG.ADMIN_PREFIXES.some((prefix) => pathname.startsWith(prefix));
 };
 
 const createLoginRedirect = (pathname: string) => {
@@ -157,11 +148,16 @@ const createLoginRedirect = (pathname: string) => {
 const routeProtection: Handle = async ({ event, resolve }) => {
   const { url, locals } = event;
   const path = url.pathname;
-  
+
+  // Redirect authenticated users away from auth pages
+  if (path.startsWith('/auth/') && locals.user) {
+    throw redirect(303, '/');
+  }
+
   if (isProtectedRoute(path) && !locals.user) {
     throw redirect(303, createLoginRedirect(path));
   }
-  
+
   if (isAdminRoute(path)) {
     if (!locals.user) {
       throw redirect(303, createLoginRedirect(path));
@@ -170,22 +166,28 @@ const routeProtection: Handle = async ({ event, resolve }) => {
       return new Response('Forbidden', { status: 403 });
     }
   }
-  
+
   return resolve(event);
 };
 
 const cspHandler: Handle = async ({ event, resolve }) => {
   const nonce = generateNonce();
   event.locals.cspNonce = nonce;
-  
+
   const response = await resolve(event);
   const cspHeader = getCSPHeader(nonce);
-  
+
   response.headers.set('Content-Security-Policy', cspHeader);
-  
+
   return response;
 };
 
-export const handle: Handle = sequence(rateLimiter, supabase, sessionValidator, routeProtection, cspHandler);
+export const handle: Handle = sequence(
+  rateLimiter,
+  supabase,
+  sessionValidator,
+  routeProtection,
+  cspHandler
+);
 
 export { rateLimiter, cspHandler };

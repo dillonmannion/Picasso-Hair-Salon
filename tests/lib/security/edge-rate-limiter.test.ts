@@ -128,7 +128,7 @@ describe('EdgeRateLimiter', () => {
 
   it('should export result schema for validation', () => {
     const resultSchema = rateLimiter.getResultSchema();
-    
+
     const validResult = {
       allowed: true,
       remaining: 4,

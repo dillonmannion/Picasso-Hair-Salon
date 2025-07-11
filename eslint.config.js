@@ -37,12 +37,6 @@ export default ts.config(
     },
   },
   {
-    ignores: [
-      'build/',
-      '.svelte-kit/',
-      'dist/',
-      'coverage/',
-      'playwright-report/',
-    ],
-  },
+    ignores: ['build/', '.svelte-kit/', 'dist/', 'coverage/', 'playwright-report/', '.vercel'],
+  }
 );

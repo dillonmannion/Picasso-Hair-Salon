@@ -11,7 +11,7 @@ const DurationMinutesSchema = z.number().int().positive().max(480);
 
 const TimestampFieldsSchema = z.object({
   created_at: TimestampSchema,
-  updated_at: TimestampSchema
+  updated_at: TimestampSchema,
 });
 
 const UserRoleSchema = z.enum(['admin', 'barber', 'customer']);
@@ -20,7 +20,7 @@ const AppointmentStatusSchema = z.enum(['pending', 'confirmed', 'completed', 'ca
 export const UserProfileSchema = TimestampFieldsSchema.extend({
   id: UuidSchema,
   email: EmailSchema,
-  role: UserRoleSchema
+  role: UserRoleSchema,
 });
 
 export const ServiceSchema = TimestampFieldsSchema.extend({
@@ -28,12 +28,12 @@ export const ServiceSchema = TimestampFieldsSchema.extend({
   name: NameSchema,
   description: z.string().max(500).nullable(),
   price: PriceSchema,
-  duration_minutes: DurationMinutesSchema
+  duration_minutes: DurationMinutesSchema,
 });
 
 const WorkingHoursSchema = z.object({
   start: TimeSchema,
-  end: TimeSchema
+  end: TimeSchema,
 });
 
 const WeeklyScheduleSchema = z.record(z.string(), WorkingHoursSchema.nullable());
@@ -43,14 +43,14 @@ export const BarberProfileSchema = TimestampFieldsSchema.extend({
   first_name: NameSchema,
   last_name: NameSchema,
   specialties: z.array(z.string().max(100)),
-  working_hours: WeeklyScheduleSchema
+  working_hours: WeeklyScheduleSchema,
 });
 
 export const CustomerProfileSchema = TimestampFieldsSchema.extend({
   user_id: UuidSchema,
   first_name: NameSchema,
   last_name: NameSchema,
-  phone: PhoneSchema
+  phone: PhoneSchema,
 });
 
 export const AppointmentSchema = TimestampFieldsSchema.extend({
@@ -61,14 +61,14 @@ export const AppointmentSchema = TimestampFieldsSchema.extend({
   end_time: TimestampSchema,
   status: AppointmentStatusSchema,
   total_price: PriceSchema,
-  notes: z.string().max(1000).nullable()
+  notes: z.string().max(1000).nullable(),
 });
 
 export const AppointmentServiceSchema = z.object({
   appointment_id: UuidSchema,
   service_id: UuidSchema,
   price: PriceSchema,
-  created_at: TimestampSchema
+  created_at: TimestampSchema,
 });
 
 export type UserProfile = z.infer<typeof UserProfileSchema>;

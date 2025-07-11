@@ -22,17 +22,23 @@ type Profile = {
 const INVALID_SESSION: ValidationResult = {
   session: null,
   user: null,
-  isValid: false
+  isValid: false,
 };
 
 export const validateSession = async (supabase: SupabaseClient): Promise<ValidationResult> => {
-  const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+  const {
+    data: { session },
+    error: sessionError,
+  } = await supabase.auth.getSession();
 
   if (!session || sessionError) {
     return INVALID_SESSION;
   }
 
-  const { data: { user }, error: userError } = await supabase.auth.getUser();
+  const {
+    data: { user },
+    error: userError,
+  } = await supabase.auth.getUser();
 
   if (!user || userError) {
     return INVALID_SESSION;
@@ -79,21 +85,21 @@ export const getUserWithRole = async (
 
   return {
     ...user,
-    role
+    role,
   };
 };
 
 export const validateAndPopulateSession = async (event: RequestEvent): Promise<void> => {
   const validation = await validateSession(event.locals.supabase);
-  
+
   if (!validation.isValid || !validation.user) {
     event.locals.user = null;
     event.locals.session = null;
     return;
   }
-  
+
   const userWithRole = await getUserWithRole(event.locals.supabase, validation.user);
-  
+
   event.locals.user = userWithRole;
   event.locals.session = validation.session;
 };

@@ -6,7 +6,7 @@ describe('Error Handling Utilities', () => {
   describe('AppError', () => {
     it('should create an error with status code and message', () => {
       const error = new AppError(404, 'Resource not found');
-      
+
       expect(error).toBeInstanceOf(Error);
       expect(error).toBeInstanceOf(AppError);
       expect(error.status).toBe(404);
@@ -16,9 +16,9 @@ describe('Error Handling Utilities', () => {
     it('should create an error with additional properties', () => {
       const error = new AppError(400, 'Validation failed', {
         code: 'VALIDATION_ERROR',
-        field: 'email'
+        field: 'email',
       });
-      
+
       expect(error.status).toBe(400);
       expect(error.message).toBe('Validation failed');
       expect(error.code).toBe('VALIDATION_ERROR');
@@ -55,14 +55,14 @@ describe('Error Handling Utilities', () => {
     it('should properly categorize Zod validation errors as 400', () => {
       const schema = z.object({
         email: z.string().email(),
-        age: z.number().positive()
+        age: z.number().positive(),
       });
 
       try {
         schema.parse({ email: 'invalid', age: -5 });
       } catch (error) {
         const appError = handleError(error);
-        
+
         expect(appError).toBeInstanceOf(AppError);
         expect(appError.status).toBe(400);
         expect(appError.message).toContain('Validation error');
@@ -75,7 +75,7 @@ describe('Error Handling Utilities', () => {
     it('should return AppError instances unchanged', () => {
       const originalError = new AppError(403, 'Forbidden', { code: 'FORBIDDEN' });
       const handledError = handleError(originalError);
-      
+
       expect(handledError).toBe(originalError);
       expect(handledError.status).toBe(403);
       expect(handledError.message).toBe('Forbidden');
@@ -85,7 +85,7 @@ describe('Error Handling Utilities', () => {
     it('should convert unknown errors to 500 status', () => {
       const unknownError = new Error('Something went wrong');
       const appError = handleError(unknownError);
-      
+
       expect(appError).toBeInstanceOf(AppError);
       expect(appError.status).toBe(500);
       expect(appError.message).toBe('Internal server error');
@@ -94,7 +94,7 @@ describe('Error Handling Utilities', () => {
 
     it('should handle non-Error objects as 500 status', () => {
       const appError = handleError('string error');
-      
+
       expect(appError).toBeInstanceOf(AppError);
       expect(appError.status).toBe(500);
       expect(appError.message).toBe('Internal server error');
@@ -103,7 +103,7 @@ describe('Error Handling Utilities', () => {
     it('should handle null and undefined as 500 status', () => {
       const nullError = handleError(null);
       const undefinedError = handleError(undefined);
-      
+
       expect(nullError).toBeInstanceOf(AppError);
       expect(nullError.status).toBe(500);
       expect(undefinedError).toBeInstanceOf(AppError);
@@ -113,25 +113,25 @@ describe('Error Handling Utilities', () => {
     it('should extract Zod error details properly', () => {
       const schema = z.object({
         username: z.string().min(3),
-        email: z.string().email()
+        email: z.string().email(),
       });
 
       try {
         schema.parse({ username: 'ab', email: 'not-an-email' });
       } catch (error) {
         const appError = handleError(error);
-        
-        expect((appError.errors as z.ZodIssue[])).toHaveLength(2);
-        expect((appError.errors as z.ZodIssue[])).toContainEqual(
+
+        expect(appError.errors as z.ZodIssue[]).toHaveLength(2);
+        expect(appError.errors as z.ZodIssue[]).toContainEqual(
           expect.objectContaining({
             path: ['username'],
-            message: expect.stringContaining('at least 3')
+            message: expect.stringContaining('at least 3'),
           })
         );
-        expect((appError.errors as z.ZodIssue[])).toContainEqual(
+        expect(appError.errors as z.ZodIssue[]).toContainEqual(
           expect.objectContaining({
             path: ['email'],
-            message: expect.stringContaining('email')
+            message: expect.stringContaining('email'),
           })
         );
       }

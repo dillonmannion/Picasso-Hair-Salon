@@ -10,7 +10,7 @@ import {
   isStaffId,
   UserIdSchema,
   ServiceIdSchema,
-  StaffIdSchema
+  StaffIdSchema,
 } from '$lib/types/branded';
 
 describe('Branded Types', () => {
@@ -18,7 +18,7 @@ describe('Branded Types', () => {
     it('should create a valid UserId from string', () => {
       const id = 'user_123';
       const userId = createUserId(id);
-      
+
       expect(userId).toBe(id);
       expect(isUserId(userId)).toBe(true);
     });
@@ -26,7 +26,7 @@ describe('Branded Types', () => {
     it('should validate UserId with schema', () => {
       const inputString = 'user_456';
       const result = UserIdSchema.safeParse(inputString);
-      
+
       expect(result.success).toBe(true);
       if (result.success) {
         expect(result.data).toBe(inputString);
@@ -45,7 +45,7 @@ describe('Branded Types', () => {
     it('should reject invalid input with schema', () => {
       const invalidInput = 123;
       const result = UserIdSchema.safeParse(invalidInput);
-      
+
       expect(result.success).toBe(false);
     });
 
@@ -56,9 +56,9 @@ describe('Branded Types', () => {
 
       const userId = createUserId('user_123');
       const result = processUser(userId);
-      
+
       expect(result).toBe('Processing user: user_123');
-      
+
       // This would cause a TypeScript error if uncommented:
       // processUser('user_123'); // Error: string is not assignable to UserId
     });
@@ -68,7 +68,7 @@ describe('Branded Types', () => {
     it('should create a valid ServiceId from string', () => {
       const id = 'service_abc';
       const serviceId = createServiceId(id);
-      
+
       expect(serviceId).toBe(id);
       expect(isServiceId(serviceId)).toBe(true);
     });
@@ -76,7 +76,7 @@ describe('Branded Types', () => {
     it('should validate ServiceId with schema', () => {
       const inputString = 'service_def';
       const result = ServiceIdSchema.safeParse(inputString);
-      
+
       expect(result.success).toBe(true);
       if (result.success) {
         expect(result.data).toBe(inputString);
@@ -95,7 +95,7 @@ describe('Branded Types', () => {
     it('should validate string input with schema', () => {
       const regularString = 'service_ghi';
       const result = ServiceIdSchema.safeParse(regularString);
-      
+
       expect(result.success).toBe(true);
       if (result.success) {
         expect(result.data).toBe(regularString);
@@ -104,14 +104,14 @@ describe('Branded Types', () => {
 
     it('should not allow cross-assignment between branded types', () => {
       const serviceId = createServiceId('service_abc');
-      
+
       // Type assertions to verify types are distinct
       const processService = (id: ServiceId): string => {
         return `Processing service: ${id}`;
       };
 
       expect(processService(serviceId)).toBe('Processing service: service_abc');
-      
+
       // This would cause a TypeScript error if uncommented:
       // const userId = createUserId('user_123');
       // processService(userId); // Error: UserId is not assignable to ServiceId
@@ -122,7 +122,7 @@ describe('Branded Types', () => {
     it('should create a valid StaffId from string', () => {
       const id = 'staff_xyz';
       const staffId = createStaffId(id);
-      
+
       expect(staffId).toBe(id);
       expect(isStaffId(staffId)).toBe(true);
     });
@@ -130,7 +130,7 @@ describe('Branded Types', () => {
     it('should validate StaffId with schema', () => {
       const inputString = 'staff_uvw';
       const result = StaffIdSchema.safeParse(inputString);
-      
+
       expect(result.success).toBe(true);
       if (result.success) {
         expect(result.data).toBe(inputString);
@@ -149,7 +149,7 @@ describe('Branded Types', () => {
     it('should validate string input with schema', () => {
       const regularString = 'staff_rst';
       const result = StaffIdSchema.safeParse(regularString);
-      
+
       expect(result.success).toBe(true);
       if (result.success) {
         expect(result.data).toBe(regularString);
@@ -175,7 +175,7 @@ describe('Branded Types', () => {
           id: 'appt_123',
           userId,
           serviceId,
-          staffId
+          staffId,
         };
       };
 
@@ -184,7 +184,7 @@ describe('Branded Types', () => {
       const staff = createStaffId('staff_xyz');
 
       const appointment = createAppointment(user, service, staff);
-      
+
       expect(appointment.userId).toBe('user_123');
       expect(appointment.serviceId).toBe('service_abc');
       expect(appointment.staffId).toBe('staff_xyz');
@@ -199,17 +199,14 @@ describe('Branded Types', () => {
       const userIds: UserId[] = [
         createUserId('user_1'),
         createUserId('user_2'),
-        createUserId('user_3')
+        createUserId('user_3'),
       ];
 
-      const serviceIds: ServiceId[] = [
-        createServiceId('service_a'),
-        createServiceId('service_b')
-      ];
+      const serviceIds: ServiceId[] = [createServiceId('service_a'), createServiceId('service_b')];
 
       expect(userIds.every(isUserId)).toBe(true);
       expect(serviceIds.every(isServiceId)).toBe(true);
-      
+
       // These collections are type-safe and cannot be mixed
       // userIds.push(createServiceId('service_c')); // TypeScript error
     });
@@ -220,7 +217,7 @@ describe('Branded Types', () => {
         userId: UserIdSchema,
         serviceId: ServiceIdSchema,
         staffId: StaffIdSchema,
-        scheduledAt: z.string().datetime()
+        scheduledAt: z.string().datetime(),
       });
 
       const validData = {
@@ -228,7 +225,7 @@ describe('Branded Types', () => {
         userId: createUserId('user_123'),
         serviceId: createServiceId('service_abc'),
         staffId: createStaffId('staff_xyz'),
-        scheduledAt: '2024-01-01T10:00:00Z'
+        scheduledAt: '2024-01-01T10:00:00Z',
       };
 
       const result = AppointmentSchema.safeParse(validData);
@@ -239,21 +236,21 @@ describe('Branded Types', () => {
         userId: 'user_456', // Will be transformed to branded
         serviceId: 'service_def', // Will be transformed to branded
         staffId: 'staff_uvw', // Will be transformed to branded
-        scheduledAt: '2024-01-01T11:00:00Z'
+        scheduledAt: '2024-01-01T11:00:00Z',
       };
 
       const invalidResult = AppointmentSchema.safeParse(invalidData);
       expect(invalidResult.success).toBe(true); // Schemas transform strings to branded types
-      
+
       // Test with actual invalid data
       const actuallyInvalidData = {
         id: 'appt_789',
         userId: 123, // Not a string
         serviceId: null, // Not a string
         staffId: undefined, // Not a string
-        scheduledAt: '2024-01-01T12:00:00Z'
+        scheduledAt: '2024-01-01T12:00:00Z',
       };
-      
+
       const actuallyInvalidResult = AppointmentSchema.safeParse(actuallyInvalidData);
       expect(actuallyInvalidResult.success).toBe(false);
     });

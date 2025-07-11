@@ -5,12 +5,12 @@ import {
   validateInsertResult,
   validateUpdateResult,
   validateDeleteResult,
-  createValidatedQuery
+  createValidatedQuery,
 } from '../../../src/lib/db/validators';
 import {
   UserProfileSchema,
   ServiceSchema,
-  AppointmentSchema
+  AppointmentSchema,
 } from '../../../src/lib/schemas/database';
 import { UserSchema } from '../../../src/lib/schemas/auth';
 
@@ -22,11 +22,11 @@ describe('Database Query Validators', () => {
         email: 'test@example.com',
         role: 'customer' as const,
         createdAt: '2023-01-01T00:00:00Z',
-        updatedAt: '2023-01-01T00:00:00Z'
+        updatedAt: '2023-01-01T00:00:00Z',
       };
 
       const result = validateSingleResult(mockData, UserSchema);
-      
+
       expect(result).toEqual(mockData);
     });
 
@@ -36,7 +36,7 @@ describe('Database Query Validators', () => {
         email: 'invalid-email', // Invalid email format
         role: 'invalid-role', // Invalid role
         createdAt: '2023-01-01T00:00:00Z',
-        updatedAt: '2023-01-01T00:00:00Z'
+        updatedAt: '2023-01-01T00:00:00Z',
       };
 
       expect(() => validateSingleResult(mockData, UserSchema)).toThrow();
@@ -61,7 +61,7 @@ describe('Database Query Validators', () => {
           price: 30,
           duration_minutes: 30,
           created_at: '2023-01-01T00:00:00Z',
-          updated_at: '2023-01-01T00:00:00Z'
+          updated_at: '2023-01-01T00:00:00Z',
         },
         {
           id: '123e4567-e89b-12d3-a456-426614174002',
@@ -70,12 +70,12 @@ describe('Database Query Validators', () => {
           price: 80,
           duration_minutes: 120,
           created_at: '2023-01-01T00:00:00Z',
-          updated_at: '2023-01-01T00:00:00Z'
-        }
+          updated_at: '2023-01-01T00:00:00Z',
+        },
       ];
 
       const result = validateArrayResult(mockData, ServiceSchema);
-      
+
       expect(result).toEqual(mockData);
       expect(result).toHaveLength(2);
     });
@@ -89,7 +89,7 @@ describe('Database Query Validators', () => {
           price: 30,
           duration_minutes: 30,
           created_at: '2023-01-01T00:00:00Z',
-          updated_at: '2023-01-01T00:00:00Z'
+          updated_at: '2023-01-01T00:00:00Z',
         },
         {
           id: '123e4567-e89b-12d3-a456-426614174002',
@@ -98,8 +98,8 @@ describe('Database Query Validators', () => {
           price: -10, // Invalid negative price
           duration_minutes: 120,
           created_at: '2023-01-01T00:00:00Z',
-          updated_at: '2023-01-01T00:00:00Z'
-        }
+          updated_at: '2023-01-01T00:00:00Z',
+        },
       ];
 
       expect(() => validateArrayResult(mockData, ServiceSchema)).toThrow();
@@ -133,11 +133,11 @@ describe('Database Query Validators', () => {
         total_price: 30,
         notes: 'First time customer',
         created_at: '2023-01-01T00:00:00Z',
-        updated_at: '2023-01-01T00:00:00Z'
+        updated_at: '2023-01-01T00:00:00Z',
       };
 
       const result = validateInsertResult(mockData, AppointmentSchema);
-      
+
       expect(result).toEqual(mockData);
     });
 
@@ -152,14 +152,16 @@ describe('Database Query Validators', () => {
         total_price: 30,
         notes: 'First time customer',
         created_at: '2023-01-01T00:00:00Z',
-        updated_at: '2023-01-01T00:00:00Z'
+        updated_at: '2023-01-01T00:00:00Z',
       };
 
       expect(() => validateInsertResult(mockData, AppointmentSchema)).toThrow();
     });
 
     it('should throw error when insert result is null', () => {
-      expect(() => validateInsertResult(null, AppointmentSchema)).toThrow('Insert operation returned no data');
+      expect(() => validateInsertResult(null, AppointmentSchema)).toThrow(
+        'Insert operation returned no data'
+      );
     });
   });
 
@@ -170,11 +172,11 @@ describe('Database Query Validators', () => {
         email: 'updated@example.com',
         role: 'admin' as const,
         created_at: '2023-01-01T00:00:00Z',
-        updated_at: '2023-01-02T00:00:00Z'
+        updated_at: '2023-01-02T00:00:00Z',
       };
 
       const result = validateUpdateResult(mockData, UserProfileSchema);
-      
+
       expect(result).toEqual(mockData);
     });
 
@@ -184,14 +186,16 @@ describe('Database Query Validators', () => {
         email: 'invalid-email', // Invalid email
         role: 'invalid-role' as unknown as 'admin', // Invalid role
         created_at: '2023-01-01T00:00:00Z',
-        updated_at: '2023-01-02T00:00:00Z'
+        updated_at: '2023-01-02T00:00:00Z',
       };
 
       expect(() => validateUpdateResult(mockData, UserProfileSchema)).toThrow();
     });
 
     it('should throw error when update result is null', () => {
-      expect(() => validateUpdateResult(null, UserProfileSchema)).toThrow('Update operation returned no data');
+      expect(() => validateUpdateResult(null, UserProfileSchema)).toThrow(
+        'Update operation returned no data'
+      );
     });
   });
 
@@ -204,11 +208,11 @@ describe('Database Query Validators', () => {
         price: 50,
         duration_minutes: 60,
         created_at: '2023-01-01T00:00:00Z',
-        updated_at: '2023-01-02T00:00:00Z'
+        updated_at: '2023-01-02T00:00:00Z',
       };
 
       const result = validateDeleteResult(mockData, ServiceSchema);
-      
+
       expect(result).toEqual(mockData);
     });
 
@@ -220,14 +224,16 @@ describe('Database Query Validators', () => {
         price: 50,
         duration_minutes: 60,
         created_at: '2023-01-01T00:00:00Z',
-        updated_at: '2023-01-02T00:00:00Z'
+        updated_at: '2023-01-02T00:00:00Z',
       };
 
       expect(() => validateDeleteResult(mockData, ServiceSchema)).toThrow();
     });
 
     it('should throw error when delete result is null', () => {
-      expect(() => validateDeleteResult(null, ServiceSchema)).toThrow('Delete operation returned no data');
+      expect(() => validateDeleteResult(null, ServiceSchema)).toThrow(
+        'Delete operation returned no data'
+      );
     });
   });
 
@@ -242,10 +248,10 @@ describe('Database Query Validators', () => {
             email: 'test@example.com',
             role: 'customer',
             createdAt: '2023-01-01T00:00:00Z',
-            updatedAt: '2023-01-01T00:00:00Z'
+            updatedAt: '2023-01-01T00:00:00Z',
           },
-          error: null
-        })
+          error: null,
+        }),
       };
 
       const validatedQuery = createValidatedQuery(
@@ -255,7 +261,7 @@ describe('Database Query Validators', () => {
       );
 
       const result = await validatedQuery;
-      
+
       expect(result.data).toBeDefined();
       expect(result.error).toBeNull();
       expect(result.data?.email).toBe('test@example.com');
@@ -266,7 +272,7 @@ describe('Database Query Validators', () => {
         message: 'Database error',
         code: 'PGRST116',
         details: 'No rows found',
-        hint: null
+        hint: null,
       };
 
       const mockQueryBuilder = {
@@ -274,8 +280,8 @@ describe('Database Query Validators', () => {
         eq: vi.fn().mockReturnThis(),
         single: vi.fn().mockResolvedValue({
           data: null,
-          error: mockError
-        })
+          error: mockError,
+        }),
       };
 
       const validatedQuery = createValidatedQuery(
@@ -285,7 +291,7 @@ describe('Database Query Validators', () => {
       );
 
       const result = await validatedQuery;
-      
+
       expect(result.data).toBeNull();
       expect(result.error).toEqual(mockError);
     });
@@ -300,10 +306,10 @@ describe('Database Query Validators', () => {
             email: 'invalid-email', // Invalid format
             role: 'customer',
             createdAt: '2023-01-01T00:00:00Z',
-            updatedAt: '2023-01-01T00:00:00Z'
+            updatedAt: '2023-01-01T00:00:00Z',
           },
-          error: null
-        })
+          error: null,
+        }),
       };
 
       const validatedQuery = createValidatedQuery(
@@ -313,7 +319,7 @@ describe('Database Query Validators', () => {
       );
 
       const result = await validatedQuery;
-      
+
       expect(result.data).toBeNull();
       expect(result.error).toBeDefined();
       expect(result.error?.message).toContain('Validation error');
@@ -328,7 +334,7 @@ describe('Database Query Validators', () => {
           price: 30,
           duration_minutes: 30,
           created_at: '2023-01-01T00:00:00Z',
-          updated_at: '2023-01-01T00:00:00Z'
+          updated_at: '2023-01-01T00:00:00Z',
         },
         {
           id: '123e4567-e89b-12d3-a456-426614174002',
@@ -337,8 +343,8 @@ describe('Database Query Validators', () => {
           price: 15,
           duration_minutes: 15,
           created_at: '2023-01-01T00:00:00Z',
-          updated_at: '2023-01-01T00:00:00Z'
-        }
+          updated_at: '2023-01-01T00:00:00Z',
+        },
       ];
 
       const mockQueryBuilder = {
@@ -346,19 +352,23 @@ describe('Database Query Validators', () => {
         eq: vi.fn().mockReturnThis(),
         mockResolvedValue: vi.fn().mockResolvedValue({
           data: mockData,
-          error: null
-        })
+          error: null,
+        }),
       };
 
       // Create a thenable mock
       const thenableMock = {
-        then: mockQueryBuilder.mockResolvedValue({
-          data: mockData,
-          error: null
-        }).then.bind(mockQueryBuilder.mockResolvedValue({
-          data: mockData,
-          error: null
-        }))
+        then: mockQueryBuilder
+          .mockResolvedValue({
+            data: mockData,
+            error: null,
+          })
+          .then.bind(
+            mockQueryBuilder.mockResolvedValue({
+              data: mockData,
+              error: null,
+            })
+          ),
       };
 
       const validatedQuery = createValidatedQuery(
@@ -368,7 +378,7 @@ describe('Database Query Validators', () => {
       );
 
       const result = await validatedQuery;
-      
+
       expect(result.data).toBeDefined();
       expect(result.error).toBeNull();
       expect(result.data).toHaveLength(2);
@@ -390,20 +400,23 @@ describe('Database Query Validators', () => {
             total_price: 30,
             notes: 'Rescheduled appointment',
             created_at: '2023-01-01T00:00:00Z',
-            updated_at: '2023-01-02T00:00:00Z'
+            updated_at: '2023-01-02T00:00:00Z',
           },
-          error: null
-        })
+          error: null,
+        }),
       };
 
       const validatedQuery = createValidatedQuery(
-        mockQueryBuilder.update({ start_time: '2023-12-01T14:00:00Z' }).eq('id', '123e4567-e89b-12d3-a456-426614174003').single(),
+        mockQueryBuilder
+          .update({ start_time: '2023-12-01T14:00:00Z' })
+          .eq('id', '123e4567-e89b-12d3-a456-426614174003')
+          .single(),
         AppointmentSchema,
         'update'
       );
 
       const result = await validatedQuery;
-      
+
       expect(result.data).toBeDefined();
       expect(result.error).toBeNull();
       expect(result.data?.start_time).toBe('2023-12-01T14:00:00Z');
@@ -421,10 +434,10 @@ describe('Database Query Validators', () => {
             price: 100,
             duration_minutes: 90,
             created_at: '2023-01-01T00:00:00Z',
-            updated_at: '2023-01-03T00:00:00Z'
+            updated_at: '2023-01-03T00:00:00Z',
           },
-          error: null
-        })
+          error: null,
+        }),
       };
 
       const validatedQuery = createValidatedQuery(
@@ -434,7 +447,7 @@ describe('Database Query Validators', () => {
       );
 
       const result = await validatedQuery;
-      
+
       expect(result.data).toBeDefined();
       expect(result.error).toBeNull();
       expect(result.data?.name).toBe('Discontinued Service');

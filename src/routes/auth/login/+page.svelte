@@ -1,6 +1,6 @@
 <script lang="ts">
   import type { PageData } from './$types';
-  import { supabase } from '$lib/supabase';
+  import { supabase } from '$lib/supabase/client';
   import { getAuthCallbackUrl } from '$lib/utils/auth-urls';
 
   let { data } = $props<{ data: PageData }>();

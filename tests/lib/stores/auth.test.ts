@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { get } from 'svelte/store';
-import { currentUser, setUser, clearUser } from './auth';
+import { currentUser, setUser, clearUser } from '$lib/stores/auth';
 import type { User } from '@supabase/supabase-js';
 
 describe('Auth Store', () => {

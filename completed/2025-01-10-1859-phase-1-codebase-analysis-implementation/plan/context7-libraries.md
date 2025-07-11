@@ -100,10 +100,10 @@ export default defineConfig({
   build: {
     // CSS code splitting
     cssCodeSplit: true,
-    
+
     // Chunk size warning limit (in kB)
     chunkSizeWarningLimit: 500,
-    
+
     // Manual chunks configuration
     rollupOptions: {
       output: {
@@ -119,23 +119,23 @@ export default defineConfig({
             // Other vendor libraries
             return 'vendor';
           }
-        }
-      }
+        },
+      },
     },
-    
+
     // CSS minification
     cssMinify: 'esbuild',
-    
+
     // Assets inline limit (4kb default)
-    assetsInlineLimit: 4096
+    assetsInlineLimit: 4096,
   },
-  
+
   // Dependency optimization
   optimizeDeps: {
     include: ['some-dep'],
     entries: ['src/main.js'],
-    force: false
-  }
+    force: false,
+  },
 });
 ```
 

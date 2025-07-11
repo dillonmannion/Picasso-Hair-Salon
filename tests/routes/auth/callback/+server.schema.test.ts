@@ -15,7 +15,6 @@ vi.mock('@sveltejs/kit', () => ({
   }),
 }));
 
-
 describe('OAuth callback with schema validation', () => {
   it('should validate and parse callback parameters with schemas', async () => {
     const mockParams = createMockOAuthCallback({
@@ -55,14 +54,14 @@ describe('OAuth callback with schema validation', () => {
 
   it('should handle missing code with schema validation error', async () => {
     const url = new URL('http://localhost/auth/callback?next=/dashboard');
-    const mockEvent = { 
-      url, 
-      locals: { 
+    const mockEvent = {
+      url,
+      locals: {
         supabase: {} as unknown as SupabaseClient,
         safeGetSession: vi.fn().mockResolvedValue({ session: null, user: null }),
         session: null,
         user: null,
-      } 
+      },
     };
 
     await expect(GET(mockEvent as unknown as MockRequestEvent)).rejects.toEqual({
@@ -80,14 +79,14 @@ describe('OAuth callback with schema validation', () => {
     const url = new URL(
       `http://localhost/auth/callback?error=${mockError.error}&error_description=${encodeURIComponent(mockError.error_description!)}`
     );
-    const mockEvent = { 
-      url, 
-      locals: { 
+    const mockEvent = {
+      url,
+      locals: {
         supabase: {} as unknown as SupabaseClient,
         safeGetSession: vi.fn().mockResolvedValue({ session: null, user: null }),
         session: null,
         user: null,
-      } 
+      },
     };
 
     await expect(GET(mockEvent as unknown as MockRequestEvent)).rejects.toEqual({

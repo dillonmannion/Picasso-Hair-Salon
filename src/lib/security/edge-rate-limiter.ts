@@ -27,14 +27,14 @@ export class EdgeRateLimiter {
 
   async checkLimit(identifier: string): Promise<RateLimitResult> {
     const key = this.buildKey(identifier);
-    
+
     try {
       const count = await this.kv.incr(key);
-      
+
       if (count === 1) {
         await this.kv.expire(key, this.config.windowSeconds);
       }
-      
+
       return this.buildResult(count);
     } catch {
       return this.buildResult(0);
@@ -56,11 +56,10 @@ export class EdgeRateLimiter {
 
   private buildResult(count: number): RateLimitResult {
     const allowed = count === 0 || count <= this.config.maxAttempts;
-    const remaining = count === 0 
-      ? this.config.maxAttempts 
-      : Math.max(0, this.config.maxAttempts - count);
+    const remaining =
+      count === 0 ? this.config.maxAttempts : Math.max(0, this.config.maxAttempts - count);
     const resetAt = new Date(Date.now() + this.config.windowSeconds * 1000);
-    
+
     return { allowed, remaining, resetAt };
   }
 }

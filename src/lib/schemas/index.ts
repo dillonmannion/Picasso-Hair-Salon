@@ -19,7 +19,7 @@ import {
   isAppointmentId,
   isCustomerId,
   isBarberId,
-  isProfileId
+  isProfileId,
 } from '$lib/types/branded';
 
 export {
@@ -42,7 +42,7 @@ export {
   isAppointmentId,
   isCustomerId,
   isBarberId,
-  isProfileId
+  isProfileId,
 };
 
 export const UuidSchema = z.string().uuid({

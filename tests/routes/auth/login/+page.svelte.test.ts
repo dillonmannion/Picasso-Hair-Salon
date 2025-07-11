@@ -20,7 +20,7 @@ vi.mock('$app/navigation', () => ({
 }));
 
 // Mock the Supabase client
-vi.mock('$lib/supabase', () => ({
+vi.mock('$lib/supabase/client', () => ({
   supabase: {
     auth: {
       signInWithOAuth: mocks.signInWithOAuth,
@@ -32,7 +32,7 @@ vi.mock('$lib/supabase', () => ({
 import LoginPage from '../../../../src/routes/auth/login/+page.svelte';
 
 // Import supabase to get the mocked instance
-import { supabase } from '$lib/supabase';
+import { supabase } from '$lib/supabase/client';
 import type { SupabaseClient } from '@supabase/supabase-js';
 
 // Create mock data that matches PageData type
@@ -123,9 +123,11 @@ describe('OAuth Login Page', () => {
   it('should display loading state while authenticating', async () => {
     // Create a promise we can control
     let resolveAuth: (value: { data: { url: string } | null; error: Error | null }) => void;
-    const authPromise = new Promise<{ data: { url: string } | null; error: Error | null }>((resolve) => {
-      resolveAuth = resolve;
-    });
+    const authPromise = new Promise<{ data: { url: string } | null; error: Error | null }>(
+      (resolve) => {
+        resolveAuth = resolve;
+      }
+    );
 
     mocks.signInWithOAuth.mockReturnValueOnce(authPromise);
 

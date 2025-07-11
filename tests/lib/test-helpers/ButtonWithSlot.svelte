@@ -3,12 +3,12 @@
   import type { ButtonProps } from '$lib/schemas';
 
   let { buttonProps = {} }: { buttonProps?: Partial<ButtonProps> } = $props();
-  
+
   // Ensure required props have values
   const mergedProps: ButtonProps = {
     variant: 'primary',
     size: 'medium',
-    ...buttonProps
+    ...buttonProps,
   };
 </script>
 

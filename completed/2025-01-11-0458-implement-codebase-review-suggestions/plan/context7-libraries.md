@@ -10,11 +10,13 @@ This file contains documentation references fetched from Context7 for libraries 
 ### Key Documentation Highlights:
 
 #### Edge Configuration
+
 - Edge runtime support is available through `@vercel/edge-config` package
 - Automatic environment variable detection for Vercel deployments
 - Supports both Edge Functions and standard Node.js runtimes
 
 #### KV Store Setup
+
 ```typescript
 import { kv } from '@vercel/kv';
 
@@ -27,19 +29,21 @@ await kv.set('key2', 'value2', { ex: 1 }); // expires in 1 second
 ```
 
 #### SvelteKit Integration
+
 ```typescript
 import { createClient } from '@vercel/kv';
 import { KV_REST_API_URL, KV_REST_API_TOKEN } from '$env/static/private';
 
 const kv = createClient({
   url: KV_REST_API_URL,
-  token: KV_REST_API_TOKEN
+  token: KV_REST_API_TOKEN,
 });
 
 await kv.set('key', 'value');
 ```
 
 #### Rate Limiting Pattern
+
 - Use KV with expiration for implementing rate limiting
 - Keys can be constructed using user identifiers (IP, user ID, etc.)
 - Set expiration based on rate limit window
@@ -53,6 +57,7 @@ await kv.set('key', 'value');
 ### Key Documentation Highlights:
 
 #### Basic RLS Setup
+
 ```sql
 -- Enable RLS on a table
 alter table tablename enable row level security;
@@ -65,6 +70,7 @@ on tablename for select to authenticated using (
 ```
 
 #### JWT Claims Access
+
 ```sql
 -- Access JWT claims in RLS policies
 auth.jwt() -- returns full JWT
@@ -75,6 +81,7 @@ auth.jwt()->>'is_anonymous' -- check if anonymous user
 ```
 
 #### Multi-Factor Authentication Enforcement
+
 ```sql
 create policy "Require MFA for sensitive operations"
 on tablename
@@ -85,6 +92,7 @@ using ((select auth.jwt()->>'aal') = 'aal2');
 ```
 
 #### Custom Claims and RBAC
+
 ```sql
 -- Access custom claims in app_metadata
 create policy "Check user role"
@@ -102,6 +110,7 @@ using ( team_id in (select auth.jwt() -> 'app_metadata' -> 'teams'));
 ```
 
 #### SSO Integration
+
 ```sql
 -- Access SSO provider information
 auth.jwt()#>>'{amr,0,method}' -- authentication method
@@ -110,6 +119,7 @@ auth.jwt()#>>'{user_metadata,iss}' -- identity provider's EntityID
 ```
 
 #### Performance Optimization
+
 ```sql
 -- Wrap auth functions in SELECT for performance
 create policy "optimized_policy" on test_table
@@ -117,12 +127,13 @@ to authenticated
 using ( (select auth.uid()) = user_id ); -- Note the wrapping SELECT
 
 -- Specify roles explicitly to avoid unnecessary processing
-create policy "select_policy" on your_table 
+create policy "select_policy" on your_table
 for select to authenticated -- Excludes 'anon' role
 using (auth.uid() = user_id);
 ```
 
 #### Security Definer Functions for Complex Logic
+
 ```sql
 create or replace function public.authorize(
   requested_permission app_permission
@@ -154,6 +165,7 @@ $$ language plpgsql stable security definer set search_path = '';
 ### Key Documentation Highlights:
 
 #### Vercel Adapter Configuration
+
 ```javascript
 import adapter from '@sveltejs/adapter-vercel';
 
@@ -162,19 +174,20 @@ export default {
     adapter: adapter({
       // Enable route splitting for optimal performance
       split: true,
-      
+
       // Configure image optimization
       images: {
         sizes: [640, 828, 1200, 1920, 3840],
         formats: ['image/avif', 'image/webp'],
-        minimumCacheTTL: 300
-      }
-    })
-  }
+        minimumCacheTTL: 300,
+      },
+    }),
+  },
 };
 ```
 
 #### Edge Runtime Configuration
+
 ```javascript
 // +page.js or +server.js
 export const config = {
@@ -184,23 +197,25 @@ export const config = {
 ```
 
 #### Route-Specific Configuration
+
 ```javascript
 // +layout.js - applies to all child routes
 export const config = {
   runtime: 'nodejs22.x',
   regions: ['iad1'],
   memory: 1024,
-  maxDuration: 15
+  maxDuration: 15,
 };
 
 // +page.js - override for specific page
 export const config = {
   runtime: 'edge', // Edge for this specific route
-  regions: 'all'
+  regions: 'all',
 };
 ```
 
 #### Incremental Static Regeneration (ISR)
+
 ```javascript
 import { BYPASS_TOKEN } from '$env/static/private';
 
@@ -208,12 +223,13 @@ export const config = {
   isr: {
     expiration: 60,
     bypassToken: BYPASS_TOKEN,
-    allowQuery: ['search']
-  }
+    allowQuery: ['search'],
+  },
 };
 ```
 
 #### Netlify Adapter with Edge Functions
+
 ```javascript
 import adapter from '@sveltejs/adapter-netlify';
 
@@ -221,13 +237,14 @@ export default {
   kit: {
     adapter: adapter({
       edge: true, // Use Deno-based edge functions
-      split: false // Cannot split with edge functions
-    })
-  }
+      split: false, // Cannot split with edge functions
+    }),
+  },
 };
 ```
 
 #### Cloudflare Adapter Configuration
+
 ```javascript
 import adapter from '@sveltejs/adapter-cloudflare';
 
@@ -235,18 +252,19 @@ export default {
   kit: {
     adapter: adapter({
       platformProxy: {
-        persist: true
+        persist: true,
       },
       routes: {
         include: ['/*'],
-        exclude: ['<all>']
-      }
-    })
-  }
+        exclude: ['<all>'],
+      },
+    }),
+  },
 };
 ```
 
 #### Route Organization Patterns
+
 ```
 src/routes/
 ├ (app)/              # Layout group
@@ -267,8 +285,9 @@ src/routes/
 ### Key Documentation Highlights:
 
 #### Basic Coverage Setup
+
 ```typescript
-import { defineConfig } from 'vitest/config'
+import { defineConfig } from 'vitest/config';
 
 export default defineConfig({
   test: {
@@ -277,11 +296,11 @@ export default defineConfig({
       provider: 'v8', // or 'istanbul'
       reporter: ['text', 'html', 'clover', 'json'],
       reportsDirectory: './coverage',
-      
+
       // Include source files
       include: ['src/**/*.{ts,tsx}'],
       exclude: ['**/*.test.{ts,tsx}', '**/node_modules/**'],
-      
+
       // Coverage thresholds
       thresholds: {
         lines: 80,
@@ -290,38 +309,39 @@ export default defineConfig({
         statements: 80,
         perFile: true,
         autoUpdate: true, // Update thresholds when coverage improves
-        100: false // Set all to 100%
-      }
-    }
-  }
-})
+        100: false, // Set all to 100%
+      },
+    },
+  },
+});
 ```
 
 #### Advanced Coverage Options
+
 ```typescript
 coverage: {
   // Report even on test failure
   reportOnFailure: true,
-  
+
   // Skip files with 100% coverage
   skipFull: true,
-  
+
   // Allow coverage of files outside project root
   allowExternal: false,
-  
+
   // Clean coverage before each run
   clean: true,
   cleanOnRerun: true,
-  
+
   // Exclude after source map remapping
   excludeAfterRemap: false,
-  
+
   // Ignore specific class methods
   ignoreClassMethods: ['constructor'],
-  
+
   // Processing concurrency
   processingConcurrency: Math.min(20, os.cpus().length),
-  
+
   // Watermarks for visual indicators
   watermarks: {
     statements: [50, 80],
@@ -333,6 +353,7 @@ coverage: {
 ```
 
 #### Custom Coverage Reporters
+
 ```typescript
 coverage: {
   reporter: [
@@ -341,12 +362,13 @@ coverage: {
     ['text'],
     // Custom reporter
     '@vitest/custom-coverage-reporter',
-    ['./custom-reporter.cjs', { someOption: true }]
-  ]
+    ['./custom-reporter.cjs', { someOption: true }],
+  ];
 }
 ```
 
 #### Per-File and Pattern-Based Thresholds
+
 ```typescript
 coverage: {
   thresholds: {
@@ -361,7 +383,7 @@ coverage: {
       branches: 85,
       lines: 80,
     },
-    
+
     // Force 100% coverage for specific files
     '**/critical/*.ts': { 100: true }
   }
@@ -369,6 +391,7 @@ coverage: {
 ```
 
 #### Coverage Performance Optimization
+
 ```bash
 # Debug slow coverage generation
 DEBUG=vitest:coverage vitest --run --coverage
@@ -382,6 +405,7 @@ DEBUG=vitest:coverage vitest --run --coverage
 ### Key Documentation Highlights:
 
 #### Basic Object Schema Definition
+
 ```typescript
 import { z } from 'zod';
 
@@ -389,7 +413,7 @@ import { z } from 'zod';
 const PersonSchema = z.object({
   name: z.string(),
   age: z.number(),
-  email: z.string().email()
+  email: z.string().email(),
 });
 
 // Derive type from schema
@@ -397,6 +421,7 @@ type Person = z.infer<typeof PersonSchema>;
 ```
 
 #### Component Props Pattern
+
 ```typescript
 // Define props schema
 const ButtonPropsSchema = z.object({
@@ -421,18 +446,19 @@ type ButtonProps = z.infer<typeof ButtonPropsSchema>;
 ```
 
 #### Schema Composition and Extension
+
 ```typescript
 // Base schema
 const BasePropsSchema = z.object({
   className: z.string().optional(),
-  style: z.record(z.string()).optional()
+  style: z.record(z.string()).optional(),
 });
 
 // Extend with spread operator (recommended)
 const ButtonPropsSchema = z.object({
   ...BasePropsSchema.shape,
   label: z.string(),
-  variant: z.enum(['primary', 'secondary'])
+  variant: z.enum(['primary', 'secondary']),
 });
 
 // Or use merge
@@ -440,11 +466,12 @@ const ExtendedSchema = BasePropsSchema.merge(ButtonPropsSchema);
 ```
 
 #### Optional and Nullable Patterns
+
 ```typescript
 // Make specific fields optional
 const PartialSchema = PersonSchema.partial({
   email: true,
-  age: true
+  age: true,
 });
 
 // Make all fields optional
@@ -454,24 +481,25 @@ const AllOptionalSchema = PersonSchema.partial();
 const NullableSchema = z.object({
   name: z.string(),
   nickname: z.string().nullable(), // string | null
-  bio: z.string().nullish() // string | null | undefined
+  bio: z.string().nullish(), // string | null | undefined
 });
 ```
 
 #### Advanced Patterns for Components
+
 ```typescript
 // Discriminated unions for variant props
 const ButtonSchema = z.discriminatedUnion('variant', [
   z.object({
     variant: z.literal('link'),
     href: z.string().url(),
-    target: z.enum(['_blank', '_self']).optional()
+    target: z.enum(['_blank', '_self']).optional(),
   }),
   z.object({
     variant: z.literal('button'),
     type: z.enum(['button', 'submit', 'reset']),
-    form: z.string().optional()
-  })
+    form: z.string().optional(),
+  }),
 ]);
 
 // Recursive schemas for nested components
@@ -480,7 +508,7 @@ const MenuItemSchema = z.object({
   icon: z.string().optional(),
   get children() {
     return z.array(MenuItemSchema).optional();
-  }
+  },
 });
 
 // Runtime validation in components
@@ -495,12 +523,13 @@ const validateProps = <T>(schema: z.ZodSchema<T>, props: unknown): T => {
 ```
 
 #### Form Integration Pattern
+
 ```typescript
 // Form schema
 const ContactFormSchema = z.object({
   name: z.string().min(2, 'Name must be at least 2 characters'),
   email: z.string().email('Invalid email address'),
-  message: z.string().min(10, 'Message must be at least 10 characters')
+  message: z.string().min(10, 'Message must be at least 10 characters'),
 });
 
 // Use with form validation
@@ -520,37 +549,39 @@ const emailFieldSchema = ContactFormSchema.shape.email;
 ### Key Documentation Highlights:
 
 #### Handle Hook Implementation
+
 ```typescript
 // src/hooks.server.ts
 import type { Handle } from '@sveltejs/kit';
 
 export const handle: Handle = async ({ event, resolve }) => {
-    // Access client IP address
-    const clientIp = event.getClientAddress();
-    
-    // Access request details
-    const url = event.url;
-    const method = event.request.method;
-    
-    // Implement rate limiting logic here
-    // Return 429 response if rate limited
-    if (isRateLimited(clientIp)) {
-        return new Response('Too Many Requests', {
-            status: 429,
-            headers: {
-                'Retry-After': '60',
-                'Content-Type': 'text/plain'
-            }
-        });
-    }
-    
-    // Continue with normal request handling
-    const response = await resolve(event);
-    return response;
+  // Access client IP address
+  const clientIp = event.getClientAddress();
+
+  // Access request details
+  const url = event.url;
+  const method = event.request.method;
+
+  // Implement rate limiting logic here
+  // Return 429 response if rate limited
+  if (isRateLimited(clientIp)) {
+    return new Response('Too Many Requests', {
+      status: 429,
+      headers: {
+        'Retry-After': '60',
+        'Content-Type': 'text/plain',
+      },
+    });
+  }
+
+  // Continue with normal request handling
+  const response = await resolve(event);
+  return response;
 };
 ```
 
 #### RequestEvent Properties for Rate Limiting
+
 - **`event.getClientAddress()`**: Returns the client's IP address
   - Respects `ADDRESS_HEADER` environment variable for proxy configurations
   - With `X-Forwarded-For`, use `XFF_DEPTH` to handle trusted proxies
@@ -560,6 +591,7 @@ export const handle: Handle = async ({ event, resolve }) => {
 - **`event.platform`**: Access to platform-specific features (KV stores, etc.)
 
 #### Environment Variables for IP Detection
+
 ```bash
 # Behind a proxy with True-Client-IP header
 ADDRESS_HEADER=True-Client-IP node build
@@ -569,72 +601,76 @@ ADDRESS_HEADER=X-Forwarded-For XFF_DEPTH=2 node build
 ```
 
 #### Integration with Vercel KV in Hooks
+
 ```typescript
 import { kv } from '@vercel/kv';
 import type { Handle } from '@sveltejs/kit';
 
 export const handle: Handle = async ({ event, resolve }) => {
-    const clientIp = event.getClientAddress();
-    const key = `rate-limit:${clientIp}`;
-    
-    // Get current request count
-    const count = await kv.incr(key);
-    
-    // Set expiration on first request
-    if (count === 1) {
-        await kv.expire(key, 60); // 60 second window
-    }
-    
-    // Check rate limit
-    if (count > 100) { // 100 requests per minute
-        return new Response('Too Many Requests', {
-            status: 429,
-            headers: {
-                'Retry-After': '60',
-                'X-RateLimit-Limit': '100',
-                'X-RateLimit-Remaining': '0',
-                'X-RateLimit-Reset': new Date(Date.now() + 60000).toISOString()
-            }
-        });
-    }
-    
-    // Add rate limit info to response
-    const response = await resolve(event);
-    response.headers.set('X-RateLimit-Limit', '100');
-    response.headers.set('X-RateLimit-Remaining', String(100 - count));
-    
-    return response;
+  const clientIp = event.getClientAddress();
+  const key = `rate-limit:${clientIp}`;
+
+  // Get current request count
+  const count = await kv.incr(key);
+
+  // Set expiration on first request
+  if (count === 1) {
+    await kv.expire(key, 60); // 60 second window
+  }
+
+  // Check rate limit
+  if (count > 100) {
+    // 100 requests per minute
+    return new Response('Too Many Requests', {
+      status: 429,
+      headers: {
+        'Retry-After': '60',
+        'X-RateLimit-Limit': '100',
+        'X-RateLimit-Remaining': '0',
+        'X-RateLimit-Reset': new Date(Date.now() + 60000).toISOString(),
+      },
+    });
+  }
+
+  // Add rate limit info to response
+  const response = await resolve(event);
+  response.headers.set('X-RateLimit-Limit', '100');
+  response.headers.set('X-RateLimit-Remaining', String(100 - count));
+
+  return response;
 };
 ```
 
 #### Multiple Hooks Composition
+
 ```typescript
 // Can export multiple hooks that run in sequence
 export const handle: Handle = async ({ event, resolve }) => {
-    // Rate limiting logic
-    const rateLimitResponse = await handleRateLimit({ event, resolve });
-    if (rateLimitResponse.status === 429) return rateLimitResponse;
-    
-    // Authentication logic
-    event.locals.user = await getUserFromSession(event.cookies.get('sessionid'));
-    
-    // Continue with default handling
-    return resolve(event);
+  // Rate limiting logic
+  const rateLimitResponse = await handleRateLimit({ event, resolve });
+  if (rateLimitResponse.status === 429) return rateLimitResponse;
+
+  // Authentication logic
+  event.locals.user = await getUserFromSession(event.cookies.get('sessionid'));
+
+  // Continue with default handling
+  return resolve(event);
 };
 ```
 
 #### Error Handling in Hooks
+
 ```typescript
 export const handleError: HandleServerError = async ({ error, event, status, message }) => {
-    // Log rate limit violations
-    if (status === 429) {
-        console.log(`Rate limit exceeded for ${event.getClientAddress()}`);
-    }
-    
-    return {
-        message: status === 429 ? 'Too many requests, please try again later' : message,
-        code: status
-    };
+  // Log rate limit violations
+  if (status === 429) {
+    console.log(`Rate limit exceeded for ${event.getClientAddress()}`);
+  }
+
+  return {
+    message: status === 429 ? 'Too many requests, please try again later' : message,
+    code: status,
+  };
 };
 ```
 

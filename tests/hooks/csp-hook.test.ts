@@ -7,7 +7,7 @@ type MockLocals = App.Locals;
 
 vi.mock('../../src/lib/security/csp-config', () => ({
   generateNonce: vi.fn(),
-  getCSPHeader: vi.fn()
+  getCSPHeader: vi.fn(),
 }));
 
 describe('CSP Hook Integration', () => {
@@ -20,7 +20,7 @@ describe('CSP Hook Integration', () => {
     getAll: vi.fn().mockReturnValue([]),
     set: vi.fn(),
     delete: vi.fn(),
-    serialize: vi.fn()
+    serialize: vi.fn(),
   });
 
   const createMockLocals = (): Partial<MockLocals> => ({});
@@ -28,7 +28,7 @@ describe('CSP Hook Integration', () => {
   it('should apply CSP headers with generated nonce to all responses', async () => {
     const mockNonce = 'test-nonce-12345';
     const mockCSPHeader = "default-src 'self'; script-src 'self' 'nonce-test-nonce-12345'";
-    
+
     vi.mocked(generateNonce).mockReturnValue(mockNonce);
     vi.mocked(getCSPHeader).mockReturnValue(mockCSPHeader);
 
@@ -44,12 +44,10 @@ describe('CSP Hook Integration', () => {
       getClientAddress: () => '127.0.0.1',
       setHeaders: vi.fn(),
       isDataRequest: false,
-      isSubRequest: false
+      isSubRequest: false,
     };
 
-    const mockResolve = vi.fn().mockResolvedValue(
-      new Response('test response', { status: 200 })
-    );
+    const mockResolve = vi.fn().mockResolvedValue(new Response('test response', { status: 200 }));
 
     const response = await cspHandler({ event: mockEvent, resolve: mockResolve });
 
@@ -62,7 +60,7 @@ describe('CSP Hook Integration', () => {
   it('should generate unique nonces for each request', async () => {
     let callCount = 0;
     const noncesUsed: string[] = [];
-    
+
     vi.mocked(generateNonce).mockImplementation(() => {
       const nonce = `nonce-${++callCount}`;
       noncesUsed.push(nonce);
@@ -82,7 +80,7 @@ describe('CSP Hook Integration', () => {
       getClientAddress: () => '127.0.0.1',
       setHeaders: vi.fn(),
       isDataRequest: false,
-      isSubRequest: false
+      isSubRequest: false,
     });
 
     const mockResolve = vi.fn().mockImplementation(async () => {
@@ -91,7 +89,7 @@ describe('CSP Hook Integration', () => {
 
     const event1 = createMockEvent();
     const event2 = createMockEvent();
-    
+
     const response1 = await cspHandler({ event: event1, resolve: mockResolve });
     const response2 = await cspHandler({ event: event2, resolve: mockResolve });
 
@@ -118,7 +116,7 @@ describe('CSP Hook Integration', () => {
       getClientAddress: () => '127.0.0.1',
       setHeaders: vi.fn(),
       isDataRequest: false,
-      isSubRequest: false
+      isSubRequest: false,
     };
 
     const mockResolve = vi.fn().mockResolvedValue(
@@ -126,8 +124,8 @@ describe('CSP Hook Integration', () => {
         status: 200,
         headers: {
           'X-Custom-Header': 'custom-value',
-          'Cache-Control': 'no-cache'
-        }
+          'Cache-Control': 'no-cache',
+        },
       })
     );
 
@@ -154,13 +152,11 @@ describe('CSP Hook Integration', () => {
       getClientAddress: () => '127.0.0.1',
       setHeaders: vi.fn(),
       isDataRequest: false,
-      isSubRequest: false
+      isSubRequest: false,
     };
 
     const originalBody = 'original response body';
-    const mockResolve = vi.fn().mockResolvedValue(
-      new Response(originalBody, { status: 201 })
-    );
+    const mockResolve = vi.fn().mockResolvedValue(new Response(originalBody, { status: 201 }));
 
     const response = await cspHandler({ event: mockEvent, resolve: mockResolve });
 

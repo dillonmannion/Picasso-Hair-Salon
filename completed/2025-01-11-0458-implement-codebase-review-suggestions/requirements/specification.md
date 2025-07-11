@@ -13,6 +13,7 @@ This specification outlines the implementation of critical and medium-priority s
 **Then** rate limiting should persist across all instances and correctly limit requests
 
 **Acceptance Criteria:**
+
 - Rate limiting uses Vercel KV or similar distributed storage
 - Rate limit counters persist across serverless function invocations
 - Rate limit windows expire correctly after the configured time
@@ -25,6 +26,7 @@ This specification outlines the implementation of critical and medium-priority s
 **Then** only the code for that specific route should be loaded
 
 **Acceptance Criteria:**
+
 - SvelteKit adapter configuration has `split: true` enabled
 - Each route is bundled separately
 - Common dependencies are properly shared between routes
@@ -37,6 +39,7 @@ This specification outlines the implementation of critical and medium-priority s
 **Then** the test run should fail with clear feedback
 
 **Acceptance Criteria:**
+
 - Coverage thresholds are set to at least 80% for all metrics
 - Behavior coverage is prioritized over line coverage
 - Clear error messages indicate which coverage metrics failed
@@ -49,6 +52,7 @@ This specification outlines the implementation of critical and medium-priority s
 **Then** role checks should use JWT claims instead of function calls
 
 **Acceptance Criteria:**
+
 - RLS policies use `auth.jwt() ->> 'role'` pattern
 - Composite indexes are added for common query patterns
 - All existing security guarantees are maintained
@@ -61,6 +65,7 @@ This specification outlines the implementation of critical and medium-priority s
 **Then** all props should be validated against a Zod schema
 
 **Acceptance Criteria:**
+
 - Button component props are derived from a Zod schema
 - All component props follow the pattern: `type Props = z.infer<typeof PropsSchema>`
 - Runtime validation is available when needed
@@ -73,6 +78,7 @@ This specification outlines the implementation of critical and medium-priority s
 **Then** it should be read from a single source of truth
 
 **Acceptance Criteria:**
+
 - CSP configuration exists in only one location
 - Both development and production use the same CSP source
 - CSP headers are properly applied to all responses
@@ -85,6 +91,7 @@ This specification outlines the implementation of critical and medium-priority s
 **Then** the type system should prevent mixing different ID types
 
 **Acceptance Criteria:**
+
 - Branded types are implemented for all entity IDs
 - TypeScript prevents assigning a UserId where ServiceId is expected
 - Existing ID usage is migrated to branded types
@@ -93,20 +100,24 @@ This specification outlines the implementation of critical and medium-priority s
 ## Technical Requirements
 
 ### Dependencies
+
 - **@vercel/kv**: For distributed rate limiting storage
 - **Existing**: Svelte 5, SvelteKit, Vitest, Zod, Supabase
 
 ### Performance Targets
+
 - Route bundles under 200KB each
 - RLS queries execute in under 50ms
 - Rate limit checks complete in under 100ms
 
 ### Security Requirements
+
 - All existing security measures maintained or improved
 - CSP headers properly configured with nonces
 - No credentials or sensitive data in code
 
 ### Testing Requirements
+
 - All changes must have corresponding tests
 - Tests must follow behavior-driven patterns
 - Coverage thresholds enforced at 80%+
@@ -126,6 +137,7 @@ Based on the codebase review, implementation should follow this priority:
 ## Success Criteria
 
 The implementation is complete when:
+
 - All critical and medium priority items are implemented
 - All tests pass with 80%+ coverage
 - The application deploys successfully to edge environments

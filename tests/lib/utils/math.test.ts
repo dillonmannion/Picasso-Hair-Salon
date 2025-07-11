@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { add, multiply } from './math';
+import { add, multiply } from '$lib/utils/math';
 
 describe('Math utilities', () => {
   describe('add', () => {

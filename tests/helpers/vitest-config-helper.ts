@@ -27,31 +27,33 @@ const extractThresholdValue = (content: string, metric: string): number => {
 export const readVitestConfig = (): { coverage: CoverageConfig } => {
   const configPath = resolve(process.cwd(), VITEST_CONFIG_PATH);
   const configContent = readFileSync(configPath, 'utf-8');
-  
-  const thresholds = COVERAGE_METRICS.reduce((acc, metric) => ({
-    ...acc,
-    [metric]: extractThresholdValue(configContent, metric)
-  }), {} as CoverageThresholds);
-  
+
+  const thresholds = COVERAGE_METRICS.reduce(
+    (acc, metric) => ({
+      ...acc,
+      [metric]: extractThresholdValue(configContent, metric),
+    }),
+    {} as CoverageThresholds
+  );
+
   return {
     coverage: {
       provider: 'v8',
       reporter: ['text', 'json', 'html'],
       thresholds,
       exclude: [],
-      include: []
-    }
+      include: [],
+    },
   };
 };
 
 export const updateCoverageThresholds = (thresholds: CoverageThresholds): string => {
   const configPath = resolve(process.cwd(), VITEST_CONFIG_PATH);
   const configContent = readFileSync(configPath, 'utf-8');
-  
-  return COVERAGE_METRICS.reduce((content, metric) => 
-    content.replace(
-      new RegExp(`${metric}:\\s*\\d+`),
-      `${metric}: ${thresholds[metric]}`
-    ), configContent
+
+  return COVERAGE_METRICS.reduce(
+    (content, metric) =>
+      content.replace(new RegExp(`${metric}:\\s*\\d+`), `${metric}: ${thresholds[metric]}`),
+    configContent
   );
 };

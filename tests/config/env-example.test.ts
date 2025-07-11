@@ -37,7 +37,9 @@ describe('Environment Example File', () => {
     // Verify example values are provided
     expect(content).toMatch(/PUBLIC_SUPABASE_URL=https:\/\/[a-z0-9]+\.supabase\.co/);
     expect(content).toMatch(/PUBLIC_SUPABASE_ANON_KEY=eyJ[a-zA-Z0-9._-]+/);
-    expect(content).toMatch(/DATABASE_URL=postgresql:\/\/postgres:password@localhost:54322\/postgres/);
+    expect(content).toMatch(
+      /DATABASE_URL=postgresql:\/\/postgres:password@localhost:54322\/postgres/
+    );
     expect(content).toMatch(/NODE_ENV=development/);
     expect(content).toMatch(/RATE_LIMIT_WINDOW_MS=900000/);
     expect(content).toMatch(/RATE_LIMIT_MAX_REQUESTS=100/);
