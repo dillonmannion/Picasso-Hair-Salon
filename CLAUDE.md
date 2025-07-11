@@ -31,7 +31,7 @@ During the `implementation` phase, the `/workflow-continue` script will invoke m
     - **My Output:** Only the TypeScript code for the test file.
 
 2.  **GREEN Phase (Generate Implementation):**
-    - **Input from Script:** The full code of the failing test file and the `pnpm test` failure output.
+    - **Input from Script:** The full code of the failing test file and the `pnpm test:unit` (or `pnpm test` if e2e tests are being written) failure output.
     - **My Task:** Write the **absolute minimum** amount of production code required to make the failing test pass. I will not add any logic, features, or code not explicitly demanded by the test.
     - **My Output:** Only the TypeScript code for the implementation file.
 
