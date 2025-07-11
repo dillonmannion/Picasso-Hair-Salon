@@ -1,4 +1,6 @@
 <script lang="ts">
+  import type { Snippet } from 'svelte';
+  
   type TypographyVariant = 'hero' | 'display' | 'heading' | 'body' | 'caption';
   type TypographyTag = 'h1' | 'h2' | 'h3' | 'p' | 'span' | 'div';
 
@@ -6,12 +8,14 @@
     variant?: TypographyVariant;
     as?: TypographyTag;
     class?: string;
+    children?: Snippet;
   }
 
   let { 
     variant = 'body', 
     as,
     class: className = '',
+    children,
     ...restProps
   }: Props = $props();
 
@@ -44,5 +48,7 @@
 </script>
 
 <svelte:element this={Element} class={classes} {...restProps}>
-  <slot />
+  {#if children}
+    {@render children()}
+  {/if}
 </svelte:element>
