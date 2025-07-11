@@ -8,12 +8,6 @@
   "devCommand": "pnpm dev",
   "installCommand": "pnpm install --frozen-lockfile",
 
-  "functions": {
-    "src/routes/api/*.js": {
-      "maxDuration": 10
-    }
-  },
-
   "regions": ["iad1"],
 
   "crons": [],
@@ -39,22 +33,6 @@
           "value": "strict-origin-when-cross-origin"
         }
       ]
-    },
-    {
-      "source": "/api/(.*)",
-      "headers": [
-        {
-          "key": "Cache-Control",
-          "value": "no-cache, no-store, must-revalidate"
-        }
-      ]
-    }
-  ],
-
-  "rewrites": [
-    {
-      "source": "/api/health",
-      "destination": "/api/health-check"
     }
   ],
 
