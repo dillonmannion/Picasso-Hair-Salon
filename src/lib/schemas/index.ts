@@ -45,8 +45,8 @@ export const ButtonSizeSchema = z.enum(['small', 'medium', 'large']);
 
 export const ButtonPropsSchema = z
   .object({
-    variant: ButtonVariantSchema.default('primary'),
-    size: ButtonSizeSchema.default('medium'),
+    variant: ButtonVariantSchema.optional().default('primary'),
+    size: ButtonSizeSchema.optional().default('medium'),
     disabled: z.boolean().optional(),
     onclick: z.function().optional(),
     class: z.string().optional(),

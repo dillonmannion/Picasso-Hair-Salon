@@ -1,7 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import type { RequestEvent } from '@sveltejs/kit';
 import type { Session } from '@supabase/supabase-js';
-import { handle } from '../src/hooks.server';
 
 // Mock modules
 const mockGetSession = vi.fn();
@@ -22,14 +21,36 @@ vi.mock('$env/static/public', () => ({
   PUBLIC_SUPABASE_ANON_KEY: 'test-anon-key',
 }));
 
+// Mock process.env for rate limiting
+vi.stubGlobal('process', {
+  env: {
+    RATE_LIMIT_MAX_ATTEMPTS: '5',
+    RATE_LIMIT_WINDOW_SECONDS: '900',
+  },
+});
+
 // Mock authGuard to prevent it from interfering with our tests
 vi.mock('../src/hooks/authGuard', () => ({
   authGuard: vi.fn(async ({ event, resolve }) => resolve(event)),
 }));
 
 // Mock the new dependencies
-vi.mock('$lib/security/rate-limiter', () => ({
-  checkRateLimit: vi.fn(() => true)
+vi.mock('@vercel/kv', () => ({
+  kv: {
+    incr: vi.fn(),
+    expire: vi.fn(),
+  }
+}));
+
+// Create a mock instance with the methods we need
+const mockEdgeRateLimiterInstance = {
+  checkLimit: vi.fn(),
+  getConfig: vi.fn()
+};
+
+// Mock the EdgeRateLimiter constructor to return our instance
+vi.mock('$lib/security/edge-rate-limiter', () => ({
+  EdgeRateLimiter: vi.fn(() => mockEdgeRateLimiterInstance)
 }));
 
 vi.mock('$lib/security/csp', () => ({
@@ -40,11 +61,25 @@ vi.mock('$lib/server/auth/session', () => ({
   validateAndPopulateSession: vi.fn()
 }));
 
+// Import handle after all mocks are set up
+const { handle } = await import('../src/hooks.server');
+
 describe('Server Hooks - Authentication Setup', () => {
   let mockEvent: RequestEvent;
 
   beforeEach(() => {
     vi.clearAllMocks();
+    
+    // Reset mock return values for each test
+    mockEdgeRateLimiterInstance.checkLimit.mockResolvedValue({ 
+      allowed: true, 
+      remaining: 5, 
+      resetAt: new Date() 
+    });
+    mockEdgeRateLimiterInstance.getConfig.mockReturnValue({ 
+      maxAttempts: 5, 
+      windowSeconds: 900 
+    });
 
     // Create a minimal mock event
     const cookies = {

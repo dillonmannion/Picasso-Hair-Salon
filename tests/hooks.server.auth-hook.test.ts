@@ -3,10 +3,26 @@ import type { RequestEvent } from '@sveltejs/kit';
 import type { Session, User } from '@supabase/supabase-js';
 import { handle } from '../src/hooks.server';
 
-// Mock the rate limiter
-vi.mock('$lib/security/rate-limiter', () => ({
-  checkRateLimit: vi.fn()
+// Mock Vercel KV
+vi.mock('@vercel/kv', () => ({
+  kv: {
+    incr: vi.fn(),
+    expire: vi.fn(),
+  }
 }));
+
+// Mock the edge rate limiter
+vi.mock('$lib/security/edge-rate-limiter', () => {
+  const mockInstance = {
+    checkLimit: vi.fn(),
+    getConfig: vi.fn(() => ({ maxAttempts: 5, windowSeconds: 900 }))
+  };
+  
+  return {
+    EdgeRateLimiter: vi.fn(() => mockInstance),
+    __mockInstance: mockInstance
+  };
+});
 
 // Mock the CSP handler
 vi.mock('$lib/security/csp', () => ({
@@ -26,16 +42,24 @@ vi.mock('$env/static/public', () => ({
 
 describe('Authentication Hook - Complete Implementation', () => {
   let mockEvent: RequestEvent;
-  let mockCheckRateLimit: ReturnType<typeof vi.fn>;
+  let mockEdgeRateLimiterInstance: {
+    checkLimit: ReturnType<typeof vi.fn>;
+    resetLimit: ReturnType<typeof vi.fn>;
+  };
   let mockApplyCSPHeaders: ReturnType<typeof vi.fn>;
   let mockValidateAndPopulateSession: ReturnType<typeof vi.fn>;
 
   beforeEach(async () => {
     vi.clearAllMocks();
     
-    // Get mocked functions
-    const rateLimiter = await import('$lib/security/rate-limiter');
-    mockCheckRateLimit = rateLimiter.checkRateLimit as ReturnType<typeof vi.fn>;
+    // Get the mock instance from the mocked module
+    const edgeRateLimiterModule = await import('$lib/security/edge-rate-limiter');
+    mockEdgeRateLimiterInstance = (edgeRateLimiterModule as unknown as {
+      __mockInstance: {
+        checkLimit: ReturnType<typeof vi.fn>;
+        resetLimit: ReturnType<typeof vi.fn>;
+      };
+    }).__mockInstance;
     
     const csp = await import('$lib/security/csp');
     mockApplyCSPHeaders = csp.applyCSPHeaders as ReturnType<typeof vi.fn>;
@@ -70,7 +94,7 @@ describe('Authentication Hook - Complete Implementation', () => {
 
   describe('Rate Limiting', () => {
     it('should apply rate limiting to all requests', async () => {
-      mockCheckRateLimit.mockReturnValue(true);
+      mockEdgeRateLimiterInstance.checkLimit.mockResolvedValue({ allowed: true, remaining: 4, resetAt: new Date() });
       mockApplyCSPHeaders.mockImplementation((response: Response) => response);
       mockValidateAndPopulateSession.mockResolvedValue(undefined);
       
@@ -78,11 +102,11 @@ describe('Authentication Hook - Complete Implementation', () => {
 
       await handle({ event: mockEvent, resolve: mockResolve });
 
-      expect(mockCheckRateLimit).toHaveBeenCalledWith('127.0.0.1');
+      expect(mockEdgeRateLimiterInstance.checkLimit).toHaveBeenCalledWith('127.0.0.1');
     });
 
     it('should return 429 when rate limit is exceeded', async () => {
-      mockCheckRateLimit.mockReturnValue(false);
+      mockEdgeRateLimiterInstance.checkLimit.mockResolvedValue({ allowed: false, remaining: 0, resetAt: new Date() });
       
       const mockResolve = vi.fn(async () => new Response('OK'));
 
@@ -94,7 +118,7 @@ describe('Authentication Hook - Complete Implementation', () => {
     });
 
     it('should continue processing when rate limit is not exceeded', async () => {
-      mockCheckRateLimit.mockReturnValue(true);
+      mockEdgeRateLimiterInstance.checkLimit.mockResolvedValue({ allowed: true, remaining: 4, resetAt: new Date() });
       mockApplyCSPHeaders.mockImplementation((response: Response) => response);
       mockValidateAndPopulateSession.mockResolvedValue(undefined);
       
@@ -109,7 +133,7 @@ describe('Authentication Hook - Complete Implementation', () => {
 
   describe('Session Validation', () => {
     it('should validate and populate session for all requests', async () => {
-      mockCheckRateLimit.mockReturnValue(true);
+      mockEdgeRateLimiterInstance.checkLimit.mockResolvedValue({ allowed: true, remaining: 4, resetAt: new Date() });
       mockApplyCSPHeaders.mockImplementation((response: Response) => response);
       mockValidateAndPopulateSession.mockResolvedValue(undefined);
       
@@ -121,7 +145,7 @@ describe('Authentication Hook - Complete Implementation', () => {
     });
 
     it('should populate event.locals.user when session is valid', async () => {
-      mockCheckRateLimit.mockReturnValue(true);
+      mockEdgeRateLimiterInstance.checkLimit.mockResolvedValue({ allowed: true, remaining: 4, resetAt: new Date() });
       mockApplyCSPHeaders.mockImplementation((response: Response) => response);
       
       const mockUser = {
@@ -150,7 +174,7 @@ describe('Authentication Hook - Complete Implementation', () => {
 
   describe('Route Protection', () => {
     it('should allow access to public routes without authentication', async () => {
-      mockCheckRateLimit.mockReturnValue(true);
+      mockEdgeRateLimiterInstance.checkLimit.mockResolvedValue({ allowed: true, remaining: 4, resetAt: new Date() });
       mockApplyCSPHeaders.mockImplementation((response: Response) => response);
       mockValidateAndPopulateSession.mockResolvedValue(undefined);
       
@@ -169,7 +193,7 @@ describe('Authentication Hook - Complete Implementation', () => {
     });
 
     it('should redirect to login for protected routes without authentication', async () => {
-      mockCheckRateLimit.mockReturnValue(true);
+      mockEdgeRateLimiterInstance.checkLimit.mockResolvedValue({ allowed: true, remaining: 4, resetAt: new Date() });
       mockApplyCSPHeaders.mockImplementation((response: Response) => response);
       mockValidateAndPopulateSession.mockResolvedValue(undefined);
       
@@ -196,7 +220,7 @@ describe('Authentication Hook - Complete Implementation', () => {
     });
 
     it('should allow access to protected routes with authentication', async () => {
-      mockCheckRateLimit.mockReturnValue(true);
+      mockEdgeRateLimiterInstance.checkLimit.mockResolvedValue({ allowed: true, remaining: 4, resetAt: new Date() });
       mockApplyCSPHeaders.mockImplementation((response: Response) => response);
       
       // User is authenticated
@@ -227,7 +251,7 @@ describe('Authentication Hook - Complete Implementation', () => {
     });
 
     it('should protect admin routes from non-admin users', async () => {
-      mockCheckRateLimit.mockReturnValue(true);
+      mockEdgeRateLimiterInstance.checkLimit.mockResolvedValue({ allowed: true, remaining: 4, resetAt: new Date() });
       mockApplyCSPHeaders.mockImplementation((response: Response) => response);
       
       // User is authenticated but not admin
@@ -259,7 +283,7 @@ describe('Authentication Hook - Complete Implementation', () => {
     });
 
     it('should allow admin access to admin routes', async () => {
-      mockCheckRateLimit.mockReturnValue(true);
+      mockEdgeRateLimiterInstance.checkLimit.mockResolvedValue({ allowed: true, remaining: 4, resetAt: new Date() });
       mockApplyCSPHeaders.mockImplementation((response: Response) => response);
       
       // User is admin
@@ -292,7 +316,7 @@ describe('Authentication Hook - Complete Implementation', () => {
 
   describe('CSP Headers', () => {
     it('should apply CSP headers to all responses', async () => {
-      mockCheckRateLimit.mockReturnValue(true);
+      mockEdgeRateLimiterInstance.checkLimit.mockResolvedValue({ allowed: true, remaining: 4, resetAt: new Date() });
       mockValidateAndPopulateSession.mockResolvedValue(undefined);
       
       const mockResponse = new Response('OK');
@@ -306,7 +330,7 @@ describe('Authentication Hook - Complete Implementation', () => {
     });
 
     it('should pass development flag based on NODE_ENV', async () => {
-      mockCheckRateLimit.mockReturnValue(true);
+      mockEdgeRateLimiterInstance.checkLimit.mockResolvedValue({ allowed: true, remaining: 4, resetAt: new Date() });
       mockValidateAndPopulateSession.mockResolvedValue(undefined);
       
       const originalEnv = process.env.NODE_ENV;
@@ -343,9 +367,9 @@ describe('Authentication Hook - Complete Implementation', () => {
     it('should execute hooks in correct order: rate limit -> session -> auth guard -> CSP', async () => {
       const executionOrder: string[] = [];
       
-      mockCheckRateLimit.mockImplementation(() => {
+      mockEdgeRateLimiterInstance.checkLimit.mockImplementation(async () => {
         executionOrder.push('rate-limit');
-        return true;
+        return { allowed: true, remaining: 4, resetAt: new Date() };
       });
       
       mockValidateAndPopulateSession.mockImplementation(async () => {

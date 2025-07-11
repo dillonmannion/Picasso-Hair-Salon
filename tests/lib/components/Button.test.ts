@@ -1,7 +1,7 @@
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/svelte';
 import userEvent from '@testing-library/user-event';
-import Button from '$lib/components/ButtonSchema.svelte';
+import Button from '$lib/components/Button.svelte';
 import { createMockButtonProps } from '$lib/test-utils/factories';
 import { ButtonPropsSchema } from '$lib/schemas';
 

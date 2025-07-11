@@ -512,6 +512,132 @@ const validateForm = (data: unknown) => {
 const emailFieldSchema = ContactFormSchema.shape.email;
 ```
 
+## 6. SvelteKit - Server Hooks for Rate Limiting
+
+**Library ID**: `/sveltejs/kit`
+**Topics**: hooks server handle RequestEvent getClientAddress
+
+### Key Documentation Highlights:
+
+#### Handle Hook Implementation
+```typescript
+// src/hooks.server.ts
+import type { Handle } from '@sveltejs/kit';
+
+export const handle: Handle = async ({ event, resolve }) => {
+    // Access client IP address
+    const clientIp = event.getClientAddress();
+    
+    // Access request details
+    const url = event.url;
+    const method = event.request.method;
+    
+    // Implement rate limiting logic here
+    // Return 429 response if rate limited
+    if (isRateLimited(clientIp)) {
+        return new Response('Too Many Requests', {
+            status: 429,
+            headers: {
+                'Retry-After': '60',
+                'Content-Type': 'text/plain'
+            }
+        });
+    }
+    
+    // Continue with normal request handling
+    const response = await resolve(event);
+    return response;
+};
+```
+
+#### RequestEvent Properties for Rate Limiting
+- **`event.getClientAddress()`**: Returns the client's IP address
+  - Respects `ADDRESS_HEADER` environment variable for proxy configurations
+  - With `X-Forwarded-For`, use `XFF_DEPTH` to handle trusted proxies
+- **`event.url`**: URL object with pathname, search params, etc.
+- **`event.request`**: Standard Web API Request object
+- **`event.locals`**: Store rate limit data for use in routes
+- **`event.platform`**: Access to platform-specific features (KV stores, etc.)
+
+#### Environment Variables for IP Detection
+```bash
+# Behind a proxy with True-Client-IP header
+ADDRESS_HEADER=True-Client-IP node build
+
+# Using X-Forwarded-For with 2 trusted proxies
+ADDRESS_HEADER=X-Forwarded-For XFF_DEPTH=2 node build
+```
+
+#### Integration with Vercel KV in Hooks
+```typescript
+import { kv } from '@vercel/kv';
+import type { Handle } from '@sveltejs/kit';
+
+export const handle: Handle = async ({ event, resolve }) => {
+    const clientIp = event.getClientAddress();
+    const key = `rate-limit:${clientIp}`;
+    
+    // Get current request count
+    const count = await kv.incr(key);
+    
+    // Set expiration on first request
+    if (count === 1) {
+        await kv.expire(key, 60); // 60 second window
+    }
+    
+    // Check rate limit
+    if (count > 100) { // 100 requests per minute
+        return new Response('Too Many Requests', {
+            status: 429,
+            headers: {
+                'Retry-After': '60',
+                'X-RateLimit-Limit': '100',
+                'X-RateLimit-Remaining': '0',
+                'X-RateLimit-Reset': new Date(Date.now() + 60000).toISOString()
+            }
+        });
+    }
+    
+    // Add rate limit info to response
+    const response = await resolve(event);
+    response.headers.set('X-RateLimit-Limit', '100');
+    response.headers.set('X-RateLimit-Remaining', String(100 - count));
+    
+    return response;
+};
+```
+
+#### Multiple Hooks Composition
+```typescript
+// Can export multiple hooks that run in sequence
+export const handle: Handle = async ({ event, resolve }) => {
+    // Rate limiting logic
+    const rateLimitResponse = await handleRateLimit({ event, resolve });
+    if (rateLimitResponse.status === 429) return rateLimitResponse;
+    
+    // Authentication logic
+    event.locals.user = await getUserFromSession(event.cookies.get('sessionid'));
+    
+    // Continue with default handling
+    return resolve(event);
+};
+```
+
+#### Error Handling in Hooks
+```typescript
+export const handleError: HandleServerError = async ({ error, event, status, message }) => {
+    // Log rate limit violations
+    if (status === 429) {
+        console.log(`Rate limit exceeded for ${event.getClientAddress()}`);
+    }
+    
+    return {
+        message: status === 429 ? 'Too many requests, please try again later' : message,
+        code: status
+    };
+};
+```
+
 ## Summary
 
 These documentation references provide comprehensive guidance for implementing:
@@ -521,5 +647,6 @@ These documentation references provide comprehensive guidance for implementing:
 3. **SvelteKit**: Flexible adapter configuration for edge deployment and route optimization
 4. **Vitest**: Comprehensive coverage configuration with thresholds and reporting
 5. **Zod**: Type-safe schema-first development patterns for component props
+6. **SvelteKit Hooks**: Server-side request handling for implementing rate limiting with IP detection
 
 All libraries have been selected for their edge compatibility, TypeScript support, and alignment with the TDD workflow requirements.

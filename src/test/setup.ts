@@ -1,22 +1,22 @@
-// Test setup file
 import '@testing-library/jest-dom/vitest';
 import { vi } from 'vitest';
 
-// Mock window.location for OAuth redirect tests
-Object.defineProperty(window, 'location', {
-  value: {
-    href: 'http://localhost:5173',
-    origin: 'http://localhost:5173',
-    assign: vi.fn(),
-    replace: vi.fn(),
-    reload: vi.fn(),
-  },
+Object.defineProperty(window, 'matchMedia', {
   writable: true,
+  value: vi.fn().mockImplementation((query: string) => ({
+    matches: false,
+    media: query,
+    onchange: null,
+    addListener: vi.fn(),
+    removeListener: vi.fn(),
+    addEventListener: vi.fn(),
+    removeEventListener: vi.fn(),
+    dispatchEvent: vi.fn(),
+  })),
 });
 
-// Mock fetch for API calls
-global.fetch = vi.fn();
-
-// Setup default env variables for testing
-process.env.PUBLIC_SUPABASE_URL = 'https://test.supabase.co';
-process.env.PUBLIC_SUPABASE_ANON_KEY = 'test-anon-key';
+if (typeof global.structuredClone === 'undefined') {
+  global.structuredClone = (obj: unknown) => {
+    return JSON.parse(JSON.stringify(obj));
+  };
+}
