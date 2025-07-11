@@ -45,6 +45,10 @@ export class EdgeRateLimiter {
     return RateLimitResultSchema;
   }
 
+  getConfig() {
+    return this.config;
+  }
+
   private buildKey(identifier: string): string {
     const prefix = this.config.keyPrefix || '';
     return prefix ? `${prefix}:rate_limit:${identifier}` : `rate_limit:${identifier}`;

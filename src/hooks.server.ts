@@ -1,9 +1,10 @@
 import { createServerClient } from '@supabase/ssr';
-import { type Handle, redirect } from '@sveltejs/kit';
+import { type Handle, type RequestEvent, redirect } from '@sveltejs/kit';
 import { sequence } from '@sveltejs/kit/hooks';
+import { kv } from '@vercel/kv';
+import { EdgeRateLimiter } from '$lib/security/edge-rate-limiter';
 
 import { PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY } from '$env/static/public';
-import { checkRateLimit } from '$lib/security/rate-limiter';
 import { applyCSPHeaders } from '$lib/security/csp';
 import { validateAndPopulateSession } from '$lib/server/auth/session';
 
@@ -65,21 +66,67 @@ const supabase: Handle = async ({ event, resolve }) => {
   });
 };
 
-const RATE_LIMIT_RETRY_AFTER_SECONDS = '900';
+const DEFAULT_RATE_LIMIT_MAX_ATTEMPTS = 5;
+const DEFAULT_RATE_LIMIT_WINDOW_SECONDS = 900;
+
+const edgeRateLimiter = new EdgeRateLimiter(kv, {
+  maxAttempts: Number(process.env.RATE_LIMIT_MAX_ATTEMPTS || DEFAULT_RATE_LIMIT_MAX_ATTEMPTS),
+  windowSeconds: Number(process.env.RATE_LIMIT_WINDOW_SECONDS || DEFAULT_RATE_LIMIT_WINDOW_SECONDS),
+});
+
+const extractClientIp = (event: RequestEvent): string => {
+  const xForwardedFor = event.request.headers.get('x-forwarded-for');
+  if (xForwardedFor) {
+    return xForwardedFor.split(',')[0].trim();
+  }
+  return event.getClientAddress();
+};
+
+const buildRateLimitHeaders = (
+  config: ReturnType<typeof edgeRateLimiter.getConfig>,
+  result: { remaining: number; resetAt: Date }
+): Record<string, string> => {
+  return {
+    'X-RateLimit-Limit': String(config.maxAttempts),
+    'X-RateLimit-Remaining': String(result.remaining),
+    'X-RateLimit-Reset': String(Math.floor(result.resetAt.getTime() / 1000)),
+  };
+};
 
 const rateLimiter: Handle = async ({ event, resolve }) => {
-  const clientIp = event.getClientAddress();
+  const clientIp = extractClientIp(event);
+  const result = await edgeRateLimiter.checkLimit(clientIp);
+  const config = edgeRateLimiter.getConfig();
   
-  if (!checkRateLimit(clientIp)) {
+  event.locals.rateLimit = {
+    allowed: result.allowed,
+    remaining: result.remaining,
+    limit: config.maxAttempts,
+    resetAt: result.resetAt,
+  };
+  
+  if (!result.allowed) {
     return new Response('Too many requests. Please try again later.', { 
       status: 429,
       headers: {
-        'Retry-After': RATE_LIMIT_RETRY_AFTER_SECONDS
+        'Retry-After': String(config.windowSeconds),
+        ...buildRateLimitHeaders(config, result),
       }
     });
   }
   
-  return resolve(event);
+  const response = await resolve(event);
+  
+  if (!response || !response.headers) {
+    throw new Error('Invalid response from resolve function');
+  }
+  
+  const rateLimitHeaders = buildRateLimitHeaders(config, result);
+  Object.entries(rateLimitHeaders).forEach(([key, value]) => {
+    response.headers.set(key, value);
+  });
+  
+  return response;
 };
 
 const sessionValidator: Handle = async ({ event, resolve }) => {
@@ -135,3 +182,5 @@ const cspHandler: Handle = async ({ event, resolve }) => {
 };
 
 export const handle: Handle = sequence(rateLimiter, supabase, sessionValidator, routeProtection, cspHandler);
+
+export { rateLimiter };

@@ -15,6 +15,12 @@ declare global {
       }>;
       session: import('@supabase/supabase-js').Session | null;
       user: import('@supabase/supabase-js').User | null;
+      rateLimit?: {
+        allowed: boolean;
+        remaining: number;
+        limit: number;
+        resetAt: Date;
+      };
     }
 
     interface PageData {
