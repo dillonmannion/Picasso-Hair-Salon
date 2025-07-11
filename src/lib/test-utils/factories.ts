@@ -39,7 +39,7 @@ export const createMockOAuthCallback = (
 export const createMockButtonProps = (overrides?: Partial<ButtonProps>): ButtonProps => {
   const baseProps = {
     variant: 'primary' as const,
-    size: 'medium' as const,
+    size: 'default' as const,
   };
 
   const propsData = { ...baseProps, ...overrides };

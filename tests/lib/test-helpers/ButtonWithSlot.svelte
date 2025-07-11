@@ -7,7 +7,7 @@
   // Ensure required props have values
   const mergedProps: ButtonProps = {
     variant: 'primary',
-    size: 'medium',
+    size: 'default',
     ...buttonProps,
   };
 </script>

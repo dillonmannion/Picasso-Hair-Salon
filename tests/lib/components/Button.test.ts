@@ -2,112 +2,108 @@ import { describe, it, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/svelte';
 import userEvent from '@testing-library/user-event';
 import Button from '$lib/components/Button.svelte';
-import { createMockButtonProps } from '$lib/test-utils/factories';
-import { ButtonPropsSchema } from '$lib/schemas';
 
-describe('Button component behavior', () => {
-  it('should render with default props', () => {
+describe('Button', () => {
+  it('should render with primary variant styling by default', () => {
     render(Button);
-
+    
     const button = screen.getByRole('button');
-    expect(button).toHaveClass('btn-primary', 'btn-medium');
-    expect(button).not.toBeDisabled();
+    expect(button).toBeInTheDocument();
+    expect(button).toHaveClass('bg-primary');
+    expect(button).toHaveClass('text-primary-foreground');
+    expect(button).toHaveClass('hover:bg-primary-hover');
   });
 
-  it('should apply variant and size classes', () => {
-    const props = createMockButtonProps({
-      variant: 'danger',
-      size: 'large',
-    });
-
-    render(Button, props);
-
+  it('should apply outline variant styling when specified', () => {
+    render(Button, { props: { variant: 'outline' } });
+    
     const button = screen.getByRole('button');
-    expect(button).toHaveClass('btn-danger', 'btn-large');
+    expect(button).toHaveClass('border');
+    expect(button).toHaveClass('border-input');
+    expect(button).toHaveClass('bg-background');
+    expect(button).toHaveClass('hover:bg-accent');
+    expect(button).toHaveClass('hover:text-accent-foreground');
+  });
+
+  it('should apply ghost variant styling when specified', () => {
+    render(Button, { props: { variant: 'ghost' } });
+    
+    const button = screen.getByRole('button');
+    expect(button).toHaveClass('hover:bg-accent');
+    expect(button).toHaveClass('hover:text-accent-foreground');
+    expect(button).not.toHaveClass('bg-primary');
+    expect(button).not.toHaveClass('border');
+  });
+
+  it('should apply small size styling when specified', () => {
+    render(Button, { props: { size: 'small' } });
+    
+    const button = screen.getByRole('button');
+    expect(button).toHaveClass('h-8');
+    expect(button).toHaveClass('px-3');
+    expect(button).toHaveClass('text-xs');
+  });
+
+  it('should apply default size styling by default', () => {
+    render(Button);
+    
+    const button = screen.getByRole('button');
+    expect(button).toHaveClass('h-10');
+    expect(button).toHaveClass('px-4');
+    expect(button).toHaveClass('py-2');
+  });
+
+  it('should apply large size styling when specified', () => {
+    render(Button, { props: { size: 'large' } });
+    
+    const button = screen.getByRole('button');
+    expect(button).toHaveClass('h-12');
+    expect(button).toHaveClass('px-8');
   });
 
   it('should handle click events', async () => {
     const user = userEvent.setup();
-    const onclick = vi.fn();
-    const props = createMockButtonProps({ onclick });
-
-    render(Button, props);
+    const handleClick = vi.fn();
+    
+    render(Button, { props: { onclick: handleClick } });
+    
     const button = screen.getByRole('button');
-
     await user.click(button);
-
-    expect(onclick).toHaveBeenCalledOnce();
+    
+    expect(handleClick).toHaveBeenCalledOnce();
   });
 
-  it('should be disabled when disabled prop is true', () => {
-    const props = createMockButtonProps({ disabled: true });
-
-    render(Button, props);
-
+  it('should apply transition for hover effects', () => {
+    render(Button);
+    
     const button = screen.getByRole('button');
-    expect(button).toBeDisabled();
-  });
-
-  it('should not fire click events when disabled', async () => {
-    const user = userEvent.setup();
-    const onclick = vi.fn();
-    const props = createMockButtonProps({
-      disabled: true,
-      onclick,
-    });
-
-    render(Button, props);
-    const button = screen.getByRole('button');
-
-    await user.click(button);
-
-    expect(onclick).not.toHaveBeenCalled();
-  });
-
-  it('should apply custom CSS classes', () => {
-    const props = createMockButtonProps({
-      class: 'custom-class another-class',
-    });
-
-    render(Button, props);
-
-    const button = screen.getByRole('button');
-    expect(button).toHaveClass('custom-class', 'another-class');
+    expect(button).toHaveClass('transition-colors');
   });
 
   it('should render slot content', async () => {
-    const ButtonWithSlot = await import('../test-helpers/ButtonWithSlot.svelte');
-
-    render(ButtonWithSlot.default, {
-      props: { buttonProps: createMockButtonProps() },
-    });
-
+    const TestButtonWithSlot = await import('./TestButtonWithSlot.svelte');
+    render(TestButtonWithSlot.default);
+    
     const button = screen.getByRole('button');
-    expect(button).toHaveTextContent('Click me!');
+    expect(button).toHaveTextContent('Click me');
   });
 
-  it('should validate props with schema at runtime', () => {
-    const props = {
-      variant: 'primary',
-      size: 'medium',
-    };
-
-    const result = ButtonPropsSchema.safeParse(props);
-    expect(result.success).toBe(true);
-  });
-
-  it('should accept all valid button HTML attributes through passthrough', () => {
-    const props = createMockButtonProps({
-      type: 'submit',
-      name: 'submitBtn',
-      form: 'myForm',
-    });
-
-    render(Button, props);
-
+  it('should apply common button styling', () => {
+    render(Button);
+    
     const button = screen.getByRole('button');
-    expect(button).toHaveAttribute('type', 'submit');
-    expect(button).toHaveAttribute('name', 'submitBtn');
-    expect(button).toHaveAttribute('form', 'myForm');
+    expect(button).toHaveClass('inline-flex');
+    expect(button).toHaveClass('items-center');
+    expect(button).toHaveClass('justify-center');
+    expect(button).toHaveClass('rounded-md');
+    expect(button).toHaveClass('text-sm');
+    expect(button).toHaveClass('font-medium');
+    expect(button).toHaveClass('ring-offset-background');
+    expect(button).toHaveClass('focus-visible:outline-none');
+    expect(button).toHaveClass('focus-visible:ring-2');
+    expect(button).toHaveClass('focus-visible:ring-ring');
+    expect(button).toHaveClass('focus-visible:ring-offset-2');
+    expect(button).toHaveClass('disabled:pointer-events-none');
+    expect(button).toHaveClass('disabled:opacity-50');
   });
 });

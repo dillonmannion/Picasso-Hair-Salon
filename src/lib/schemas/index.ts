@@ -85,13 +85,13 @@ export const OAuthErrorParamsSchema = z
   })
   .strict();
 
-export const ButtonVariantSchema = z.enum(['primary', 'secondary', 'danger']);
-export const ButtonSizeSchema = z.enum(['small', 'medium', 'large']);
+export const ButtonVariantSchema = z.enum(['primary', 'outline', 'ghost']);
+export const ButtonSizeSchema = z.enum(['small', 'default', 'large']);
 
 export const ButtonPropsSchema = z
   .object({
     variant: ButtonVariantSchema.optional().default('primary'),
-    size: ButtonSizeSchema.optional().default('medium'),
+    size: ButtonSizeSchema.optional().default('default'),
     disabled: z.boolean().optional(),
     onclick: z.function().optional(),
     class: z.string().optional(),

@@ -15,7 +15,7 @@
         <a href="/protected">Go to Protected Page</a>
       </Button>
       <form method="POST" action="/auth/logout" style="display: inline;">
-        <Button variant="secondary" type="submit">Logout</Button>
+        <Button variant="outline" type="submit">Logout</Button>
       </form>
     </div>
   {:else}

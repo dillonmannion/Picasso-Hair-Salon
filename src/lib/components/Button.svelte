@@ -6,7 +6,7 @@
 
   let {
     variant = 'primary',
-    size = 'medium',
+    size = 'default',
     disabled = false,
     onclick,
     class: className = '',
@@ -14,81 +14,47 @@
     ...restProps
   }: Props = $props();
 
-  if (import.meta.env.DEV) {
-    const validationResult = ButtonPropsSchema.safeParse({
+  const validateProps = () => {
+    if (!import.meta.env.DEV) return;
+    
+    const result = ButtonPropsSchema.safeParse({
       variant,
       size,
       disabled,
       onclick,
       class: className,
     });
-    if (!validationResult.success) {
-      console.warn('Button props validation failed:', validationResult.error);
+    
+    if (!result.success) {
+      console.warn('Button props validation failed:', result.error);
     }
-  }
+  };
+
+  validateProps();
+
+  const variantStyles: Record<NonNullable<typeof variant>, string> = {
+    primary: 'bg-primary text-primary-foreground hover:bg-primary-hover',
+    outline: 'border border-input bg-background hover:bg-accent hover:text-accent-foreground',
+    ghost: 'hover:bg-accent hover:text-accent-foreground',
+  };
+
+  const sizeStyles: Record<NonNullable<typeof size>, string> = {
+    small: 'h-8 px-3 text-xs',
+    default: 'h-10 px-4 py-2',
+    large: 'h-12 px-8',
+  };
+
+  const baseStyles = 'inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50';
 
   const buttonClasses = $derived(
-    className ? `btn-${variant} btn-${size} ${className}` : `btn-${variant} btn-${size}`
+    [baseStyles, variantStyles[variant], sizeStyles[size], className]
+      .filter(Boolean)
+      .join(' ')
   );
 </script>
 
 <button class={buttonClasses} {disabled} {onclick} {...restProps}>
-  {@render children?.()}
+  {#if children}
+    {@render children()}
+  {/if}
 </button>
-
-<style>
-  button {
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    font-weight: 500;
-    transition: all 0.2s;
-  }
-
-  .btn-primary {
-    background: #007bff;
-    color: white;
-  }
-
-  .btn-primary:hover {
-    background: #0056b3;
-  }
-
-  .btn-secondary {
-    background: #6c757d;
-    color: white;
-  }
-
-  .btn-secondary:hover {
-    background: #545b62;
-  }
-
-  .btn-danger {
-    background: #dc3545;
-    color: white;
-  }
-
-  .btn-danger:hover {
-    background: #c82333;
-  }
-
-  .btn-small {
-    padding: 0.25rem 0.5rem;
-    font-size: 0.875rem;
-  }
-
-  .btn-medium {
-    padding: 0.5rem 1rem;
-    font-size: 1rem;
-  }
-
-  .btn-large {
-    padding: 0.75rem 1.5rem;
-    font-size: 1.125rem;
-  }
-
-  button:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
-  }
-</style>

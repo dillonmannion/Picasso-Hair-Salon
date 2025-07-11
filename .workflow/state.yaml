@@ -3,7 +3,7 @@ description: 'Implement @design-doc.md'
 phase: 'implementation'
 status: 'active'
 started: '2025-07-11T00:00:00Z'
-last_updated: '2025-01-11T08:20:15Z'
+last_updated: '2025-01-11T08:33:15Z'
 
 checkpoints:
   requirements_complete: true
@@ -19,3 +19,9 @@ current_context:
     - name: 'Animation System Schema'
       test_file: 'tests/lib/schemas/animations.test.ts'
       impl_file: 'src/lib/schemas/animations.ts'
+    - name: 'Typography Component'
+      test_file: 'tests/lib/components/Typography.test.ts'
+      impl_file: 'src/lib/components/Typography.svelte'
+    - name: 'Container Component'
+      test_file: 'tests/lib/components/Container.test.ts'
+      impl_file: 'src/lib/components/Container.svelte'

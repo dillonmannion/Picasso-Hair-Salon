@@ -87,17 +87,17 @@ describe('Test data factory behavior', () => {
       const result = ButtonPropsSchema.safeParse(props);
       expect(result.success).toBe(true);
       expect(props.variant).toBe('primary');
-      expect(props.size).toBe('medium');
+      expect(props.size).toBe('default');
     });
 
     it('should allow button prop overrides', () => {
       const props = createMockButtonProps({
-        variant: 'danger',
+        variant: 'ghost',
         size: 'large',
         disabled: true,
       });
 
-      expect(props.variant).toBe('danger');
+      expect(props.variant).toBe('ghost');
       expect(props.size).toBe('large');
       expect(props.disabled).toBe(true);
       const result = ButtonPropsSchema.safeParse(props);
