@@ -25,7 +25,7 @@ describe('SvelteKit Edge Configuration', () => {
     expect(adapter).toHaveBeenCalledWith({
       runtime: 'edge',
       regions: ['iad1', 'sfo1', 'pdx1', 'cle1', 'gru1', 'hnd1', 'lhr1', 'syd1'],
-      split: false
+      split: true
     });
     
     expect(config.kit?.adapter).toBeDefined();
