@@ -43,6 +43,7 @@ supabase/.temp
 
 # Misc
 .vercel
+.workflow
 
 # Markdown
 !CLAUDE.md
