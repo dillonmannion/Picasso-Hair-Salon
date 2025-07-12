@@ -142,6 +142,16 @@ export const OAuthCallbackSchema = z.object({
 export type OAuthCallback = z.infer<typeof OAuthCallbackSchema>;
 
 // ============================================================================
+// Route Protection
+// ============================================================================
+export const RouteProtectionSchema = z.object({
+  requiresAuth: z.boolean(),
+  allowedRoles: z.array(UserRoleSchema).default([]),
+  redirectTo: z.string().default('/'),
+});
+export type RouteProtection = z.infer<typeof RouteProtectionSchema>;
+
+// ============================================================================
 // Helper Functions
 // ============================================================================
 
@@ -152,4 +162,20 @@ export const hasPermission = (role: UserRole, permission: Permission): boolean =
 
 export const getUserPermissions = (role: UserRole): readonly Permission[] => {
   return RolePermissionsSchema[role];
+};
+
+export const canAccessRoute = (userRole: UserRole | null, protection: RouteProtection): boolean => {
+  if (!protection.requiresAuth) {
+    return true;
+  }
+  
+  if (!userRole) {
+    return false;
+  }
+  
+  if (protection.allowedRoles.length === 0) {
+    return true; // Any authenticated user
+  }
+  
+  return protection.allowedRoles.includes(userRole);
 };

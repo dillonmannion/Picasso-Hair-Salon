@@ -10,6 +10,10 @@ import {
   LoginRequestSchema,
   OAuthProviderSchema,
   OAuthCallbackSchema,
+  RouteProtectionSchema,
+  hasPermission,
+  getUserPermissions,
+  canAccessRoute,
 } from '$lib/schemas/auth';
 
 describe('Authentication Schemas', () => {
@@ -314,6 +318,136 @@ describe('Authentication Schemas', () => {
       };
 
       expect(() => OAuthCallbackSchema.parse(invalidCallback)).toThrow();
+    });
+  });
+
+  describe('RouteProtectionSchema', () => {
+    it('should validate public route protection', () => {
+      const protection = {
+        requiresAuth: false,
+        allowedRoles: [],
+      };
+      const result = RouteProtectionSchema.parse(protection);
+      expect(result.requiresAuth).toBe(false);
+      expect(result.allowedRoles).toEqual([]);
+      expect(result.redirectTo).toBe('/');
+    });
+
+    it('should validate protected route with single role', () => {
+      const protection = {
+        requiresAuth: true,
+        allowedRoles: ['customer'],
+        redirectTo: '/login',
+      };
+      const result = RouteProtectionSchema.parse(protection);
+      expect(result.requiresAuth).toBe(true);
+      expect(result.allowedRoles).toEqual(['customer']);
+      expect(result.redirectTo).toBe('/login');
+    });
+
+    it('should validate protected route with multiple roles', () => {
+      const protection = {
+        requiresAuth: true,
+        allowedRoles: ['staff', 'owner'],
+        redirectTo: '/login',
+      };
+      const result = RouteProtectionSchema.parse(protection);
+      expect(result.requiresAuth).toBe(true);
+      expect(result.allowedRoles).toHaveLength(2);
+      expect(result.allowedRoles).toContain('staff');
+      expect(result.allowedRoles).toContain('owner');
+    });
+
+    it('should provide default values', () => {
+      const minimalProtection = {
+        requiresAuth: true,
+      };
+      const result = RouteProtectionSchema.parse(minimalProtection);
+      expect(result.allowedRoles).toEqual([]);
+      expect(result.redirectTo).toBe('/');
+    });
+
+    it('should reject invalid roles in allowedRoles', () => {
+      const protection = {
+        requiresAuth: true,
+        allowedRoles: ['admin'], // Not a valid role
+        redirectTo: '/login',
+      };
+      expect(() => RouteProtectionSchema.parse(protection)).toThrow();
+    });
+  });
+
+  describe('Helper Functions', () => {
+    describe('hasPermission', () => {
+      it('should return true for valid role-permission combinations', () => {
+        expect(hasPermission('customer', 'appointments.create')).toBe(true);
+        expect(hasPermission('staff', 'services.manage')).toBe(true);
+        expect(hasPermission('owner', 'settings.manage')).toBe(true);
+      });
+
+      it('should return false for invalid role-permission combinations', () => {
+        expect(hasPermission('customer', 'staff.manage')).toBe(false);
+        expect(hasPermission('staff', 'settings.manage')).toBe(false);
+      });
+    });
+
+    describe('getUserPermissions', () => {
+      it('should return correct permissions for each role', () => {
+        const customerPerms = getUserPermissions('customer');
+        expect(customerPerms).toContain('appointments.create');
+        expect(customerPerms).not.toContain('staff.manage');
+
+        const staffPerms = getUserPermissions('staff');
+        expect(staffPerms).toContain('services.manage');
+        expect(staffPerms).not.toContain('settings.manage');
+
+        const ownerPerms = getUserPermissions('owner');
+        expect(ownerPerms).toContain('settings.manage');
+        expect(ownerPerms).toContain('staff.manage');
+      });
+    });
+
+    describe('canAccessRoute', () => {
+      it('should allow access to public routes', () => {
+        const publicRoute = RouteProtectionSchema.parse({
+          requiresAuth: false,
+        });
+        
+        expect(canAccessRoute(null, publicRoute)).toBe(true);
+        expect(canAccessRoute('customer', publicRoute)).toBe(true);
+        expect(canAccessRoute('staff', publicRoute)).toBe(true);
+      });
+
+      it('should deny unauthenticated access to protected routes', () => {
+        const protectedRoute = RouteProtectionSchema.parse({
+          requiresAuth: true,
+          allowedRoles: ['customer'],
+        });
+        
+        expect(canAccessRoute(null, protectedRoute)).toBe(false);
+      });
+
+      it('should allow any authenticated user when no roles specified', () => {
+        const anyAuthRoute = RouteProtectionSchema.parse({
+          requiresAuth: true,
+          allowedRoles: [],
+        });
+        
+        expect(canAccessRoute('customer', anyAuthRoute)).toBe(true);
+        expect(canAccessRoute('staff', anyAuthRoute)).toBe(true);
+        expect(canAccessRoute('owner', anyAuthRoute)).toBe(true);
+      });
+
+      it('should respect role restrictions', () => {
+        const staffOnlyRoute = RouteProtectionSchema.parse({
+          requiresAuth: true,
+          allowedRoles: ['staff', 'owner'],
+        });
+        
+        expect(canAccessRoute('customer', staffOnlyRoute)).toBe(false);
+        expect(canAccessRoute('staff', staffOnlyRoute)).toBe(true);
+        expect(canAccessRoute('owner', staffOnlyRoute)).toBe(true);
+      });
     });
   });
 
