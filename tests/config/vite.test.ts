@@ -11,6 +11,11 @@ vi.mock('@sveltejs/kit/vite', () => ({
   sveltekit: () => ({ name: 'vite:sveltekit' }),
 }));
 
+// Mock Tailwind CSS Vite plugin
+vi.mock('@tailwindcss/vite', () => ({
+  default: () => ({ name: 'vite:tailwindcss' }),
+}));
+
 describe('Vite build configuration', () => {
   let viteConfig: UserConfig;
 
@@ -86,5 +91,11 @@ describe('Vite build configuration', () => {
         plugin && typeof plugin === 'object' && 'name' in plugin && plugin.name === 'vite:sveltekit'
     );
     expect(hasSkPlugin).toBe(true);
+
+    const hasTailwindPlugin = viteConfig.plugins?.some(
+      (plugin) =>
+        plugin && typeof plugin === 'object' && 'name' in plugin && plugin.name === 'vite:tailwindcss'
+    );
+    expect(hasTailwindPlugin).toBe(true);
   });
 });
