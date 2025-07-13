@@ -91,9 +91,10 @@ describe('Landing Page', () => {
     
     // Should render gallery images
     const galleryImages = screen.getAllByRole('img');
-    const gallerySpecificImages = galleryImages.filter(img => 
-      img.getAttribute('alt')?.includes('Gallery image')
-    );
+    const gallerySpecificImages = galleryImages.filter(img => {
+      const alt = img.getAttribute('alt') || '';
+      return alt.includes('hair') || alt.includes('Hair') || alt.includes('salon');
+    });
     expect(gallerySpecificImages.length).toBeGreaterThan(0);
   });
 

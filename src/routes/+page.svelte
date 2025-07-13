@@ -38,7 +38,7 @@
       subtitle="Where Artistry Meets Elegance"
       ctaText="Book Your Experience"
       ctaHref="#services"
-      backgroundImage="/images/hero-bg.jpg"
+      backgroundImage="https://images.unsplash.com/photo-1521590832167-7bcbfaa6381f?w=1920&q=80"
     />
 
     <section id="services" aria-label="Services" class="py-20">

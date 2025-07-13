@@ -26,25 +26,30 @@ const INVALID_SESSION: ValidationResult = {
 };
 
 export const validateSession = async (supabase: SupabaseClient): Promise<ValidationResult> => {
-  const {
-    data: { session },
-    error: sessionError,
-  } = await supabase.auth.getSession();
+  try {
+    const {
+      data: { session },
+      error: sessionError,
+    } = await supabase.auth.getSession();
 
-  if (!session || sessionError) {
+    if (!session || sessionError) {
+      return INVALID_SESSION;
+    }
+
+    const {
+      data: { user },
+      error: userError,
+    } = await supabase.auth.getUser();
+
+    if (!user || userError) {
+      return INVALID_SESSION;
+    }
+
+    return { session, user, isValid: true };
+  } catch (error) {
+    console.error('Error validating session:', error);
     return INVALID_SESSION;
   }
-
-  const {
-    data: { user },
-    error: userError,
-  } = await supabase.auth.getUser();
-
-  if (!user || userError) {
-    return INVALID_SESSION;
-  }
-
-  return { session, user, isValid: true };
 };
 
 export const clearInvalidSession = async (supabase: SupabaseClient): Promise<void> => {

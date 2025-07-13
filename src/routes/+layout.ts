@@ -12,13 +12,21 @@ export const load: LayoutLoad = async ({ fetch, data, depends }) => {
     },
   });
 
-  const {
-    data: { session },
-  } = await supabase.auth.getSession();
+  let session = null;
+  
+  try {
+    const {
+      data: { session: authSession },
+    } = await supabase.auth.getSession();
+    session = authSession;
+  } catch (error) {
+    console.error('Error getting session in layout:', error);
+    // Session remains null on error
+  }
 
   return {
     supabase,
-    session,
+    session: session ?? data.session,
     user: data.user,
   };
 };
