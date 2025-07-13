@@ -3,7 +3,7 @@ description: 'Implement @design-doc.md'
 phase: 'implementation'
 status: 'active'
 started: '2025-07-11T00:00:00Z'
-last_updated: '2025-07-12T09:46:30Z'
+last_updated: '2025-07-13T02:24:30Z'
 
 checkpoints:
   requirements_complete: true
@@ -61,3 +61,9 @@ current_context:
     - name: 'Authentication Schema'
       test_file: 'tests/lib/schemas/auth.test.ts'
       impl_file: 'src/lib/schemas/auth.ts'
+    - name: 'Protected Route Load Function'
+      test_file: 'tests/routes/(protected)/+layout.server.test.ts'
+      impl_file: 'src/routes/(protected)/+layout.server.ts'
+    - name: 'Landing Page'
+      test_file: 'tests/routes/+page.test.ts'
+      impl_file: 'src/routes/+page.svelte'

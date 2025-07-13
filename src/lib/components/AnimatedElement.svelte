@@ -63,6 +63,7 @@
 <div
   bind:this={element}
   data-animated
+  data-testid="animated-element"
   class={classes}
   style:animation-delay="{isVisible ? delay : 0}ms"
   style:animation-duration="{isVisible ? duration : 0}ms"

@@ -21,7 +21,7 @@
   const ANIMATION_STAGGER_DELAY = 100;
 </script>
 
-<div role="grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 {className}">
+<div role="grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 {className}" data-testid="service-grid">
   {#each services as service, index (service.id)}
     <AnimatedElement animation="fly" delay={index * ANIMATION_STAGGER_DELAY} class="h-full">
       <article class="bg-white h-full flex flex-col overflow-hidden rounded-lg shadow-sm hover:shadow-lg transition-shadow duration-300">

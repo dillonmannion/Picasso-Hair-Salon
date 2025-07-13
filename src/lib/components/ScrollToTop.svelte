@@ -42,6 +42,7 @@
 	<button
 		onclick={scrollToTop}
 		aria-label="Scroll to top"
+		data-testid="scroll-to-top"
 		class="fixed bottom-6 right-6 z-50 bg-primary text-white rounded-full shadow-lg hover:bg-primary-dark hover:shadow-xl transition-opacity duration-300 p-4"
 	>
 		<svg

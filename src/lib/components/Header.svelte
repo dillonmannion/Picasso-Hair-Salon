@@ -48,7 +48,9 @@
   <div class="container mx-auto px-4">
     <div class="flex items-center justify-between h-16">
       {#if brandName}
-        <div class="text-xl font-semibold">{brandName}</div>
+        <a href="/" class="text-xl font-semibold hover:text-atelier-gold transition-colors">
+          {brandName}
+        </a>
       {/if}
 
       <nav aria-label="desktop navigation" class="hidden md:block">

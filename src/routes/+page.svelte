@@ -1,50 +1,99 @@
 <script lang="ts">
   import type { PageData } from './$types';
-  import Button from '$lib/components/Button.svelte';
+  import Header from '$lib/components/Header.svelte';
+  import HeroSection from '$lib/components/HeroSection.svelte';
+  import ServiceGrid from '$lib/components/ServiceGrid.svelte';
+  import MasonryGallery from '$lib/components/MasonryGallery.svelte';
+  import ScrollToTop from '$lib/components/ScrollToTop.svelte';
+  import Container from '$lib/components/Container.svelte';
+  import Typography from '$lib/components/Typography.svelte';
+  import AnimatedElement from '$lib/components/AnimatedElement.svelte';
+  import { onMount } from 'svelte';
+  import { initSmoothScroll } from '$lib/utils/smooth-scroll';
+  import { mockServices, mockGalleryImages } from '$lib/data/mock-data';
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   let { data } = $props<{ data: PageData }>();
+
+  const navItems = [
+    { label: 'Services', href: '#services' },
+    { label: 'Gallery', href: '#gallery' },
+    { label: 'Contact', href: '#contact' }
+  ];
+
+  const services = mockServices;
+  const galleryImages = mockGalleryImages;
+
+  onMount(() => {
+    return initSmoothScroll();
+  });
 </script>
 
-<div class="container">
-  <h1 class="text-4xl font-bold text-blue-600">Welcome to Picasso Hair Salon</h1>
+<div data-testid="page-container" class="min-h-screen">
+  <Header navItems={navItems} brandName="Picasso Hair Salon" />
+  
+  <main>
+    <HeroSection
+      title="Picasso Hair Salon"
+      subtitle="Where Artistry Meets Elegance"
+      ctaText="Book Your Experience"
+      ctaHref="#services"
+      backgroundImage="/images/hero-bg.jpg"
+    />
 
-  {#if data.user}
-    <p>Hello, {data.user.email}!</p>
-    <div class="actions">
-      <Button>
-        <a href="/protected">Go to Protected Page</a>
-      </Button>
-      <form method="POST" action="/auth/logout" style="display: inline;">
-        <Button variant="outline" type="submit">Logout</Button>
-      </form>
-    </div>
-  {:else}
-    <p>Please log in to access all features.</p>
-    <div class="actions">
-      <Button>
-        <a href="/auth/login">Login / Sign Up</a>
-      </Button>
-    </div>
-  {/if}
+    <section id="services" aria-label="Services" class="py-20">
+      <Container>
+        <AnimatedElement animation="fade" delay={200}>
+          <Typography variant="display" class="mb-12 text-center" data-testid="typography">
+            Our Services
+          </Typography>
+        </AnimatedElement>
+        <ServiceGrid services={services} />
+      </Container>
+    </section>
+
+    <section id="gallery" aria-label="Gallery" class="py-20 bg-atelier-100">
+      <Container>
+        <AnimatedElement animation="fade" delay={200}>
+          <Typography variant="display" class="mb-12 text-center" data-testid="typography">
+            Our Work
+          </Typography>
+        </AnimatedElement>
+        <MasonryGallery images={galleryImages} />
+      </Container>
+    </section>
+
+    <section id="contact" aria-label="Contact" class="py-20">
+      <Container size="narrow">
+        <AnimatedElement animation="fade" delay={200}>
+          <Typography variant="display" class="mb-8 text-center" data-testid="typography">
+            Visit Us
+          </Typography>
+          <div class="text-center space-y-4">
+            <Typography variant="body">
+              123 Artisan Boulevard<br />
+              New York, NY 10001
+            </Typography>
+            <Typography variant="body">
+              <a href="tel:+12125551234" class="hover:text-atelier-600 transition-colors">
+                (212) 555-1234
+              </a>
+            </Typography>
+            <Typography variant="body">
+              Open Tuesday - Saturday<br />
+              10:00 AM - 8:00 PM
+            </Typography>
+          </div>
+        </AnimatedElement>
+      </Container>
+    </section>
+  </main>
+
+  <ScrollToTop />
 </div>
 
 <style>
-  .container {
-    max-width: 800px;
-    margin: 2rem auto;
-    padding: 2rem;
-    text-align: center;
-  }
-
-  .actions {
-    margin-top: 2rem;
-    display: flex;
-    gap: 1rem;
-    justify-content: center;
-  }
-
-  a {
-    color: inherit;
-    text-decoration: none;
+  :global(html) {
+    scroll-behavior: smooth;
   }
 </style>

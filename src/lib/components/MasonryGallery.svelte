@@ -12,7 +12,7 @@
   let { images, class: className = '' }: Props = $props();
 </script>
 
-<section aria-label="Gallery" class="masonry-gallery {className}">
+<div class="masonry-gallery {className}" data-testid="masonry-gallery" role="region" aria-label="Gallery">
   <div class="masonry-container columns-2 md:columns-3 lg:columns-4 gap-4">
     {#each images as image, index (index)}
       <figure class="group mb-4 break-inside-avoid overflow-hidden rounded-lg transition-all duration-300 hover:scale-105 hover:shadow-lg">
@@ -25,7 +25,7 @@
       </figure>
     {/each}
   </div>
-</section>
+</div>
 
 <style>
   .masonry-gallery {

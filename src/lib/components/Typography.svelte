@@ -9,6 +9,8 @@
     as?: TypographyTag;
     class?: string;
     children?: Snippet;
+    'data-testid'?: string;
+    [key: string]: unknown;
   }
 
   let { 

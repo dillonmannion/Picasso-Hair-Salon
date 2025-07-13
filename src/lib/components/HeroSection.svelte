@@ -15,7 +15,7 @@
   let { backgroundImage, title, subtitle, ctaText, ctaHref, parallax = false }: Props = $props();
 </script>
 
-<section class="relative h-screen overflow-hidden" aria-label="Hero section">
+<section class="relative h-screen overflow-hidden" aria-label="Hero section" data-testid="hero-section">
   <div class="absolute inset-0" {...(parallax && { 'data-parallax': 'true' })}>
     <img 
       src={backgroundImage} 

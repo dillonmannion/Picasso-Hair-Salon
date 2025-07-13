@@ -21,7 +21,7 @@
   const containerClasses = `mx-auto px-4 sm:px-6 lg:px-8 ${sizeClasses[size]} ${className}`;
 </script>
 
-<div class={containerClasses} {...restProps}>
+<div class={containerClasses} data-testid="container" {...restProps}>
   {#if children}
     {@render children()}
   {/if}
