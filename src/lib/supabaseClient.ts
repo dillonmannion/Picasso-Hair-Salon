@@ -136,10 +136,13 @@ export async function signOut() {
 /**
  * Helper function to get redirect URL for OAuth
  */
-export function getAuthRedirectURL(): string {
+export function getAuthRedirectURL(origin?: string): string {
 	if (typeof window !== 'undefined') {
 		return `${window.location.origin}/auth/callback`;
 	}
-	// Fallback for SSR
-	return `${PUBLIC_SUPABASE_URL}/auth/callback`;
+	// Server-side: use provided origin or fallback to localhost for dev
+	if (origin) {
+		return `${origin}/auth/callback`;
+	}
+	return `http://localhost:5173/auth/callback`;
 }

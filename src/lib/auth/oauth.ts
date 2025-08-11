@@ -4,11 +4,11 @@ import type { Provider, SupabaseClient } from '@supabase/supabase-js';
 /**
  * Initiate Google OAuth sign-in
  */
-export async function signInWithGoogle(supabase: SupabaseClient, redirectTo?: string) {
+export async function signInWithGoogle(supabase: SupabaseClient, redirectTo?: string, origin?: string) {
 	const { data, error } = await supabase.auth.signInWithOAuth({
 		provider: 'google',
 		options: {
-			redirectTo: redirectTo ?? getAuthRedirectURL(),
+			redirectTo: redirectTo ?? getAuthRedirectURL(origin),
 			queryParams: {
 				access_type: 'offline',
 				prompt: 'consent'
@@ -30,12 +30,13 @@ export async function signInWithGoogle(supabase: SupabaseClient, redirectTo?: st
 export async function signInWithOAuth(
 	supabase: SupabaseClient,
 	provider: Provider,
-	redirectTo?: string
+	redirectTo?: string,
+	origin?: string
 ) {
 	const { data, error } = await supabase.auth.signInWithOAuth({
 		provider,
 		options: {
-			redirectTo: redirectTo ?? getAuthRedirectURL()
+			redirectTo: redirectTo ?? getAuthRedirectURL(origin)
 		}
 	});
 
@@ -50,8 +51,8 @@ export async function signInWithOAuth(
 /**
  * Get OAuth redirect URL with optional next parameter
  */
-export function getOAuthRedirectURL(next?: string): string {
-	const baseURL = getAuthRedirectURL();
+export function getOAuthRedirectURL(next?: string, origin?: string): string {
+	const baseURL = getAuthRedirectURL(origin);
 	if (next) {
 		const url = new URL(baseURL);
 		url.searchParams.set('next', next);
@@ -91,11 +92,12 @@ export function isClientSide(): boolean {
 export async function handleOAuthRedirect(
 	supabase: SupabaseClient,
 	provider: Provider,
-	redirectTo?: string
+	redirectTo?: string,
+	origin?: string
 ) {
 	if (!isClientSide()) {
 		// Server-side OAuth initiation
-		const { data, error } = await signInWithOAuth(supabase, provider, redirectTo);
+		const { data, error } = await signInWithOAuth(supabase, provider, redirectTo, origin);
 
 		if (error) {
 			throw new Error(`OAuth initiation failed: ${error.message}`);
@@ -110,5 +112,5 @@ export async function handleOAuthRedirect(
 	}
 
 	// Client-side OAuth (automatic redirect)
-	return signInWithOAuth(supabase, provider, redirectTo);
+	return signInWithOAuth(supabase, provider, redirectTo, origin);
 }
