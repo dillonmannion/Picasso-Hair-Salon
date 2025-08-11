@@ -619,19 +619,16 @@ import { counter, increment } from './store.svelte.js';
 ### Common Issues
 
 1. **State not updating**
-
    - Ensure you're using `$state` for reactive data
    - Array/object mutations need reassignment
    - Check that effects have correct dependencies
 
 2. **Props undefined**
-
    - Destructure from `$props()` not `$props`
    - Provide default values for optional props
    - Check parent component prop passing
 
 3. **Memory leaks**
-
    - Clean up intervals/timeouts in effects
    - Unsubscribe from external stores
    - Remove event listeners on destroy

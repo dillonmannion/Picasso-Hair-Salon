@@ -4,9 +4,13 @@
 	import type { PageData } from './$types';
 	import { cn } from '$lib/utils/cn';
 
-	export let data: PageData;
+	interface Props {
+		data: PageData;
+	}
 
-	let selectedStylistId: string | null = null;
+	let { data }: Props = $props();
+
+	let selectedStylistId = $state<string | null>(null);
 	const serviceId = $page.url.searchParams.get('service');
 
 	function formatRating(rating: number): string {

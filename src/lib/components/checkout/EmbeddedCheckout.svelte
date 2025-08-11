@@ -3,14 +3,18 @@
 	import { loadStripe, type Stripe, type StripeEmbeddedCheckout } from '@stripe/stripe-js';
 	import { PUBLIC_STRIPE_PUBLISHABLE_KEY } from '$env/static/public';
 
-	export let appointmentId: string;
-	export let onComplete: (() => void) | undefined = undefined;
+	interface Props {
+		appointmentId: string;
+		onComplete?: () => void;
+	}
 
-	let checkoutDiv: HTMLDivElement;
-	let stripe: Stripe | null = null;
-	let checkout: StripeEmbeddedCheckout | null = null;
-	let loading = true;
-	let error = '';
+	let { appointmentId, onComplete }: Props = $props();
+
+	let checkoutDiv = $state<HTMLDivElement>();
+	let stripe = $state<Stripe | null>(null);
+	let checkout = $state<StripeEmbeddedCheckout | null>(null);
+	let loading = $state(true);
+	let error = $state('');
 
 	async function initializeCheckout() {
 		try {
@@ -78,7 +82,7 @@
 	{:else if error}
 		<div class="error">
 			<p>Error: {error}</p>
-			<button on:click={() => window.location.reload()}>Try Again</button>
+			<button onclick={() => window.location.reload()}>Try Again</button>
 		</div>
 	{:else}
 		<div bind:this={checkoutDiv} class="stripe-checkout"></div>

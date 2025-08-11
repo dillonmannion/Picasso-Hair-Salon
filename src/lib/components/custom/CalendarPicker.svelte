@@ -1,39 +1,53 @@
 <script lang="ts">
 	import { cn } from '$lib/utils/cn';
+	import { SvelteDate } from 'svelte/reactivity';
 
-	export let selectedDate: string | null = null;
-	export let minDate: Date = new Date();
-	export let maxDate: Date = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000); // 30 days from now
-	export let disabledDates: string[] = [];
-
-	let currentMonth = new Date(minDate);
-	let weeks: Date[][] = [];
-
-	$: {
-		generateCalendar(currentMonth);
+	interface Props {
+		selectedDate?: string | null;
+		minDate?: Date;
+		maxDate?: Date;
+		disabledDates?: string[];
+		onDateSelect?: (date: string) => void;
 	}
+
+	let {
+		selectedDate = null,
+		minDate = new Date(),
+		maxDate = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 days from now
+		disabledDates = [],
+		onDateSelect
+	}: Props = $props();
+
+	let currentMonth = new SvelteDate(minDate);
+	let weeks = $state<Date[][]>([]);
+
+	$effect(() => {
+		generateCalendar(currentMonth);
+	});
 
 	function generateCalendar(month: Date) {
 		const year = month.getFullYear();
 		const monthIndex = month.getMonth();
-		const firstDay = new Date(year, monthIndex, 1);
-		const lastDay = new Date(year, monthIndex + 1, 0);
-		const startDate = new Date(firstDay);
+		const firstDay = new SvelteDate(year, monthIndex, 1);
+		const lastDay = new SvelteDate(year, monthIndex + 1, 0);
+		const startDate = new SvelteDate(firstDay);
 		startDate.setDate(startDate.getDate() - firstDay.getDay());
 
-		weeks = [];
+		const newWeeks: Date[][] = [];
 		let currentWeek: Date[] = [];
 
 		while (startDate <= lastDay || currentWeek.length > 0) {
-			currentWeek.push(new Date(startDate));
+			currentWeek.push(new SvelteDate(startDate));
 
 			if (currentWeek.length === 7) {
-				weeks.push(currentWeek);
+				newWeeks.push(currentWeek);
 				currentWeek = [];
 			}
 
 			startDate.setDate(startDate.getDate() + 1);
 		}
+
+		weeks = newWeeks;
 	}
 
 	function formatDate(date: Date): string {
@@ -52,17 +66,17 @@
 	}
 
 	function selectDate(date: Date) {
-		if (!isDateDisabled(date)) {
-			selectedDate = formatDate(date);
+		if (!isDateDisabled(date) && onDateSelect) {
+			onDateSelect(formatDate(date));
 		}
 	}
 
 	function previousMonth() {
-		currentMonth = new Date(currentMonth.getFullYear(), currentMonth.getMonth() - 1);
+		currentMonth = new SvelteDate(currentMonth.getFullYear(), currentMonth.getMonth() - 1);
 	}
 
 	function nextMonth() {
-		currentMonth = new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1);
+		currentMonth = new SvelteDate(currentMonth.getFullYear(), currentMonth.getMonth() + 1);
 	}
 
 	const monthNames = [

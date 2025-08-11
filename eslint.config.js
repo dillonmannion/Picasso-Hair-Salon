@@ -41,6 +41,10 @@ export default ts.config(
 			'src/lib/types/database.types.ts', // Supabase auto-generated types
 			'src/app.d.ts', // SvelteKit auto-generated
 
+			// Svelte 5 state files (runes not yet supported by ESLint)
+			'src/lib/state/**/*.svelte.ts',
+			'src/lib/state/**/*.svelte.js',
+
 			// Package manager artifacts
 			'**/package-lock.json',
 			'**/pnpm-lock.yaml',
@@ -76,18 +80,26 @@ export default ts.config(
 			'tests/**',
 			'test-results/**',
 			'vitest-setup-client.ts',
+			'e2e/**',
 
 			// Configuration files
-			'eslint.config.js',
-			'svelte.config.js',
-			'vite.config.ts',
-			'vitest.config.ts',
-			'playwright.config.ts',
-			'tailwind.config.js',
-			'postcss.config.js',
+			'*.config.{js,ts,mjs}',
+			'**/*.config.{js,ts,mjs}',
+			'.prettierrc',
+			'components.json',
+			'project.inlang/**',
 
-			// Scripts directory (utility scripts don't need strict linting)
+			// Documentation
+			'**/*.md',
+			'docs/**',
+			'README.md',
+			'CLAUDE.md',
+			'REPOSITORY_REVIEW.md',
+
+			// Scripts and database directory
 			'scripts/**',
+			'database/**',
+			'messages/**',
 
 			// Common auto-generated patterns
 			'**/.generated/**',
@@ -190,7 +202,36 @@ export default ts.config(
 		rules: {
 			'svelte/no-unused-svelte-ignore': 'warn',
 			'svelte/require-store-reactive-access': 'warn',
-			'svelte/no-at-html-tags': 'error'
+			'svelte/no-at-html-tags': 'error',
+
+			// Svelte 5 best practices
+			'svelte/no-reactive-reassign': 'error',
+			'svelte/valid-prop-names-in-kit-pages': 'error',
+			'svelte/prefer-destructured-store-props': 'warn',
+
+			// Component best practices
+			'svelte/block-lang': ['error', { script: 'ts', style: null }],
+			'svelte/no-immutable-reactive-statements': 'error',
+			'svelte/no-reactive-functions': 'error',
+			'svelte/no-reactive-literals': 'warn',
+
+			// Accessibility
+			'svelte/no-dom-manipulating': 'warn'
+		}
+	},
+
+	// Svelte 5 state files configuration
+	{
+		files: ['**/*.svelte.ts', '**/*.svelte.js'],
+		languageOptions: {
+			parserOptions: {
+				project: './tsconfig.eslint.json'
+			}
+		},
+		rules: {
+			// Disable rules that don't apply to state files
+			'@typescript-eslint/no-unused-vars': 'off',
+			'@typescript-eslint/no-explicit-any': 'warn'
 		}
 	},
 

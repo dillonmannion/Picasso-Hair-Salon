@@ -4,7 +4,11 @@ import type { Provider, SupabaseClient } from '@supabase/supabase-js';
 /**
  * Initiate Google OAuth sign-in
  */
-export async function signInWithGoogle(supabase: SupabaseClient, redirectTo?: string, origin?: string) {
+export async function signInWithGoogle(
+	supabase: SupabaseClient,
+	redirectTo?: string,
+	origin?: string
+) {
 	const { data, error } = await supabase.auth.signInWithOAuth({
 		provider: 'google',
 		options: {

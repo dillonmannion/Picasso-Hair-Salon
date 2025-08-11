@@ -1,9 +1,14 @@
 <script lang="ts">
 	import { cn } from '$lib/utils/cn';
 
-	export let slots: Array<{ time: string; available: boolean }> = [];
-	export let selectedTime: string | null = null;
-	export let columns: number = 4;
+	interface Props {
+		slots?: Array<{ time: string; available: boolean }>;
+		selectedTime?: string | null;
+		columns?: number;
+		onTimeSelect?: (time: string) => void;
+	}
+
+	let { slots = [], selectedTime = null, columns = 4, onTimeSelect }: Props = $props();
 
 	function formatTime(time: string): string {
 		const [hours, minutes] = time.split(':');
@@ -14,24 +19,26 @@
 	}
 
 	function selectTime(time: string, available: boolean) {
-		if (available) {
-			selectedTime = time;
+		if (available && onTimeSelect) {
+			onTimeSelect(time);
 		}
 	}
 
 	// Group slots by period (morning, afternoon, evening)
-	$: groupedSlots = slots.reduce(
-		(acc, slot) => {
-			const hour = Number.parseInt(slot.time.split(':')[0] ?? '0');
-			const period = hour < 12 ? 'Morning' : hour < 17 ? 'Afternoon' : 'Evening';
+	const groupedSlots = $derived(
+		slots.reduce(
+			(acc, slot) => {
+				const hour = Number.parseInt(slot.time.split(':')[0] ?? '0');
+				const period = hour < 12 ? 'Morning' : hour < 17 ? 'Afternoon' : 'Evening';
 
-			if (!acc[period]) {
-				acc[period] = [];
-			}
-			acc[period].push(slot);
-			return acc;
-		},
-		{} as Record<string, typeof slots>
+				if (!acc[period]) {
+					acc[period] = [];
+				}
+				acc[period].push(slot);
+				return acc;
+			},
+			{} as Record<string, typeof slots>
+		)
 	);
 </script>
 

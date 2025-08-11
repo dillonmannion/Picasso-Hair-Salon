@@ -3,9 +3,13 @@
 	import type { PageData } from './$types';
 	import { cn } from '$lib/utils/cn';
 
-	export let data: PageData;
+	interface Props {
+		data: PageData;
+	}
 
-	let selectedServiceId: string | null = null;
+	let { data }: Props = $props();
+
+	let selectedServiceId = $state<string | null>(null);
 
 	function formatPrice(price: number): string {
 		return new Intl.NumberFormat('en-US', {

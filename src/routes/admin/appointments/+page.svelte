@@ -52,7 +52,7 @@
 
 	function formatTime(timeStr: string) {
 		const [hours, minutes] = timeStr.split(':');
-		const hour = parseInt(hours);
+		const hour = Number.parseInt(hours);
 		const ampm = hour >= 12 ? 'PM' : 'AM';
 		const displayHour = hour === 0 ? 12 : hour > 12 ? hour - 12 : hour;
 		return `${displayHour}:${minutes} ${ampm}`;
@@ -261,7 +261,7 @@
 								</td>
 								<td class="px-4 py-3">
 									${appointment.total_price
-										? parseFloat(appointment.total_price).toFixed(2)
+										? Number.parseFloat(appointment.total_price).toFixed(2)
 										: '0.00'}
 								</td>
 								<td class="px-4 py-3">

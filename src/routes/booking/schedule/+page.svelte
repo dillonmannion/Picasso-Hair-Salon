@@ -7,27 +7,35 @@
 	import type { PageData } from './$types';
 	import { cn } from '$lib/utils/cn';
 
-	export let data: PageData;
+	interface Props {
+		data: PageData;
+	}
 
-	let selectedDate: string | null = $page.url.searchParams.get('date');
-	let selectedTime: string | null = $page.url.searchParams.get('time');
+	let { data }: Props = $props();
+
+	let selectedDate = $state<string | null>($page.url.searchParams.get('date'));
+	let selectedTime = $state<string | null>($page.url.searchParams.get('time'));
 
 	const serviceId = $page.url.searchParams.get('service');
 	const stylistId = $page.url.searchParams.get('stylist');
 
 	// Update URL when date changes
-	$: if (selectedDate) {
-		const url = new URL($page.url);
-		url.searchParams.set('date', selectedDate);
-		void goto(url.toString(), { replaceState: true, noScroll: true });
-	}
+	$effect(() => {
+		if (selectedDate) {
+			const url = new URL($page.url);
+			url.searchParams.set('date', selectedDate);
+			void goto(url.toString(), { replaceState: true, noScroll: true });
+		}
+	});
 
 	// Update URL when time changes
-	$: if (selectedTime) {
-		const url = new URL($page.url);
-		url.searchParams.set('time', selectedTime);
-		void goto(url.toString(), { replaceState: true, noScroll: true });
-	}
+	$effect(() => {
+		if (selectedTime) {
+			const url = new URL($page.url);
+			url.searchParams.set('time', selectedTime);
+			void goto(url.toString(), { replaceState: true, noScroll: true });
+		}
+	});
 
 	function goBack() {
 		void goto(`/booking/stylist?service=${serviceId}`);
@@ -73,7 +81,8 @@
 		<div>
 			<h3 class="mb-4 text-lg font-medium text-gray-900">Select a Date</h3>
 			<CalendarPicker
-				bind:selectedDate
+				{selectedDate}
+				onDateSelect={(date) => (selectedDate = date)}
 				minDate={today}
 				maxDate={new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)}
 				{disabledDates}
@@ -85,7 +94,12 @@
 			<div>
 				<h3 class="mb-4 text-lg font-medium text-gray-900">Select a Time</h3>
 				{#if data.timeSlots.length > 0}
-					<TimeSlotGrid slots={data.timeSlots} bind:selectedTime columns={4} />
+					<TimeSlotGrid
+						slots={data.timeSlots}
+						{selectedTime}
+						onTimeSelect={(time) => (selectedTime = time)}
+						columns={4}
+					/>
 				{:else}
 					<div class="rounded-lg bg-yellow-50 p-4">
 						<p class="text-yellow-800">

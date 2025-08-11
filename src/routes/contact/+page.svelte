@@ -2,7 +2,7 @@
 	import { MapPin, Clock, Phone, Mail } from 'lucide-svelte';
 	import { enhance } from '$app/forms';
 
-	let isSubmitting = false;
+	let isSubmitting = $state(false);
 </script>
 
 <svelte:head>

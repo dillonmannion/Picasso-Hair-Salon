@@ -272,7 +272,7 @@ localStorage.removeItem('theme');
 }
 
 @utility tab-* {
-	tab-size: --value(--tab-size- *);
+	tab-size: --value(--tab-size-*);
 }
 
 @theme {
@@ -530,19 +530,16 @@ localStorage.removeItem('theme');
 ### Common Issues
 
 1. **Classes not applying**
-
    - Ensure files are included in content configuration
    - Check for typos in class names
    - Verify TailwindCSS is properly imported
 
 2. **Styles not updating**
-
    - Clear browser cache
    - Restart dev server
    - Check for CSS specificity conflicts
 
 3. **PurgeCSS removing needed styles**
-
    - Add files to content array
    - Use safelist for dynamic classes
    - Avoid string concatenation for class names

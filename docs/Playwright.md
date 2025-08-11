@@ -403,14 +403,12 @@ test.describe('Mobile', () => {
 ### Common Issues
 
 1. **Element not found**
-
    - Check selector specificity
    - Verify element is visible
    - Use getByRole for accessibility
    - Wait for dynamic content
 
 2. **Timeout errors**
-
    - Increase timeout for slow operations
    - Check network conditions
    - Verify element states

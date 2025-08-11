@@ -410,18 +410,15 @@ export async function load({ fetch }) {
 ### Common Issues
 
 1. **"Not found" errors in production**
-
    - Ensure your adapter is configured correctly
    - Check that dynamic routes have `entries` function if prerendering
 
 2. **Data not updating**
-
    - Use `invalidate()` or `invalidateAll()` to refresh data
    - Check your `depends()` declarations
    - Ensure you're not caching too aggressively
 
 3. **Form actions not working**
-
    - Ensure you're using `method="POST"` on forms
    - Check that JavaScript is not preventing default behavior
    - Verify your action names match

@@ -4,13 +4,29 @@
 		"src/**/*.js",
 		"src/**/*.ts",
 		"src/**/*.svelte",
-		"tests/**/*.js",
-		"tests/**/*.ts",
-		"tests/**/*.svelte",
+		"src/**/*.svelte.ts",
+		"src/**/*.svelte.js",
+		"vitest-setup.ts"
+	],
+	"exclude": [
+		"node_modules",
+		"build",
+		".svelte-kit",
+		"dist",
+		"coverage",
+		"test-results",
+		"playwright-report",
+		"**/*.test.ts",
+		"**/*.spec.ts",
+		"**/*.test.js",
+		"**/*.spec.js",
+		"tests/**",
+		"e2e/**",
+		"docs/**",
+		"scripts/**",
+		"database/**",
 		"*.config.js",
 		"*.config.ts",
-		"*.config.mjs",
-		"eslint.config.js"
-	],
-	"exclude": ["node_modules", "build", ".svelte-kit", "dist", "coverage"]
+		"*.config.mjs"
+	]
 }

@@ -525,19 +525,16 @@ export default defineConfig({
 ### Common Issues
 
 1. **Module resolution errors**
-
    - Check tsconfig paths
    - Verify vitest config aliases
    - Ensure proper file extensions
 
 2. **Timeout errors**
-
    - Increase test timeout
    - Check for missing await
    - Verify async operations complete
 
 3. **Flaky tests**
-
    - Ensure proper cleanup
    - Avoid timing dependencies
    - Mock external services

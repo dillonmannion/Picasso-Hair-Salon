@@ -3,7 +3,7 @@
 	import { goto } from '$app/navigation';
 	import EmbeddedCheckout from '$lib/components/checkout/EmbeddedCheckout.svelte';
 
-	$: appointmentId = $page.url.searchParams.get('appointment_id');
+	const appointmentId = $derived($page.url.searchParams.get('appointment_id'));
 
 	function handleComplete() {
 		// Redirect to success page after payment completion
@@ -11,9 +11,11 @@
 	}
 
 	// Redirect if no appointment ID
-	$: if (!appointmentId) {
-		goto('/booking');
-	}
+	$effect(() => {
+		if (!appointmentId) {
+			goto('/booking');
+		}
+	});
 </script>
 
 <div class="container mx-auto max-w-4xl px-4 py-8">

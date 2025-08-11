@@ -5,11 +5,21 @@
 	type Service = Database['public']['Tables']['services']['Row'];
 	type Stylist = Database['public']['Tables']['stylists']['Row'];
 
-	export let service: Service | null = null;
-	export let stylist: Stylist | null = null;
-	export let date: string | null = null;
-	export let time: string | null = null;
-	export let isAnyStylist: boolean = false;
+	interface Props {
+		service?: Service | null;
+		stylist?: Stylist | null;
+		date?: string | null;
+		time?: string | null;
+		isAnyStylist?: boolean;
+	}
+
+	let {
+		service = null,
+		stylist = null,
+		date = null,
+		time = null,
+		isAnyStylist = false
+	}: Props = $props();
 </script>
 
 <div class="rounded-lg border bg-gray-50 p-6">

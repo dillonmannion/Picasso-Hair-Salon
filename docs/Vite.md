@@ -542,19 +542,16 @@ const modules = import.meta.glob(['./dir/*.js', '!**/bar.js']);
 ### Common Issues
 
 1. **"Failed to resolve module"**
-
    - Check import paths and extensions
    - Verify alias configuration
    - Ensure dependencies are installed
 
 2. **HMR not working**
-
    - Check if behind a proxy
    - Verify WebSocket connection
    - Ensure import.meta.hot guards
 
 3. **Build errors**
-
    - Clear cache: `rm -rf node_modules/.vite`
    - Check for circular dependencies
    - Verify TypeScript configuration

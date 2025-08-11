@@ -596,19 +596,16 @@ const refunds = await stripe.refunds.list({
 ### Common Issues
 
 1. **"No such customer" error**
-
    - Verify customer ID is correct
    - Check if using correct API keys (test vs live)
    - Ensure customer exists in the correct Stripe account
 
 2. **Webhook signature verification fails**
-
    - Use raw request body, not parsed JSON
    - Verify webhook secret is correct
    - Check for modifications to the request body
 
 3. **Payment requires authentication**
-
    - Implement 3D Secure handling
    - Use Payment Intents API with proper confirmation flow
    - Handle `requires_action` status

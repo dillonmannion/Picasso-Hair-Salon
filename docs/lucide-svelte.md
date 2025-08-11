@@ -457,19 +457,16 @@ const icons: IconMap = {
 ### Common Issues
 
 1. **Icon not rendering**
-
    - Check import name matches icon name
    - Verify package is installed correctly
    - Ensure using correct casing (PascalCase)
 
 2. **TypeScript errors**
-
    - Update to latest version of @lucide/svelte
    - Check tsconfig moduleResolution settings
    - Use type imports for icon types
 
 3. **Build performance issues**
-
    - Use direct imports from icons directory
    - Avoid importing entire library
    - Check bundler configuration

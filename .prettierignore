@@ -22,11 +22,30 @@ src/app.d.ts
 # Testing files
 **/*.{test,spec}.{js,ts,svelte}
 tests/
+e2e/
+test-results/
+playwright-report/
 vitest-setup-client.ts
 
 # Configuration files (auto-managed)
 .svelte-kit/
 .vscode/settings.json
+
+# Documentation
+**/*.md
+docs/
+README.md
+CLAUDE.md
+REPOSITORY_REVIEW.md
+
+# Scripts and database
+scripts/
+database/
+messages/
+
+# Environment files
+.env*
+!.env.example
 
 # Common auto-generated patterns
 **/.generated/
@@ -34,3 +53,10 @@ vitest-setup-client.ts
 **/__generated__/
 **/*.generated.{js,ts,svelte,css,html}
 **/*.gen.{js,ts,svelte,css,html}
+
+# IDE and logs
+.idea/
+**/*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*

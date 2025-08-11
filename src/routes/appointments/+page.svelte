@@ -28,7 +28,7 @@
 	function formatTime(timeStr: string) {
 		// Convert 24-hour time to 12-hour format with AM/PM
 		const [hours, minutes] = timeStr.split(':');
-		const hour = parseInt(hours);
+		const hour = Number.parseInt(hours);
 		const ampm = hour >= 12 ? 'PM' : 'AM';
 		const displayHour = hour === 0 ? 12 : hour > 12 ? hour - 12 : hour;
 		return `${displayHour}:${minutes} ${ampm}`;
@@ -49,7 +49,7 @@
 		}
 	}
 
-	function canCancelAppointment(appointment: typeof data.appointments[0]): boolean {
+	function canCancelAppointment(appointment: (typeof data.appointments)[0]): boolean {
 		if (appointment.status === 'cancelled' || appointment.status === 'completed') {
 			return false;
 		}

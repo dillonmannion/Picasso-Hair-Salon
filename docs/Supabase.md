@@ -534,19 +534,16 @@ const { data } = await supabase.from('users').select('id, name, email');
 ### Common Issues
 
 1. **Authentication errors**
-
    - Check redirect URLs in Supabase dashboard
    - Verify email confirmations are enabled/disabled
    - Check OAuth provider settings
 
 2. **RLS blocking queries**
-
    - Test queries with service role key first
    - Check policy definitions
    - Use `EXPLAIN` to debug policies
 
 3. **Real-time not working**
-
    - Enable replication for tables
    - Check WebSocket connections
    - Verify RLS policies allow subscriptions

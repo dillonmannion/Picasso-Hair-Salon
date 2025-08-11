@@ -546,25 +546,21 @@ test('user can log in', async ({ page }) => {
 ### Before Deployment
 
 1. **Environment Variables**
-
    - Set all required environment variables
    - Use different values for production
    - Never commit sensitive data
 
 2. **Build Configuration**
-
    - Choose appropriate adapter
    - Configure prerendering
    - Set up error pages
 
 3. **Performance**
-
    - Enable compression
    - Configure caching headers
    - Optimize images and assets
 
 4. **Security**
-
    - Set security headers
    - Enable HTTPS
    - Configure CORS properly

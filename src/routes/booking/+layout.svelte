@@ -7,12 +7,12 @@
 	let { data }: { data: LayoutData } = $props();
 
 	// Booking state from URL params
-	$: bookingState = {
+	const bookingState = $derived({
 		serviceId: $page.url.searchParams.get('service'),
 		stylistId: $page.url.searchParams.get('stylist'),
 		date: $page.url.searchParams.get('date'),
 		time: $page.url.searchParams.get('time')
-	};
+	});
 
 	// Navigation validation
 	function canAccessStep(stepPath: string): boolean {
@@ -39,7 +39,7 @@
 	}
 
 	// Prevent invalid navigation
-	$: {
+	$effect(() => {
 		const currentPath = $page.url.pathname;
 		if (
 			currentPath.startsWith('/booking/') &&
@@ -57,7 +57,7 @@
 				);
 			}
 		}
-	}
+	});
 </script>
 
 <div class="min-h-screen bg-gray-50">

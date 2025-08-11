@@ -457,19 +457,16 @@ Most components share these common patterns:
 ### Common Issues
 
 1. **Types not working**
-
    - Ensure `moduleResolution: "bundler"` in tsconfig
    - Import types from `bits-ui` directly
    - Check TypeScript version compatibility
 
 2. **Styling not applied**
-
    - Verify class names are correct
    - Check if using correct data attributes
    - Ensure CSS is properly imported
 
 3. **State not updating**
-
    - Use `$state()` for reactive state
    - Check binding syntax is correct
    - Verify event handlers are attached

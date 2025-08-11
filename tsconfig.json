@@ -3,7 +3,18 @@
 	"compilerOptions": {
 		// Enhanced strict settings for better code quality
 		"strict": true,
+		"noImplicitAny": true,
+		"strictNullChecks": true,
+		"strictFunctionTypes": true,
+		"strictBindCallApply": true,
+		"strictPropertyInitialization": true,
+		"noImplicitThis": true,
+		"alwaysStrict": true,
 		"noUncheckedIndexedAccess": true,
+		"noUnusedLocals": true,
+		"noUnusedParameters": true,
+		"noImplicitReturns": true,
+		"noFallthroughCasesInSwitch": true,
 
 		// Modern ES features (updated from SvelteKit defaults)
 		"target": "ES2022",
@@ -22,5 +33,29 @@
 
 		// Project-specific types
 		"types": ["vite/client", "@testing-library/jest-dom"]
-	}
+	},
+	"exclude": [
+		"node_modules",
+		"build",
+		".svelte-kit",
+		"dist",
+		"coverage",
+		"test-results",
+		"playwright-report",
+		"*.config.js",
+		"*.config.ts",
+		"*.config.mjs",
+		"eslint.config.js",
+		"tailwind.config.js",
+		"postcss.config.js",
+		"docs/**",
+		"scripts/**",
+		"database/**",
+		"tests/**",
+		"e2e/**",
+		"**/*.test.ts",
+		"**/*.spec.ts",
+		"**/*.test.js",
+		"**/*.spec.js"
+	]
 }

@@ -2,7 +2,11 @@
 	import { goto } from '$app/navigation';
 	import type { PageData } from './$types';
 
-	export let data: PageData;
+	interface Props {
+		data: PageData;
+	}
+
+	let { data }: Props = $props();
 
 	function viewAppointments() {
 		void goto('/appointments');
