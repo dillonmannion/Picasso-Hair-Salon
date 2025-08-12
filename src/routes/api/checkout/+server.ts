@@ -1,6 +1,6 @@
+import { createCheckoutSession } from '$lib/stripe/client';
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { createCheckoutSession } from '$lib/stripe/client';
 
 export const GET: RequestHandler = ({ url }) => {
 	const appointmentId = url.searchParams.get('appointmentId');
@@ -111,7 +111,7 @@ export const POST: RequestHandler = async ({ request, url, locals }) => {
 			appointmentId: appointment.id,
 			serviceId: appointment.service_id,
 			serviceName: appointment.services?.name ?? '',
-			servicePrice: appointment.services?.price ?? 0,
+			servicePrice: Number(appointment.services?.price ?? 0),
 			stylistId: appointment.stylist_id,
 			stylistName: appointment.stylists?.name ?? '',
 			customerEmail: user.email ?? '',
@@ -120,27 +120,27 @@ export const POST: RequestHandler = async ({ request, url, locals }) => {
 			appointmentTime: appointment.appointment_time,
 			successUrl: `${url.origin}/booking/success?session_id={CHECKOUT_SESSION_ID}`,
 			cancelUrl: `${url.origin}/booking/cancel?appointment_id=${appointmentId}&canceled=true`,
-			mode: mode === 'embedded' ? 'embedded' : undefined
+			mode: mode === 'embedded' ? ('embedded' as const) : undefined
 		};
 
-		const session = await createCheckoutSession(sessionConfig);
+		const checkout_session = await createCheckoutSession(sessionConfig);
 
 		// For POST requests from form, redirect to Stripe
 		if (!request.headers.get('content-type')?.includes('application/json')) {
 			return new Response(null, {
 				status: 303,
 				headers: {
-					Location: session.url ?? '/booking/success'
+					Location: checkout_session.url ?? '/booking/success'
 				}
 			});
 		}
 
 		// For embedded mode, return client secret
 		if (mode === 'embedded') {
-			return json({ clientSecret: session.client_secret });
+			return json({ clientSecret: checkout_session.client_secret });
 		}
 
-		return json({ url: session.url });
+		return json({ url: checkout_session.url });
 	} catch (error) {
 		console.error('Checkout session creation error:', error);
 		return json({ error: 'Failed to create checkout session' }, { status: 500 });
