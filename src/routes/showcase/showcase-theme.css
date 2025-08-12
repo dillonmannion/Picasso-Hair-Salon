@@ -1,0 +1,204 @@
+/* Dynamic theme switching using CSS variables - Tailwind CSS v4 approach */
+
+/* Default theme variables (Atelier) */
+.showcase-wrapper {
+	--showcase-bg-primary: #fbfbfa;
+	--showcase-bg-secondary: #f3f3f1;
+	--showcase-text-primary: #141414;
+	--showcase-text-secondary: #2a2a2a;
+	--showcase-text-muted: #5a5a5a;
+	--showcase-border: #e6e6e4;
+	--showcase-accent: #b9a891;
+	--showcase-btn-bg: #141414;
+	--showcase-btn-text: white;
+	--showcase-btn-hover: #2a2a2a;
+	--showcase-shadow: 0 10px 18px rgba(0, 0, 0, 0.08);
+}
+
+/* Luxe theme variables - Strong burgundy and cream presence */
+.showcase-wrapper[data-theme='luxe'] {
+	--showcase-bg-primary: #f3ede2; /* Stronger cream background */
+	--showcase-bg-secondary: #e8dcc9; /* Deeper cream for sections */
+	--showcase-text-primary: #5e1c1c; /* Deep burgundy for headings */
+	--showcase-text-secondary: #7d2525; /* Rich burgundy for body text */
+	--showcase-text-muted: #9c2f2f; /* Medium burgundy for accents */
+	--showcase-border: #dcc8a8; /* Warm cream border */
+	--showcase-accent: #b94545; /* Bright burgundy accent */
+	--showcase-btn-bg: #7d2525; /* Rich burgundy button */
+	--showcase-btn-text: #fdfcfa; /* Light cream text */
+	--showcase-btn-hover: #5e1c1c; /* Dark burgundy hover */
+	--showcase-shadow: 0 12px 24px rgba(94, 28, 28, 0.15); /* Burgundy-tinted shadow */
+	--showcase-polaroid-bg: #fdfcfa; /* Pure cream for polaroids */
+	--showcase-kicker-color: #b94545; /* Bright burgundy for kickers */
+	--showcase-nav-bg: #5e1c1c; /* Deep burgundy for nav items on hover */
+}
+
+/* Base showcase styles using CSS variables */
+.showcase-wrapper {
+	background-color: var(--showcase-bg-primary);
+	color: var(--showcase-text-primary);
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+	transition:
+		background-color 0.3s ease,
+		color 0.3s ease;
+}
+
+/* Typography */
+.showcase-heading {
+	color: var(--showcase-text-primary);
+}
+
+.showcase-text {
+	color: var(--showcase-text-secondary);
+}
+
+/* Components */
+.showcase-kicker {
+	text-transform: uppercase;
+	letter-spacing: 0.14em;
+	font-size: 0.75rem;
+	color: var(--showcase-kicker-color, var(--showcase-text-muted));
+	font-weight: 600;
+}
+
+.showcase-btn {
+	display: inline-flex;
+	align-items: center;
+	border-radius: 0.25rem;
+	padding: 0.5rem 1.5rem;
+	font-size: 0.875rem;
+	background-color: var(--showcase-btn-bg);
+	color: var(--showcase-btn-text);
+	transition: all 200ms;
+	text-decoration: none;
+	white-space: nowrap;
+	border: 2px solid transparent;
+}
+
+.showcase-btn:hover {
+	background-color: var(--showcase-btn-hover);
+	text-decoration: none;
+	transform: translateY(-1px);
+	box-shadow: var(--showcase-shadow);
+}
+
+.showcase-btn-outline {
+	display: inline-flex;
+	align-items: center;
+	border-radius: 0.25rem;
+	padding: 0.5rem 1.5rem;
+	font-size: 0.875rem;
+	background-color: transparent;
+	color: var(--showcase-btn-bg);
+	border: 2px solid var(--showcase-btn-bg);
+	transition: all 200ms;
+	text-decoration: none;
+	white-space: nowrap;
+}
+
+.showcase-btn-outline:hover {
+	background-color: var(--showcase-btn-bg);
+	color: var(--showcase-btn-text);
+	text-decoration: none;
+	transform: translateY(-1px);
+}
+
+.showcase-nav-link {
+	font-size: 13px;
+	letter-spacing: 0.08em;
+	color: var(--showcase-text-secondary);
+	transition: all 200ms;
+	text-decoration: none;
+	white-space: nowrap;
+	display: inline-block;
+}
+
+.showcase-nav-link:hover {
+	color: var(--showcase-accent);
+	text-decoration: none;
+}
+
+/* Luxe specific nav link hover */
+.showcase-wrapper[data-theme='luxe'] .showcase-nav-link:hover {
+	background-color: var(--showcase-nav-bg);
+	color: var(--showcase-btn-text);
+	padding: 0.25rem 0.5rem;
+	border-radius: 0.25rem;
+	margin: -0.25rem -0.5rem;
+}
+
+.showcase-polaroid {
+	background-color: var(--showcase-polaroid-bg, white);
+	box-shadow: var(--showcase-shadow);
+	border: 2px solid var(--showcase-border);
+	padding: 0.75rem;
+}
+
+.showcase-polaroid > img {
+	display: block;
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+}
+
+.showcase-polaroid:hover {
+	transform: rotate(-1deg) scale(1.02);
+	transition: transform 0.3s ease;
+}
+
+.showcase-accent-bg {
+	background-color: var(--showcase-bg-secondary);
+}
+
+/* Header specific fixes */
+.showcase-wrapper[data-theme='atelier'] .showcase-header {
+	background-color: rgba(255, 255, 255, 0.85);
+	backdrop-filter: blur(8px);
+	border-bottom: 1px solid var(--showcase-border);
+}
+
+.showcase-wrapper[data-theme='luxe'] .showcase-header {
+	background-color: rgba(243, 237, 226, 0.95); /* Cream with transparency */
+	backdrop-filter: blur(8px);
+	border-bottom: 2px solid var(--showcase-btn-bg); /* Burgundy border */
+}
+
+.showcase-header-link {
+	font-size: 13px;
+	letter-spacing: 0.08em;
+	color: var(--showcase-text-secondary);
+	transition: all 200ms;
+	text-decoration: none;
+	padding: 0.5rem 0.75rem;
+	display: inline-block;
+	white-space: nowrap;
+}
+
+.showcase-header-link:hover {
+	color: var(--showcase-accent);
+	text-decoration: none;
+}
+
+/* Luxe specific header link styling */
+.showcase-wrapper[data-theme='luxe'] .showcase-header-link {
+	color: var(--showcase-text-primary);
+	font-weight: 500;
+}
+
+.showcase-wrapper[data-theme='luxe'] .showcase-header-link:hover {
+	background-color: var(--showcase-btn-bg);
+	color: var(--showcase-btn-text);
+	border-radius: 0.25rem;
+}
+
+/* Theme toggle buttons */
+.theme-toggle-btn {
+	padding: 0.5rem 1rem;
+	border-radius: 0.375rem;
+	font-size: 0.875rem;
+	transition: all 200ms;
+	border: none;
+	cursor: pointer;
+	white-space: nowrap;
+}

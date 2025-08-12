@@ -1,0 +1,134 @@
+@import 'tailwindcss';
+
+@theme inline {
+	/* Atelier Color Palette - Original */
+	--color-atelier-paper-50: #fbfbfa;
+	--color-atelier-paper-100: #f3f3f1;
+	--color-atelier-ink-900: #141414;
+	--color-atelier-ink-700: #2a2a2a;
+	--color-atelier-ink-500: #5a5a5a;
+	--color-atelier-line: #e6e6e4;
+	--color-atelier-accent-400: #b9a891;
+
+	/* Luxe Color Palette - Cream/Burgundy/Black */
+	--color-luxe-cream-50: #fdfcfa;
+	--color-luxe-cream-100: #f9f6f0;
+	--color-luxe-cream-200: #f3ede2;
+	--color-luxe-cream-300: #e8dcc9;
+	--color-luxe-cream-400: #dcc8a8;
+	--color-luxe-cream-500: #c9b08a;
+
+	--color-luxe-burgundy-50: #fdf6f6;
+	--color-luxe-burgundy-100: #f9e8e8;
+	--color-luxe-burgundy-200: #f0c9c9;
+	--color-luxe-burgundy-300: #e5a1a1;
+	--color-luxe-burgundy-400: #d16969;
+	--color-luxe-burgundy-500: #b94545;
+	--color-luxe-burgundy-600: #9c2f2f;
+	--color-luxe-burgundy-700: #7d2525;
+	--color-luxe-burgundy-800: #5e1c1c;
+	--color-luxe-burgundy-900: #3f1212;
+	--color-luxe-burgundy-950: #2a0b0b;
+
+	--color-luxe-black-50: #f8f8f8;
+	--color-luxe-black-100: #e8e8e8;
+	--color-luxe-black-200: #d1d1d1;
+	--color-luxe-black-300: #a8a8a8;
+	--color-luxe-black-400: #787878;
+	--color-luxe-black-500: #525252;
+	--color-luxe-black-600: #3a3a3a;
+	--color-luxe-black-700: #2a2a2a;
+	--color-luxe-black-800: #1a1a1a;
+	--color-luxe-black-900: #0d0d0d;
+	--color-luxe-black-950: #000000;
+
+	/* Atelier Shadows */
+	--shadow-polaroid: 0 10px 18px rgba(0, 0, 0, 0.08);
+	--shadow-luxe: 0 12px 24px rgba(0, 0, 0, 0.12);
+}
+
+@layer base {
+	.atelier-showcase {
+		@apply bg-atelier-paper-50 text-atelier-ink-900 antialiased;
+	}
+
+	.atelier-showcase h1 {
+		@apply text-[clamp(2.5rem,2.2vw+1.5rem,4rem)] leading-tight;
+		font-family: 'Cormorant Garamond', serif;
+	}
+
+	.atelier-showcase h2 {
+		@apply text-[clamp(2rem,1.6vw+1.2rem,3rem)] leading-snug;
+		font-family: 'Cormorant Garamond', serif;
+	}
+
+	.atelier-showcase h3 {
+		@apply text-2xl md:text-3xl;
+		font-family: 'Cormorant Garamond', serif;
+	}
+
+	.atelier-showcase p {
+		@apply text-atelier-ink-700 text-[15px] leading-relaxed;
+	}
+
+	.atelier-showcase a {
+		@apply underline-offset-2 hover:underline;
+	}
+}
+
+@layer components {
+	.atelier-kicker {
+		@apply text-atelier-ink-500 text-xs font-medium tracking-[.14em] uppercase;
+	}
+
+	.atelier-btn {
+		@apply bg-atelier-ink-900 hover:bg-atelier-ink-700 inline-flex items-center rounded px-6 py-2 text-sm text-white transition-colors duration-200;
+	}
+
+	.atelier-nav-link {
+		@apply text-atelier-ink-700 hover:text-atelier-ink-900 text-[13px] tracking-[.08em] transition-colors;
+	}
+
+	.atelier-polaroid {
+		@apply border-atelier-line border bg-white p-2 shadow-[0_10px_18px_rgba(0,0,0,.08)];
+	}
+
+	.atelier-polaroid > img {
+		@apply block h-full w-full object-cover;
+	}
+
+	.atelier-polaroid:hover {
+		transform: rotate(-1deg) scale(1.02);
+		transition: transform 0.3s ease;
+	}
+
+	.atelier-bg-vlines {
+		background-image:
+			repeating-linear-gradient(
+				to bottom,
+				transparent 0,
+				transparent 40px,
+				rgba(0, 0, 0, 0.02) 40px,
+				rgba(0, 0, 0, 0.02) 41px
+			),
+			linear-gradient(to right, #e6e6e4 1px, transparent 1px);
+		background-size:
+			auto,
+			calc(100% / 4) 100%;
+		background-position:
+			0 0,
+			0 0;
+	}
+
+	.atelier-float-art {
+		@apply pointer-events-none opacity-20 contrast-100 grayscale;
+	}
+}
+
+@font-face {
+	font-family: 'Cormorant Garamond';
+	font-style: normal;
+	font-weight: 400;
+	font-display: swap;
+	src: url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;600;700&display=swap');
+}

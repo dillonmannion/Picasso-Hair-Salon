@@ -1,0 +1,65 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+	body {
+		@apply bg-paper-50 text-ink-900 antialiased;
+	}
+	h1 {
+		@apply font-display text-[clamp(2.5rem,2.2vw+1.5rem,4rem)] leading-tight;
+	}
+	h2 {
+		@apply font-display text-[clamp(2rem,1.6vw+1.2rem,3rem)] leading-snug;
+	}
+	h3 {
+		@apply font-display text-2xl md:text-3xl;
+	}
+	p {
+		@apply text-ink-700 text-[15px] leading-relaxed;
+	}
+	a {
+		@apply underline-offset-2 hover:underline;
+	}
+}
+@layer components {
+	.kicker {
+		@apply tracking-widerish text-ink-500 text-xs uppercase;
+	}
+	.btn {
+		@apply bg-ink-900 hover:bg-ink-700 inline-flex items-center rounded px-6 py-2 text-sm text-white transition;
+	}
+	.nav-link {
+		@apply tracking-wideish text-ink-700 hover:text-ink-900 text-[13px];
+	}
+
+	.polaroid {
+		@apply shadow-polaroid border-line border bg-white p-2;
+	}
+	.polaroid > img {
+		@apply block h-full w-full object-cover;
+	}
+
+	.bg-vlines {
+		background-image:
+			repeating-linear-gradient(
+				to bottom,
+				transparent 0,
+				transparent 40px,
+				rgba(0, 0, 0, 0.02) 40px,
+				rgba(0, 0, 0, 0.02) 41px
+			),
+			linear-gradient(to right, var(--line) 1px, transparent 1px);
+		background-size:
+			auto,
+			calc(100% / 4) 100%;
+		background-position:
+			0 0,
+			0 0;
+		--line: theme(colors.line);
+	}
+
+	.float-art {
+		@apply pointer-events-none opacity-20 contrast-100 grayscale;
+	}
+}

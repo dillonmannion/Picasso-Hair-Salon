@@ -10,53 +10,53 @@
 		DropdownMenuSeparator,
 		DropdownMenuTrigger
 	} from '$lib/components/ui/dropdown-menu';
-	import { goto } from '$app/navigation';
+	import { goto, invalidate } from '$app/navigation';
+	import { getUserDisplayName, getUserInitials, getUserAvatarUrl } from '$lib/utils/user';
 	import type { SupabaseClient, User } from '@supabase/supabase-js';
 
-	let { user, supabase }: { user: User; supabase: SupabaseClient } = $props();
+	let { user, supabase }: { user: User | null; supabase: SupabaseClient } = $props();
 
-	async function signOut() {
-		const { error } = await supabase.auth.signOut();
-		if (!error) {
-			goto('/');
-		}
-	}
+	// Get user data with fallbacks
+	const displayName = $derived(getUserDisplayName(user));
+	const initials = $derived(getUserInitials(user));
+	const avatarUrl = $derived(getUserAvatarUrl(user));
 
-	function getUserInitials(user: User): string {
-		if (user.user_metadata?.full_name) {
-			return user.user_metadata.full_name
-				.split(' ')
-				.map((name: string) => name[0])
-				.join('')
-				.toUpperCase()
-				.slice(0, 2);
+	async function handleSignOut() {
+		try {
+			const { error } = await supabase.auth.signOut();
+			if (error) {
+				console.error('Error signing out:', error);
+				// You could show a toast notification here
+			} else {
+				// Invalidate auth data to trigger server-side session check
+				await invalidate('supabase:auth');
+				await goto('/', { replaceState: true });
+				// Force a page refresh to ensure clean state
+				window.location.reload();
+			}
+		} catch (err) {
+			console.error('Unexpected error during sign out:', err);
 		}
-		if (user.email) {
-			return user.email.slice(0, 2).toUpperCase();
-		}
-		return 'U';
-	}
-
-	function getUserDisplayName(user: User): string {
-		return user.user_metadata?.full_name || user.email || 'User';
 	}
 </script>
 
 <DropdownMenu>
 	<DropdownMenuTrigger>
-		<Button variant="ghost" class="relative h-8 w-8 rounded-full">
-			<Avatar class="h-8 w-8">
-				<AvatarImage src={user.user_metadata?.avatar_url} alt={getUserDisplayName(user)} />
-				<AvatarFallback>{getUserInitials(user)}</AvatarFallback>
-			</Avatar>
-		</Button>
+		{#snippet child({ props })}
+			<Button variant="ghost" class="relative h-8 w-8 rounded-full" {...props}>
+				<Avatar class="h-8 w-8">
+					<AvatarImage src={avatarUrl || ''} alt={displayName} />
+					<AvatarFallback>{initials}</AvatarFallback>
+				</Avatar>
+			</Button>
+		{/snippet}
 	</DropdownMenuTrigger>
 	<DropdownMenuContent class="w-56" align="end">
 		<DropdownMenuLabel class="font-normal">
 			<div class="flex flex-col space-y-1">
-				<p class="text-sm leading-none font-medium">{getUserDisplayName(user)}</p>
+				<p class="text-sm leading-none font-medium">{displayName}</p>
 				<p class="text-muted-foreground text-xs leading-none">
-					{user.email}
+					{user?.email ?? 'No email'}
 				</p>
 			</div>
 		</DropdownMenuLabel>
@@ -117,7 +117,7 @@
 			</DropdownMenuItem>
 		</DropdownMenuGroup>
 		<DropdownMenuSeparator />
-		<DropdownMenuItem onclick={signOut}>
+		<DropdownMenuItem onclick={handleSignOut}>
 			<svg
 				class="mr-2 h-4 w-4"
 				fill="none"

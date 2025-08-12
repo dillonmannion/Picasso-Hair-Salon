@@ -1,7 +1,6 @@
 import { paraglideVitePlugin } from '@inlang/paraglide-js';
-import tailwindcss from '@tailwindcss/vite';
-import { svelteTesting } from '@testing-library/svelte/vite';
 import { sveltekit } from '@sveltejs/kit/vite';
+import tailwindcss from '@tailwindcss/vite';
 import { defineConfig } from 'vite';
 
 export default defineConfig({
@@ -13,29 +12,31 @@ export default defineConfig({
 			outdir: './src/lib/paraglide'
 		})
 	],
+
+	// Simplified configuration - removed redundant options
+	optimizeDeps: {
+		include: ['@supabase/supabase-js', '@supabase/ssr', 'date-fns', 'clsx', 'tailwind-merge']
+	},
+
+	server: {
+		fs: {
+			allow: ['..']
+		},
+		warmup: {
+			clientFiles: ['./src/routes/+layout.svelte']
+		}
+	},
+
+	// Vitest configuration integrated
 	test: {
-		projects: [
-			{
-				extends: './vite.config.ts',
-				plugins: [svelteTesting()],
-				test: {
-					name: 'client',
-					environment: 'jsdom',
-					clearMocks: true,
-					include: ['src/**/*.svelte.{test,spec}.{js,ts}'],
-					exclude: ['src/lib/server/**'],
-					setupFiles: ['./vitest-setup-client.ts']
-				}
-			},
-			{
-				extends: './vite.config.ts',
-				test: {
-					name: 'server',
-					environment: 'node',
-					include: ['src/**/*.{test,spec}.{js,ts}'],
-					exclude: ['src/**/*.svelte.{test,spec}.{js,ts}']
-				}
-			}
-		]
+		environment: 'jsdom',
+		include: ['src/**/*.{test,spec}.{js,ts}'],
+		setupFiles: './vitest-setup.ts',
+		globals: true,
+		coverage: {
+			provider: 'v8',
+			reporter: ['text', 'html'],
+			exclude: ['src/**/*.{test,spec}.{js,ts}', 'src/lib/paraglide/**', 'src/app.html']
+		}
 	}
 });

@@ -103,13 +103,31 @@ CREATE POLICY "Users can update own profile" ON users
 CREATE POLICY "Users can insert own profile" ON users
   FOR INSERT WITH CHECK (auth.uid() = id);
 
+CREATE POLICY "Admin full access to users" ON users
+  FOR ALL TO authenticated 
+  USING (
+    (auth.jwt() ->> 'email') = ANY(ARRAY['admin@picassosalon.com', 'owner@picassosalon.com'])
+  );
+
 -- Services policies (public read, admin write)
 CREATE POLICY "Anyone can view active services" ON services
   FOR SELECT USING (is_active = true);
 
+CREATE POLICY "Admin full access to services" ON services
+  FOR ALL TO authenticated 
+  USING (
+    (auth.jwt() ->> 'email') = ANY(ARRAY['admin@picassosalon.com', 'owner@picassosalon.com'])
+  );
+
 -- Stylists policies (public read, admin write)
 CREATE POLICY "Anyone can view active stylists" ON stylists
   FOR SELECT USING (is_active = true);
+
+CREATE POLICY "Admin full access to stylists" ON stylists
+  FOR ALL TO authenticated 
+  USING (
+    (auth.jwt() ->> 'email') = ANY(ARRAY['admin@picassosalon.com', 'owner@picassosalon.com'])
+  );
 
 -- Appointments policies
 CREATE POLICY "Users can view own appointments" ON appointments
@@ -121,6 +139,12 @@ CREATE POLICY "Users can create own appointments" ON appointments
 CREATE POLICY "Users can update own appointments" ON appointments
   FOR UPDATE USING (auth.uid() = user_id);
 
+CREATE POLICY "Admin full access to appointments" ON appointments
+  FOR ALL TO authenticated 
+  USING (
+    (auth.jwt() ->> 'email') = ANY(ARRAY['admin@picassosalon.com', 'owner@picassosalon.com'])
+  );
+
 -- Reviews policies
 CREATE POLICY "Anyone can view visible reviews" ON reviews
   FOR SELECT USING (is_visible = true);
@@ -131,9 +155,21 @@ CREATE POLICY "Users can create own reviews" ON reviews
 CREATE POLICY "Users can update own reviews" ON reviews
   FOR UPDATE USING (auth.uid() = user_id);
 
+CREATE POLICY "Admin full access to reviews" ON reviews
+  FOR ALL TO authenticated 
+  USING (
+    (auth.jwt() ->> 'email') = ANY(ARRAY['admin@picassosalon.com', 'owner@picassosalon.com'])
+  );
+
 -- Gallery images policies (public read)
 CREATE POLICY "Anyone can view gallery images" ON gallery_images
   FOR SELECT USING (true);
+
+CREATE POLICY "Admin full access to gallery images" ON gallery_images
+  FOR ALL TO authenticated 
+  USING (
+    (auth.jwt() ->> 'email') = ANY(ARRAY['admin@picassosalon.com', 'owner@picassosalon.com'])
+  );
 
 -- Indexes for performance
 CREATE INDEX IF NOT EXISTS idx_appointments_user_id ON appointments(user_id);

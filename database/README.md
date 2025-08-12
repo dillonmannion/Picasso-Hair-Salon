@@ -4,6 +4,15 @@
 
 To set up the database schema for the Picasso Hair Salon project, follow these steps:
 
+### Migrations
+
+The database setup includes migrations for incremental changes:
+
+1. **schema.sql** - Initial schema with all base tables
+2. **migrations/003_create_orders_table.sql** - Adds orders table for Stripe payments
+
+Apply migrations in order after the initial schema.
+
 ### Option 1: Using Supabase Dashboard (Recommended for initial setup)
 
 1. Go to your Supabase project dashboard: https://arrqhipfaejlodashfou.supabase.co/project/arrqhipfaejlodashfou
@@ -57,6 +66,7 @@ The database includes the following tables:
 - **appointments**: Booking system linking users, services, and stylists
 - **reviews**: Customer reviews and ratings
 - **gallery_images**: Gallery images for showcasing work
+- **orders**: Payment transaction records for Stripe integration (added in migration 003)
 
 All tables include:
 
@@ -72,18 +82,76 @@ All tables include:
 3. Consider adding some sample data for development
 4. Update the Supabase client configuration to use the new types
 
-## Sample Data (Optional)
+## Database Seeding
 
-You may want to add some sample services and stylists for development:
+The project includes an automated seeding script that populates the database with sample data for development and testing.
+
+### Environment Setup
+
+1. Copy `.env.example` to `.env`:
+
+   ```bash
+   cp .env.example .env
+   ```
+
+2. Fill in your Supabase credentials:
+   - `PUBLIC_SUPABASE_URL`: Your Supabase project URL
+   - `PUBLIC_SUPABASE_ANON_KEY`: Your public anon key
+   - `SUPABASE_SERVICE_ROLE_KEY`: Your service role key (required for seeding)
+
+### Running the Seed Script
+
+To populate the database with sample data:
+
+```bash
+# Seed the database with sample data
+pnpm run seed
+
+# For production environment
+pnpm run seed:prod
+```
+
+The seed script will:
+
+1. Clear existing data from all tables
+2. Insert sample services (4 services including haircuts, color, grooming)
+3. Insert sample stylists (3 stylists with different specialties)
+4. Insert sample gallery images (3 showcase images)
+
+### Sample Data Included
+
+**Services:**
+
+- Haircut & Style ($45, 60 min)
+- Hair Color ($120, 180 min)
+- Beard Trim ($25, 30 min)
+- Hair Wash ($15, 20 min, inactive)
+
+**Stylists:**
+
+- Sarah Johnson (Haircuts, Styling, Wedding Hair)
+- Maria Garcia (Hair Color, Highlights, Balayage)
+- Carlos Rodriguez (Mens Cuts, Beard Trim, Hot Towel Shave)
+
+**Gallery Images:**
+
+- Modern Bob Cut
+- Balayage Highlights
+- Classic Mens Cut
+
+### Manual Sample Data (Alternative)
+
+If you prefer to add sample data manually:
 
 ```sql
 -- Sample services
 INSERT INTO services (name, description, price, duration, category) VALUES
-('Haircut & Style', 'Professional haircut with styling', 65.00, 60, 'haircut'),
-('Color & Highlights', 'Full color treatment with highlights', 150.00, 180, 'color'),
-('Blowout', 'Professional blowout and style', 45.00, 45, 'styling');
+('Haircut & Style', 'Professional haircut with styling', '45.00', 60, 'Hair'),
+('Hair Color', 'Full hair coloring service', '120.00', 180, 'Color'),
+('Beard Trim', 'Professional beard trimming and shaping', '25.00', 30, 'Grooming');
 
--- Sample stylist
+-- Sample stylists
 INSERT INTO stylists (name, bio, specialties) VALUES
-('Maria Rodriguez', 'Expert colorist with 10+ years experience', ARRAY['color', 'highlights', 'balayage']);
+('Sarah Johnson', 'Master stylist with 10+ years experience', ARRAY['Haircuts', 'Styling', 'Wedding Hair']),
+('Maria Garcia', 'Color specialist and creative stylist', ARRAY['Hair Color', 'Highlights', 'Balayage']);
 ```
