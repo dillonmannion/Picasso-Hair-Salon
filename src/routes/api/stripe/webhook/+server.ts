@@ -4,6 +4,7 @@ import { constructWebhookEvent } from '$lib/stripe/client';
 import { createClient } from '@supabase/supabase-js';
 import { PUBLIC_SUPABASE_URL } from '$env/static/public';
 import { env } from '$env/dynamic/private';
+import type Stripe from 'stripe';
 
 export const POST: RequestHandler = async ({ request }) => {
 	const signature = request.headers.get('stripe-signature');
@@ -34,7 +35,7 @@ export const POST: RequestHandler = async ({ request }) => {
 
 		switch (event.type) {
 			case 'checkout.session.completed': {
-				const session = event.data.object as any;
+				const session = event.data.object as Stripe.Checkout.Session;
 
 				if (!session.metadata?.appointment_id) {
 					console.error('No appointment_id in session metadata');
@@ -87,14 +88,14 @@ export const POST: RequestHandler = async ({ request }) => {
 			}
 
 			case 'payment_intent.succeeded': {
-				const paymentIntent = event.data.object as any;
+				const paymentIntent = event.data.object as Stripe.PaymentIntent;
 				console.log(`Payment intent succeeded: ${paymentIntent.id}`);
 				// Additional handling if needed
 				break;
 			}
 
 			case 'payment_intent.payment_failed': {
-				const paymentIntent = event.data.object as any;
+				const paymentIntent = event.data.object as Stripe.PaymentIntent;
 				console.error(`Payment failed for intent: ${paymentIntent.id}`);
 
 				if (paymentIntent.metadata?.appointment_id) {

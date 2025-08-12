@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { MapPin, Clock, Phone, Mail } from 'lucide-svelte';
 	import { enhance } from '$app/forms';
+	import { Clock, Mail, MapPin, Phone } from 'lucide-svelte';
 
 	let isSubmitting = $state(false);
 </script>
@@ -162,9 +162,15 @@
 					<h3 class="mb-3 text-lg font-semibold text-gray-900">Follow Us</h3>
 					<p class="mb-4 text-gray-600">Stay connected for the latest updates and styling tips!</p>
 					<div class="flex space-x-4">
-						<a href="#" class="text-primary-600 hover:text-primary-700">Facebook</a>
-						<a href="#" class="text-primary-600 hover:text-primary-700">Instagram</a>
-						<a href="#" class="text-primary-600 hover:text-primary-700">Twitter</a>
+						<a href="http://www.facebook.com" class="text-primary-600 hover:text-primary-700"
+							>Facebook</a
+						>
+						<a href="http://www.instagram.com" class="text-primary-600 hover:text-primary-700"
+							>Instagram</a
+						>
+						<a href="http://www.twitter.com" class="text-primary-600 hover:text-primary-700"
+							>Twitter</a
+						>
 					</div>
 				</div>
 			</div>

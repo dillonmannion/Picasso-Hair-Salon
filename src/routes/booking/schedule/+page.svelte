@@ -19,23 +19,21 @@
 	const serviceId = $page.url.searchParams.get('service');
 	const stylistId = $page.url.searchParams.get('stylist');
 
-	// Update URL when date changes
-	$effect(() => {
-		if (selectedDate) {
-			const url = new URL($page.url);
-			url.searchParams.set('date', selectedDate);
-			void goto(url.toString(), { replaceState: true, noScroll: true });
-		}
-	});
+	function handleDateSelect(date: string) {
+		selectedDate = date;
+		selectedTime = null; // Reset time when date changes
+		const url = new URL($page.url);
+		url.searchParams.set('date', date);
+		url.searchParams.delete('time'); // Remove time from URL when date changes
+		void goto(url.toString(), { replaceState: true, noScroll: true });
+	}
 
-	// Update URL when time changes
-	$effect(() => {
-		if (selectedTime) {
-			const url = new URL($page.url);
-			url.searchParams.set('time', selectedTime);
-			void goto(url.toString(), { replaceState: true, noScroll: true });
-		}
-	});
+	function handleTimeSelect(time: string) {
+		selectedTime = time;
+		const url = new URL($page.url);
+		url.searchParams.set('time', time);
+		void goto(url.toString(), { replaceState: true, noScroll: true });
+	}
 
 	function goBack() {
 		void goto(`/booking/stylist?service=${serviceId}`);
@@ -82,7 +80,7 @@
 			<h3 class="mb-4 text-lg font-medium text-gray-900">Select a Date</h3>
 			<CalendarPicker
 				{selectedDate}
-				onDateSelect={(date) => (selectedDate = date)}
+				onDateSelect={handleDateSelect}
 				minDate={today}
 				maxDate={new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)}
 				{disabledDates}
@@ -97,7 +95,7 @@
 					<TimeSlotGrid
 						slots={data.timeSlots}
 						{selectedTime}
-						onTimeSelect={(time) => (selectedTime = time)}
+						onTimeSelect={handleTimeSelect}
 						columns={4}
 					/>
 				{:else}

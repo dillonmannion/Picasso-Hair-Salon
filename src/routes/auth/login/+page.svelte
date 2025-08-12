@@ -40,8 +40,8 @@
 	}
 </script>
 
-<div class="container flex min-h-screen items-center justify-center py-12">
-	<Card class="w-full max-w-md">
+<div class="flex min-h-screen items-center justify-center px-4 py-12">
+	<Card class="mx-auto w-full max-w-md">
 		<CardHeader class="space-y-1">
 			<CardTitle class="text-center text-2xl">Welcome to Picasso Hair Salon</CardTitle>
 			<CardDescription class="text-center">

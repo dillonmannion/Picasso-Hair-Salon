@@ -416,6 +416,8 @@ export async function getAppointmentStats(
 		// Count week's appointments
 		if (
 			appointment.appointment_date &&
+			today &&
+			weekFromNow &&
 			appointment.appointment_date >= today &&
 			appointment.appointment_date <= weekFromNow
 		) {

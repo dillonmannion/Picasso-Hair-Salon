@@ -18,6 +18,7 @@
 	let notes = $state('');
 	let agreedToTerms = $state(false);
 	let isSubmitting = $state(false);
+	let paymentMethod = $state<'now' | 'later'>('now');
 
 	function goBack() {
 		const params = new URLSearchParams({
@@ -58,6 +59,7 @@
 		<input type="hidden" name="date" value={data.date} />
 		<input type="hidden" name="time" value={data.time} />
 		<input type="hidden" name="isAnyStylist" value={data.isAnyStylist} />
+		<input type="hidden" name="paymentMethod" value={paymentMethod} />
 		{#if data.isAnyStylist}
 			<input
 				type="hidden"
@@ -111,6 +113,50 @@
 							</dd>
 						</div>
 					</dl>
+				</div>
+
+				<!-- Payment Method Selection -->
+				<div class="rounded-lg border bg-white p-6">
+					<h3 class="mb-4 text-lg font-semibold text-gray-900">Payment Method</h3>
+					<p class="mb-4 text-sm text-gray-600">
+						Choose how you'd like to pay for your appointment
+					</p>
+					<div class="space-y-3">
+						<label
+							class="flex cursor-pointer items-start rounded-lg border p-4 transition-colors hover:bg-gray-50"
+						>
+							<input
+								type="radio"
+								name="paymentMethod"
+								value="now"
+								bind:group={paymentMethod}
+								class="text-primary focus:ring-primary mt-1"
+							/>
+							<div class="ml-3">
+								<div class="font-medium text-gray-900">Pay Now (Online)</div>
+								<div class="text-sm text-gray-600">
+									Secure payment through Stripe. Your appointment will be confirmed immediately.
+								</div>
+							</div>
+						</label>
+						<label
+							class="flex cursor-pointer items-start rounded-lg border p-4 transition-colors hover:bg-gray-50"
+						>
+							<input
+								type="radio"
+								name="paymentMethod"
+								value="later"
+								bind:group={paymentMethod}
+								class="text-primary focus:ring-primary mt-1"
+							/>
+							<div class="ml-3">
+								<div class="font-medium text-gray-900">Pay at Salon</div>
+								<div class="text-sm text-gray-600">
+									Pay when you arrive for your appointment. We accept cash and all major cards.
+								</div>
+							</div>
+						</label>
+					</div>
 				</div>
 
 				<!-- Special Requests -->
@@ -189,7 +235,11 @@
 						: 'cursor-not-allowed bg-gray-200 text-gray-400'
 				)}
 			>
-				{isSubmitting ? 'Creating Appointment...' : 'Confirm Booking'}
+				{isSubmitting
+					? 'Creating Appointment...'
+					: paymentMethod === 'now'
+						? 'Continue to Payment'
+						: 'Confirm Booking'}
 			</button>
 		</div>
 	</form>

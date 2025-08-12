@@ -1,7 +1,6 @@
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { createCheckoutSession } from '$lib/stripe/client';
-import { supabase } from '$lib/supabaseClient';
 
 export const GET: RequestHandler = ({ url }) => {
 	const appointmentId = url.searchParams.get('appointmentId');
@@ -41,14 +40,13 @@ interface CheckoutRequestBody {
 	mode?: 'redirect' | 'embedded';
 }
 
-export const POST: RequestHandler = async ({ request, url }) => {
+export const POST: RequestHandler = async ({ request, url, locals }) => {
 	try {
 		// Check if user is authenticated
-		const {
-			data: { user },
-			error: authError
-		} = await supabase.auth.getUser();
-		if (authError || !user) {
+		const session = await locals.safeGetSession();
+		const user = session?.user;
+
+		if (!user) {
 			return json({ error: 'Unauthorized' }, { status: 401 });
 		}
 
@@ -73,7 +71,7 @@ export const POST: RequestHandler = async ({ request, url }) => {
 		}
 
 		// Fetch appointment details with service and stylist information
-		const { data: appointment, error: appointmentError } = await supabase
+		const { data: appointment, error: appointmentError } = await locals.supabase
 			.from('appointments')
 			.select(
 				`
@@ -92,9 +90,14 @@ export const POST: RequestHandler = async ({ request, url }) => {
 			return json({ error: 'Appointment not found' }, { status: 404 });
 		}
 
-		// Check if appointment is paid (field from migration)
+		// Check if appointment is already paid
 		const appointmentWithPaid = appointment as typeof appointment & { paid?: boolean };
-		if (appointment.status !== 'scheduled' || appointmentWithPaid.paid) {
+		if (appointmentWithPaid.paid) {
+			return json({ error: 'Appointment is already paid' }, { status: 400 });
+		}
+
+		// Check if appointment status allows payment
+		if (appointment.status !== 'pending' && appointment.status !== 'confirmed') {
 			return json({ error: 'Appointment is not available for payment' }, { status: 400 });
 		}
 

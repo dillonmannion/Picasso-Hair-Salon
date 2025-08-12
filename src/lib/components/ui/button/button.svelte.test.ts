@@ -1,6 +1,7 @@
 import { describe, test, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/svelte';
 import userEvent from '@testing-library/user-event';
+import type { Snippet } from 'svelte';
 import Button from './button.svelte';
 
 // Mock SvelteKit navigation
@@ -27,7 +28,7 @@ describe('Button Component', () => {
 		render(Button, {
 			props: {
 				href: '/test',
-				children: ($$slots: any) => 'Link Button'
+				children: (() => 'Link Button') as Snippet
 			}
 		});
 		
@@ -43,7 +44,7 @@ describe('Button Component', () => {
 		render(Button, {
 			props: {
 				onclick: handleClick,
-				children: ($$slots: any) => 'Click Button'
+				children: (() => 'Click Button') as Snippet
 			}
 		});
 		

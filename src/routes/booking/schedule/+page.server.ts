@@ -3,6 +3,15 @@ import type { PageServerLoad } from './$types';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Database } from '$lib/types/database.types';
 
+type AppointmentWithService = {
+	appointment_time: string;
+	services: { duration: number };
+};
+
+type AppointmentWithStylistAndService = AppointmentWithService & {
+	stylist_id: string;
+};
+
 export const load: PageServerLoad = async ({ locals, url }) => {
 	const serviceId = url.searchParams.get('service');
 	const stylistId = url.searchParams.get('stylist');
@@ -104,7 +113,7 @@ async function generateTimeSlots(
 			}
 
 			// Check for conflicts with existing appointments
-			const hasConflict = appointments?.some((apt: any) => {
+			const hasConflict = appointments?.some((apt: AppointmentWithService) => {
 				const aptStartTime = new Date(`2000-01-01T${apt.appointment_time}`);
 				const aptEndTime = new Date(aptStartTime.getTime() + apt.services.duration * 60000);
 				const slotStartTime = new Date(`2000-01-01T${time}`);
@@ -144,14 +153,17 @@ async function generateTimeSlotsForAny(
 	// Group appointments by stylist
 	const appointmentsByStylist =
 		appointments?.reduce(
-			(acc: Record<string, any[]>, apt: any) => {
+			(
+				acc: Record<string, AppointmentWithStylistAndService[]>,
+				apt: AppointmentWithStylistAndService
+			) => {
 				if (!acc[apt.stylist_id]) {
 					acc[apt.stylist_id] = [];
 				}
 				acc[apt.stylist_id].push(apt);
 				return acc;
 			},
-			{} as Record<string, any[]>
+			{} as Record<string, AppointmentWithStylistAndService[]>
 		) || {};
 
 	// Generate time slots
@@ -174,7 +186,7 @@ async function generateTimeSlotsForAny(
 			const isAvailable = stylistIds.some((stylistId) => {
 				const stylistAppointments = appointmentsByStylist[stylistId] || [];
 
-				const hasConflict = stylistAppointments.some((apt: any) => {
+				const hasConflict = stylistAppointments.some((apt: AppointmentWithStylistAndService) => {
 					const aptStartTime = new Date(`2000-01-01T${apt.appointment_time}`);
 					const aptEndTime = new Date(aptStartTime.getTime() + apt.services.duration * 60000);
 					const slotStartTime = new Date(`2000-01-01T${time}`);

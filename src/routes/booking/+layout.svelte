@@ -2,9 +2,9 @@
 	import { page } from '$app/stores';
 	import { goto } from '$app/navigation';
 	import ProgressIndicator from '$lib/components/custom/ProgressIndicator.svelte';
-	import type { LayoutData } from './$types';
+	import type { Snippet } from 'svelte';
 
-	let { data }: { data: LayoutData } = $props();
+	let { children }: { children: Snippet } = $props();
 
 	// Booking state from URL params
 	const bookingState = $derived({
@@ -48,11 +48,11 @@
 		) {
 			// Redirect to the appropriate step
 			if (!bookingState.serviceId) {
-				goto('/booking/service');
+				void goto('/booking/service');
 			} else if (!bookingState.stylistId) {
-				goto(`/booking/stylist?service=${bookingState.serviceId}`);
+				void goto(`/booking/stylist?service=${bookingState.serviceId}`);
 			} else if (!bookingState.date || !bookingState.time) {
-				goto(
+				void goto(
 					`/booking/schedule?service=${bookingState.serviceId}&stylist=${bookingState.stylistId}`
 				);
 			}
@@ -73,7 +73,7 @@
 
 		<!-- Content -->
 		<div class="mt-8 rounded-lg bg-white p-6 shadow-md">
-			<slot />
+			{@render children()}
 		</div>
 
 		<!-- Debug info in development -->

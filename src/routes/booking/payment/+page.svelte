@@ -6,8 +6,8 @@
 	const appointmentId = $derived($page.url.searchParams.get('appointment_id'));
 
 	function handleComplete() {
-		// Redirect to success page after payment completion
-		goto('/booking/success');
+		// Redirect to success page after payment completion with appointment ID
+		goto(`/booking/success?id=${appointmentId}`);
 	}
 
 	// Redirect if no appointment ID

@@ -61,7 +61,7 @@ export const load: PageServerLoad = async ({ url, locals }) => {
 
 		return {
 			appointment,
-			paymentSuccessful: appointment.paid
+			paymentSuccessful: 'paid' in appointment ? appointment.paid : false
 		};
 	}
 

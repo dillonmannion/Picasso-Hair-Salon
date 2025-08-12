@@ -18,7 +18,7 @@
 		onDateSelect
 	}: Props = $props();
 
-	let currentMonth = new SvelteDate(minDate);
+	let currentMonth = $state(new SvelteDate(minDate));
 	let weeks = $state<Date[][]>([]);
 
 	$effect(() => {

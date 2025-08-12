@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
+	import { onMount } from 'svelte';
 	import type { PageData } from './$types';
 
 	interface Props {
@@ -7,6 +8,16 @@
 	}
 
 	let { data }: Props = $props();
+
+	// Automatically redirect to appointments after 5 seconds
+	onMount(() => {
+		const timeout = setTimeout(() => {
+			void goto('/appointments');
+		}, 5000);
+
+		// Clean up timeout if component unmounts
+		return () => clearTimeout(timeout);
+	});
 
 	function viewAppointments() {
 		void goto('/appointments');
@@ -40,8 +51,9 @@
 		<p class="mt-2 text-lg text-gray-600">
 			{data.paymentSuccessful
 				? 'Your payment has been processed and your appointment is confirmed.'
-				: 'Your appointment has been successfully scheduled.'}
+				: 'Your appointment has been successfully scheduled. Please pay at the salon.'}
 		</p>
+		<p class="mt-4 text-sm text-gray-500">Redirecting to your appointments in a few seconds...</p>
 	</div>
 
 	<!-- Appointment Details Card -->
@@ -60,8 +72,10 @@
 				<p class="text-sm text-gray-600">
 					Time: <span class="font-medium text-gray-900">{data.appointment.appointment_time}</span>
 				</p>
-				{#if data.appointment.paid}
+				{#if 'paid' in data.appointment && data.appointment.paid}
 					<p class="text-sm font-medium text-green-600">✓ Payment confirmed</p>
+				{:else}
+					<p class="text-sm font-medium text-yellow-600">⚠ Payment pending - Pay at salon</p>
 				{/if}
 			</div>
 		{/if}

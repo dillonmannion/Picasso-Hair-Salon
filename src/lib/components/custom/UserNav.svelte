@@ -10,11 +10,16 @@
 		DropdownMenuSeparator,
 		DropdownMenuTrigger
 	} from '$lib/components/ui/dropdown-menu';
-	import { goto } from '$app/navigation';
+	import { goto, invalidate } from '$app/navigation';
 	import { getUserDisplayName, getUserInitials, getUserAvatarUrl } from '$lib/utils/user';
 	import type { SupabaseClient, User } from '@supabase/supabase-js';
 
-	let { user, supabase }: { user: User; supabase: SupabaseClient } = $props();
+	let { user, supabase }: { user: User | null; supabase: SupabaseClient } = $props();
+
+	// Get user data with fallbacks
+	const displayName = $derived(getUserDisplayName(user));
+	const initials = $derived(getUserInitials(user));
+	const avatarUrl = $derived(getUserAvatarUrl(user));
 
 	async function handleSignOut() {
 		try {
@@ -23,7 +28,11 @@
 				console.error('Error signing out:', error);
 				// You could show a toast notification here
 			} else {
+				// Invalidate auth data to trigger server-side session check
+				await invalidate('supabase:auth');
 				await goto('/', { replaceState: true });
+				// Force a page refresh to ensure clean state
+				window.location.reload();
 			}
 		} catch (err) {
 			console.error('Unexpected error during sign out:', err);
@@ -36,8 +45,8 @@
 		{#snippet child({ props })}
 			<Button variant="ghost" class="relative h-8 w-8 rounded-full" {...props}>
 				<Avatar class="h-8 w-8">
-					<AvatarImage src={getUserAvatarUrl(user)} alt={getUserDisplayName(user)} />
-					<AvatarFallback>{getUserInitials(user)}</AvatarFallback>
+					<AvatarImage src={avatarUrl || ''} alt={displayName} />
+					<AvatarFallback>{initials}</AvatarFallback>
 				</Avatar>
 			</Button>
 		{/snippet}
@@ -45,9 +54,9 @@
 	<DropdownMenuContent class="w-56" align="end">
 		<DropdownMenuLabel class="font-normal">
 			<div class="flex flex-col space-y-1">
-				<p class="text-sm leading-none font-medium">{getUserDisplayName(user)}</p>
+				<p class="text-sm leading-none font-medium">{displayName}</p>
 				<p class="text-muted-foreground text-xs leading-none">
-					{user.email}
+					{user?.email ?? 'No email'}
 				</p>
 			</div>
 		</DropdownMenuLabel>

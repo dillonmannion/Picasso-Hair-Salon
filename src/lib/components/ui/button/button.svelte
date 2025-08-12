@@ -56,10 +56,10 @@
 	}: ButtonProps = $props();
 
 	// Handle navigation for button elements with href
-	async function handleClick(event: MouseEvent) {
+	async function handleClick(event: MouseEvent & { currentTarget: EventTarget & HTMLButtonElement }) {
 		// If there's a custom onclick handler, call it first
-		if (onclick) {
-			onclick(event);
+		if (onclick && typeof onclick === 'function') {
+			(onclick as (e: MouseEvent) => void)(event);
 		}
 		
 		// If the button has an href and isn't disabled, navigate

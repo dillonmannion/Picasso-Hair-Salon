@@ -1,15 +1,62 @@
-import { createBrowserClient } from '@supabase/ssr';
+import { createBrowserClient, isBrowser } from '@supabase/ssr';
 import { PUBLIC_SUPABASE_ANON_KEY, PUBLIC_SUPABASE_URL } from '$env/static/public';
 import type { LayoutLoad } from './$types';
 
 export const load: LayoutLoad = ({ fetch, data, depends }) => {
 	depends('supabase:auth');
 
-	// For our simplified auth system, we only need a browser client
-	// Server-side operations are handled via hooks.server.ts
+	// Create browser client with proper cookie handling for session persistence
 	const supabase = createBrowserClient(PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY, {
 		global: {
 			fetch
+		},
+		cookies: {
+			getAll() {
+				if (!isBrowser()) return [];
+
+				return document.cookie
+					.split(';')
+					.map((cookie) => {
+						const [name, ...parts] = cookie.split('=');
+						return {
+							name: name?.trim() ?? '',
+							value: parts.join('=').trim()
+						};
+					})
+					.filter((cookie) => cookie.name && cookie.value);
+			},
+			setAll(cookiesToSet) {
+				if (!isBrowser()) return;
+
+				cookiesToSet.forEach(({ name, value, options }) => {
+					let cookieString = `${name}=${value}`;
+
+					if (options?.maxAge) {
+						cookieString += `; Max-Age=${options.maxAge}`;
+					}
+					if (options?.expires) {
+						cookieString += `; Expires=${options.expires.toUTCString()}`;
+					}
+					if (options?.path) {
+						cookieString += `; Path=${options.path}`;
+					}
+					if (options?.domain) {
+						cookieString += `; Domain=${options.domain}`;
+					}
+					if (options?.secure) {
+						cookieString += '; Secure';
+					}
+					if (options?.httpOnly) {
+						// Note: Can't set HttpOnly from JavaScript
+						console.warn('Cannot set HttpOnly cookie from JavaScript');
+					}
+					if (options?.sameSite) {
+						cookieString += `; SameSite=${options.sameSite}`;
+					}
+
+					document.cookie = cookieString;
+				});
+			}
 		}
 	});
 

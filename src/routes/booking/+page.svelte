@@ -1,11 +1,13 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
-	import { onMount } from 'svelte';
+	import { browser } from '$app/environment';
 
-	onMount(() => {
-		// Redirect to the first step
-		goto('/booking/service');
-	});
+	if (browser) {
+		// Redirect to the first step only in the browser
+		goto('/booking/service').catch((err) => {
+			console.error('Failed to redirect to booking service:', err);
+		});
+	}
 </script>
 
 <div class="flex items-center justify-center p-8">

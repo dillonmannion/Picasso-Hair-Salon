@@ -1,5 +1,7 @@
 import { error, fail, redirect } from '@sveltejs/kit';
 import type { PageServerLoad, Actions } from './$types';
+import type { SupabaseClient } from '@supabase/supabase-js';
+import type { Database } from '$lib/types/database.types';
 
 export const load: PageServerLoad = async ({ locals, url }) => {
 	const serviceId = url.searchParams.get('service');
@@ -101,6 +103,7 @@ export const actions = {
 		const time = formData.get('time') as string;
 		const notes = formData.get('notes') as string;
 		const isAnyStylist = formData.get('isAnyStylist') === 'true';
+		const paymentMethod = formData.get('paymentMethod') as string;
 
 		// Get service details for price
 		const { data: service } = await locals.supabase
@@ -182,13 +185,19 @@ export const actions = {
 			return fail(500, { error: 'Failed to create appointment' });
 		}
 
-		// Redirect to embedded payment page
-		throw redirect(303, `/booking/payment?appointment_id=${appointment.id}`);
+		// Redirect based on payment method
+		if (paymentMethod === 'now') {
+			// Redirect to embedded payment page
+			throw redirect(303, `/booking/payment?appointment_id=${appointment.id}`);
+		} else {
+			// Redirect directly to success page for pay-later option
+			throw redirect(303, `/booking/success?id=${appointment.id}`);
+		}
 	}
 } satisfies Actions;
 
 async function checkStylistAvailability(
-	supabase: any,
+	supabase: SupabaseClient<Database>,
 	stylistId: string,
 	date: string,
 	time: string,
@@ -208,7 +217,7 @@ async function checkStylistAvailability(
 	const slotStartTime = new Date(`2000-01-01T${time}:00`);
 	const slotEndTime = new Date(slotStartTime.getTime() + serviceDuration * 60000);
 
-	return !appointments.some((apt: any) => {
+	return !appointments.some((apt: { appointment_time: string; services: { duration: number } }) => {
 		const aptStartTime = new Date(`2000-01-01T${apt.appointment_time}`);
 		const aptEndTime = new Date(aptStartTime.getTime() + apt.services.duration * 60000);
 
