@@ -25,18 +25,5 @@ export default defineConfig({
 		warmup: {
 			clientFiles: ['./src/routes/+layout.svelte']
 		}
-	},
-
-	// Vitest configuration integrated
-	test: {
-		environment: 'jsdom',
-		include: ['src/**/*.{test,spec}.{js,ts}'],
-		setupFiles: './vitest-setup.ts',
-		globals: true,
-		coverage: {
-			provider: 'v8',
-			reporter: ['text', 'html'],
-			exclude: ['src/**/*.{test,spec}.{js,ts}', 'src/lib/paraglide/**', 'src/app.html']
-		}
 	}
 });

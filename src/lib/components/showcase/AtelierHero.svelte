@@ -19,17 +19,9 @@
 <section class="relative grid min-h-[80svh] bg-white lg:grid-cols-2">
 	<div class="relative overflow-hidden">
 		<img src={leftImg} alt="" class="h-full w-full object-cover grayscale" />
-		<div class="absolute top-1/3 left-10 max-w-[14rem] text-white">
-			<div class="tracking-widerish text-sm/5 uppercase opacity-90">More on Picasso</div>
-			<ul class="mt-3 space-y-2 text-sm/6">
-				<li><a class="hover:underline" href="/team">Professional Team</a></li>
-				<li><a class="hover:underline" href="/appointments">Book Appointment</a></li>
-				<li><a class="hover:underline" href="/contact">Contact Us</a></li>
-			</ul>
-		</div>
 	</div>
 
-	<div class="relative">
+	<div class="relative mr-3 ml-2">
 		<div class="container py-12 lg:py-20">
 			<h1 class="mb-6">
 				<span class="block text-[36px] md:text-[44px] {theme === 'luxe' ? 'text-[#5e1c1c]' : ''}"

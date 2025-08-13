@@ -31,7 +31,7 @@
 </script>
 
 <svelte:head>
-	<title>Picasso Hair Salon - Where Art Meets Style</title>
+	<title>Picasso Hair Salon</title>
 	<meta
 		name="description"
 		content="Experience luxury hair styling at Picasso Hair Salon. Expert stylists, premium services, and personalized care in an elegant setting."

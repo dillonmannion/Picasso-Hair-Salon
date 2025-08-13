@@ -1,9 +1,7 @@
 <script lang="ts">
 	import { invalidate } from '$app/navigation';
-	import { page } from '$app/state';
 	import LuxeHeader from '$lib/components/custom/LuxeHeader.svelte';
 	import { Toaster } from '$lib/components/ui/sonner';
-	import { theme } from '$lib/stores/theme.svelte';
 	import type { Snippet } from 'svelte';
 	import '../app.css';
 	import type { LayoutData } from './$types';
@@ -11,14 +9,11 @@
 	let { children, data }: { children: Snippet; data: LayoutData } = $props();
 	let { supabase, user, adminStatus } = $derived(data);
 
-	// Check if we're on the homepage to avoid duplicate header
-	const isHomepage = $derived(page.url.pathname === '/');
-
 	// Initialize theme on mount (theme store handles this automatically)
 	// The theme store will apply the correct theme class to the document
 
 	$effect(() => {
-		const { data: authData } = supabase.auth.onAuthStateChange(async (event, session) => {
+		const { data: authData } = supabase.auth.onAuthStateChange(async (event) => {
 			/**
 			 * Handle auth state changes by invalidating all auth-related data.
 			 * This triggers a fresh server-side session validation via safeGetSession.
@@ -45,8 +40,7 @@
 		// Check session status every 30 seconds
 		const refreshInterval = setInterval(async () => {
 			const {
-				data: { session },
-				error
+				data: { session }
 			} = await supabase.auth.getSession();
 
 			if (session) {
@@ -80,7 +74,7 @@
 <div
 	class="bg-background text-foreground relative flex min-h-screen flex-col transition-colors duration-300"
 >
-	<LuxeHeader {user} {supabase} {isHomepage} />
+	<LuxeHeader {user} {supabase} {adminStatus} />
 	<main class="flex-1">
 		{@render children?.()}
 	</main>

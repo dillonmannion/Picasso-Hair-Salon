@@ -5,50 +5,79 @@
 	interface Props {
 		user?: User | null;
 		supabase?: SupabaseClient;
-		isHomepage?: boolean;
+		adminStatus?: { isAdmin: boolean };
 	}
 
-	let { user = null, supabase, isHomepage = false }: Props = $props();
+	let { user = null, supabase, adminStatus }: Props = $props();
 
 	let mobileMenuOpen = $state(false);
 
 	const links = [
 		{ href: '/', label: 'HOME' },
-		{ href: isHomepage ? '#services' : '/services', label: 'SERVICES' },
-		{ href: isHomepage ? '#gallery' : '/gallery', label: 'GALLERY' },
+		{ href: '/#services', label: 'SERVICES' },
+		{ href: '/#gallery', label: 'GALLERY' },
 		{ href: '/booking/service', label: 'APPOINTMENT' },
-		{ href: isHomepage ? '#contact' : '/contact', label: 'CONTACT' }
+		{ href: '/#contact', label: 'CONTACT' }
 	];
 </script>
 
-<header
-	class="showcase-header border-luxe-cream-400 bg-luxe-cream-100 sticky top-0 z-50 items-center border-b"
->
-	<div class="container flex h-16 items-center justify-between">
-		<a
-			href="/"
-			class="showcase-heading text-2xl tracking-wide"
-			style="font-family: 'Cormorant Garamond', serif;"
+<header class="showcase-header border-luxe-cream-400 bg-luxe-cream-100 sticky top-0 z-50 border-b">
+	<div class="relative h-16">
+		<!-- Left: Hamburger (below xl) -->
+		<button
+			class="absolute top-1/2 left-4 -translate-y-1/2 p-2 xl:hidden"
+			onclick={() => (mobileMenuOpen = !mobileMenuOpen)}
+			aria-label="Toggle menu"
 		>
-			PICASSO
-		</a>
+			<svg
+				width="20"
+				height="20"
+				viewBox="0 0 24 24"
+				fill="none"
+				stroke="currentColor"
+				stroke-width="2"
+				class="text-luxe-burgundy-700"
+			>
+				<path d="M3 6h18M3 12h18M3 18h18" />
+			</svg>
+		</button>
 
-		<div class="flex items-center gap-6">
-			<!-- Desktop Navigation -->
-			<nav class="hidden items-center gap-2 md:flex">
+		<!-- Center: Title + Nav (xl and up) -->
+		<div
+			class="absolute top-1/2 left-1/2 hidden -translate-x-1/2 -translate-y-1/2 items-center xl:flex"
+		>
+			<a
+				href="/"
+				class="showcase-heading mr-8 text-2xl tracking-wide"
+				style="font-family: 'Cormorant Garamond', serif;"
+			>
+				PICASSO
+			</a>
+			<nav class="flex items-center justify-end gap-6">
 				{#each links as link}
 					<a
-						class="showcase-header-link text-luxe-black-700 hover:text-luxe-burgundy-700 transition-colors"
+						class="showcase-header-link text-luxe-black-700 hover:text-luxe-burgundy-700 py-1 text-sm tracking-wide uppercase transition-colors"
 						href={link.href}
 					>
 						{link.label}
 					</a>
 				{/each}
 			</nav>
+		</div>
 
-			<!-- User Navigation -->
+		<!-- Center: Title only (below xl) -->
+		<a
+			href="/"
+			class="showcase-heading absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-2xl tracking-wide xl:hidden"
+			style="font-family: 'Cormorant Garamond', serif;"
+		>
+			PICASSO
+		</a>
+
+		<!-- Right: User Profile/Sign In (all sizes) -->
+		<div class="absolute top-1/2 right-4 -translate-y-1/2">
 			{#if user && supabase}
-				<UserNav {user} {supabase} />
+				<UserNav {user} {supabase} {adminStatus} />
 			{:else}
 				<a
 					href="/auth/login"
@@ -57,35 +86,16 @@
 					Sign In
 				</a>
 			{/if}
-
-			<!-- Mobile Menu Button -->
-			<button
-				class="p-2 md:hidden"
-				onclick={() => (mobileMenuOpen = !mobileMenuOpen)}
-				aria-label="Toggle menu"
-			>
-				<svg
-					width="20"
-					height="20"
-					viewBox="0 0 24 24"
-					fill="none"
-					stroke="currentColor"
-					stroke-width="2"
-					class="text-luxe-burgundy-700"
-				>
-					<path d="M3 6h18M3 12h18M3 18h18" />
-				</svg>
-			</button>
 		</div>
 	</div>
 
-	<!-- Mobile Menu -->
+	<!-- Mobile Menu Dropdown -->
 	{#if mobileMenuOpen}
-		<div class="border-luxe-cream-400 bg-luxe-cream-100 border-t md:hidden">
-			<nav class="container flex flex-col py-2">
+		<div class="border-luxe-cream-400 bg-luxe-cream-100 border-t xl:hidden">
+			<nav class="container flex flex-col px-4 py-2">
 				{#each links as link}
 					<a
-						class="showcase-header-link text-luxe-black-700 hover:text-luxe-burgundy-700 py-2 transition-colors"
+						class="showcase-header-link text-luxe-black-700 hover:text-luxe-burgundy-700 py-2 tracking-wide uppercase transition-colors"
 						href={link.href}
 						onclick={() => (mobileMenuOpen = false)}
 					>
@@ -94,7 +104,7 @@
 				{/each}
 				{#if !user}
 					<a
-						class="showcase-header-link text-luxe-burgundy-700 py-2 font-medium"
+						class="showcase-header-link text-luxe-burgundy-700 py-2 font-medium tracking-wide uppercase"
 						href="/auth/login"
 						onclick={() => (mobileMenuOpen = false)}
 					>

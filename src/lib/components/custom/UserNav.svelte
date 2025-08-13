@@ -14,7 +14,15 @@
 	import { getUserDisplayName, getUserInitials, getUserAvatarUrl } from '$lib/utils/user';
 	import type { SupabaseClient, User } from '@supabase/supabase-js';
 
-	let { user, supabase }: { user: User | null; supabase: SupabaseClient } = $props();
+	let {
+		user,
+		supabase,
+		adminStatus
+	}: {
+		user: User | null;
+		supabase: SupabaseClient;
+		adminStatus?: { isAdmin: boolean };
+	} = $props();
 
 	// Get user data with fallbacks
 	const displayName = $derived(getUserDisplayName(user));
@@ -40,17 +48,24 @@
 	}
 </script>
 
-<DropdownMenu>
-	<DropdownMenuTrigger>
-		{#snippet child({ props })}
-			<Button variant="ghost" class="relative h-8 w-8 rounded-full" {...props}>
-				<Avatar class="h-8 w-8">
-					<AvatarImage src={avatarUrl || ''} alt={displayName} />
-					<AvatarFallback>{initials}</AvatarFallback>
-				</Avatar>
-			</Button>
-		{/snippet}
-	</DropdownMenuTrigger>
+<div class="flex items-center space-x-2">
+	{#if adminStatus?.isAdmin}
+		<Button variant="outline" size="sm" onclick={() => goto('/admin')}>
+			Admin Dashboard
+		</Button>
+	{/if}
+
+	<DropdownMenu>
+		<DropdownMenuTrigger>
+			{#snippet child({ props })}
+				<Button variant="ghost" class="relative h-8 w-8 rounded-full" {...props}>
+					<Avatar class="h-8 w-8">
+						<AvatarImage src={avatarUrl || ''} alt={displayName} />
+						<AvatarFallback>{initials}</AvatarFallback>
+					</Avatar>
+				</Button>
+			{/snippet}
+		</DropdownMenuTrigger>
 	<DropdownMenuContent class="w-56" align="end">
 		<DropdownMenuLabel class="font-normal">
 			<div class="flex flex-col space-y-1">
@@ -135,3 +150,4 @@
 		</DropdownMenuItem>
 	</DropdownMenuContent>
 </DropdownMenu>
+</div>
