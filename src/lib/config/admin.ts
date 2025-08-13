@@ -1,4 +1,5 @@
 // Admin configuration for Picasso Hair Salon
+// @ts-expect-error - env variables are not typed correctly
 import { env } from '$env/dynamic/private';
 import type { User } from '@supabase/supabase-js';
 

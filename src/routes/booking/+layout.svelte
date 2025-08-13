@@ -60,19 +60,27 @@
 	});
 </script>
 
-<div class="min-h-screen bg-gray-50">
+<div class="from-luxe-cream-50 min-h-screen bg-gradient-to-b to-white">
 	<div class="mx-auto max-w-4xl px-4 py-8">
 		<!-- Header -->
 		<div class="mb-8 text-center">
-			<h1 class="text-3xl font-bold text-gray-900">Book Your Appointment</h1>
-			<p class="mt-2 text-gray-600">Follow the steps below to schedule your visit</p>
+			<h1
+				class="text-luxe-burgundy-700 font-['Cormorant_Garamond'] text-4xl font-light md:text-5xl"
+			>
+				Book Your Appointment
+			</h1>
+			<p class="text-luxe-black-600 mt-3 text-lg">
+				Follow the steps below to schedule your luxurious experience
+			</p>
 		</div>
 
 		<!-- Progress Indicator -->
 		<ProgressIndicator />
 
 		<!-- Content -->
-		<div class="mt-8 rounded-lg bg-white p-6 shadow-md">
+		<div
+			class="border-luxe-cream-400 bg-luxe-cream-50 mt-8 rounded-xl border p-8 shadow-[0_12px_24px_rgba(94,28,28,0.15)]"
+		>
 			{@render children()}
 		</div>
 

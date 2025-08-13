@@ -2,75 +2,84 @@
 
 @import 'tw-animate-css';
 
+/* Import Luxe Theme System */
+@import './lib/styles/luxe-theme.css';
+
+/* Import Showcase Theme for Header */
+@import './lib/styles/showcase-theme.css';
+
 @custom-variant dark (&:is(.dark *));
 
+/* Luxe Theme as Default - Mapping to existing variables for backward compatibility */
 :root {
-	--radius: 0.625rem;
-	--background: oklch(1 0 0);
-	--foreground: oklch(0.147 0.004 49.25);
-	--card: oklch(1 0 0);
-	--card-foreground: oklch(0.147 0.004 49.25);
-	--popover: oklch(1 0 0);
-	--popover-foreground: oklch(0.147 0.004 49.25);
-	--primary: oklch(0.216 0.006 56.043);
-	--primary-foreground: oklch(0.985 0.001 106.423);
-	--secondary: oklch(0.97 0.001 106.424);
-	--secondary-foreground: oklch(0.216 0.006 56.043);
-	--muted: oklch(0.97 0.001 106.424);
-	--muted-foreground: oklch(0.553 0.013 58.071);
-	--accent: oklch(0.97 0.001 106.424);
-	--accent-foreground: oklch(0.216 0.006 56.043);
-	--destructive: oklch(0.577 0.245 27.325);
-	--border: oklch(0.923 0.003 48.717);
-	--input: oklch(0.923 0.003 48.717);
-	--ring: oklch(0.709 0.01 56.259);
-	--chart-1: oklch(0.646 0.222 41.116);
-	--chart-2: oklch(0.6 0.118 184.704);
-	--chart-3: oklch(0.398 0.07 227.392);
-	--chart-4: oklch(0.828 0.189 84.429);
-	--chart-5: oklch(0.769 0.188 70.08);
-	--sidebar: oklch(0.985 0.001 106.423);
-	--sidebar-foreground: oklch(0.147 0.004 49.25);
-	--sidebar-primary: oklch(0.216 0.006 56.043);
-	--sidebar-primary-foreground: oklch(0.985 0.001 106.423);
-	--sidebar-accent: oklch(0.97 0.001 106.424);
-	--sidebar-accent-foreground: oklch(0.216 0.006 56.043);
-	--sidebar-border: oklch(0.923 0.003 48.717);
-	--sidebar-ring: oklch(0.709 0.01 56.259);
+	--radius: 0.5rem;
+	/* Luxe Cream & Burgundy Color Scheme */
+	--background: #fdfcfa; /* luxe-cream-50 */
+	--foreground: #1a1a1a; /* luxe-black-800 */
+	--card: #f9f6f0; /* luxe-cream-100 */
+	--card-foreground: #1a1a1a; /* luxe-black-800 */
+	--popover: #f9f6f0; /* luxe-cream-100 */
+	--popover-foreground: #1a1a1a; /* luxe-black-800 */
+	--primary: #7d2525; /* luxe-burgundy-700 */
+	--primary-foreground: #fdfcfa; /* luxe-cream-50 */
+	--secondary: #f3ede2; /* luxe-cream-200 */
+	--secondary-foreground: #7d2525; /* luxe-burgundy-700 */
+	--muted: #e8dcc9; /* luxe-cream-300 */
+	--muted-foreground: #525252; /* luxe-black-500 */
+	--accent: #dcc8a8; /* luxe-cream-400 */
+	--accent-foreground: #7d2525; /* luxe-burgundy-700 */
+	--destructive: #b94545; /* luxe-burgundy-500 */
+	--border: #dcc8a8; /* luxe-cream-400 */
+	--input: #e8dcc9; /* luxe-cream-300 */
+	--ring: #7d2525; /* luxe-burgundy-700 */
+	--chart-1: #9c2f2f; /* luxe-burgundy-600 */
+	--chart-2: #dcc8a8; /* luxe-cream-400 */
+	--chart-3: #5e1c1c; /* luxe-burgundy-800 */
+	--chart-4: #c9b08a; /* luxe-cream-500 */
+	--chart-5: #b94545; /* luxe-burgundy-500 */
+	--sidebar: #f3ede2; /* luxe-cream-200 */
+	--sidebar-foreground: #1a1a1a; /* luxe-black-800 */
+	--sidebar-primary: #7d2525; /* luxe-burgundy-700 */
+	--sidebar-primary-foreground: #fdfcfa; /* luxe-cream-50 */
+	--sidebar-accent: #dcc8a8; /* luxe-cream-400 */
+	--sidebar-accent-foreground: #7d2525; /* luxe-burgundy-700 */
+	--sidebar-border: #dcc8a8; /* luxe-cream-400 */
+	--sidebar-ring: #7d2525; /* luxe-burgundy-700 */
 }
 
+/* Luxe Dark Mode Variant */
 .dark {
-	--background: oklch(0.147 0.004 49.25);
-	--foreground: oklch(0.985 0.001 106.423);
-	--card: oklch(0.216 0.006 56.043);
-	--card-foreground: oklch(0.985 0.001 106.423);
-	--popover: oklch(0.216 0.006 56.043);
-	--popover-foreground: oklch(0.985 0.001 106.423);
-	--primary: oklch(0.923 0.003 48.717);
-	--primary-foreground: oklch(0.216 0.006 56.043);
-	--secondary: oklch(0.268 0.007 34.298);
-	--secondary-foreground: oklch(0.985 0.001 106.423);
-	--muted: oklch(0.268 0.007 34.298);
-	--muted-foreground: oklch(0.709 0.01 56.259);
-	--accent: oklch(0.268 0.007 34.298);
-	--accent-foreground: oklch(0.985 0.001 106.423);
-	--destructive: oklch(0.704 0.191 22.216);
-	--border: oklch(1 0 0 / 10%);
-	--input: oklch(1 0 0 / 15%);
-	--ring: oklch(0.553 0.013 58.071);
-	--chart-1: oklch(0.488 0.243 264.376);
-	--chart-2: oklch(0.696 0.17 162.48);
-	--chart-3: oklch(0.769 0.188 70.08);
-	--chart-4: oklch(0.627 0.265 303.9);
-	--chart-5: oklch(0.645 0.246 16.439);
-	--sidebar: oklch(0.216 0.006 56.043);
-	--sidebar-foreground: oklch(0.985 0.001 106.423);
-	--sidebar-primary: oklch(0.488 0.243 264.376);
-	--sidebar-primary-foreground: oklch(0.985 0.001 106.423);
-	--sidebar-accent: oklch(0.268 0.007 34.298);
-	--sidebar-accent-foreground: oklch(0.985 0.001 106.423);
-	--sidebar-border: oklch(1 0 0 / 10%);
-	--sidebar-ring: oklch(0.553 0.013 58.071);
+	--background: #0d0d0d; /* luxe-black-900 */
+	--foreground: #fdfcfa; /* luxe-cream-50 */
+	--card: #1a1a1a; /* luxe-black-800 */
+	--card-foreground: #fdfcfa; /* luxe-cream-50 */
+	--popover: #1a1a1a; /* luxe-black-800 */
+	--popover-foreground: #fdfcfa; /* luxe-cream-50 */
+	--primary: #e5a1a1; /* luxe-burgundy-300 */
+	--primary-foreground: #2a0b0b; /* luxe-burgundy-950 */
+	--secondary: #3f1212; /* luxe-burgundy-900 */
+	--secondary-foreground: #f9e8e8; /* luxe-burgundy-100 */
+	--muted: #2a2a2a; /* luxe-black-700 */
+	--muted-foreground: #a8a8a8; /* luxe-black-300 */
+	--accent: #5e1c1c; /* luxe-burgundy-800 */
+	--accent-foreground: #f9e8e8; /* luxe-burgundy-100 */
+	--destructive: #d16969; /* luxe-burgundy-400 */
+	--border: #3a3a3a; /* luxe-black-600 */
+	--input: #2a2a2a; /* luxe-black-700 */
+	--ring: #e5a1a1; /* luxe-burgundy-300 */
+	--chart-1: #f0c9c9; /* luxe-burgundy-200 */
+	--chart-2: #dcc8a8; /* luxe-cream-400 */
+	--chart-3: #e5a1a1; /* luxe-burgundy-300 */
+	--chart-4: #c9b08a; /* luxe-cream-500 */
+	--chart-5: #d16969; /* luxe-burgundy-400 */
+	--sidebar: #1a1a1a; /* luxe-black-800 */
+	--sidebar-foreground: #fdfcfa; /* luxe-cream-50 */
+	--sidebar-primary: #e5a1a1; /* luxe-burgundy-300 */
+	--sidebar-primary-foreground: #2a0b0b; /* luxe-burgundy-950 */
+	--sidebar-accent: #5e1c1c; /* luxe-burgundy-800 */
+	--sidebar-accent-foreground: #f9e8e8; /* luxe-burgundy-100 */
+	--sidebar-border: #3a3a3a; /* luxe-black-600 */
+	--sidebar-ring: #e5a1a1; /* luxe-burgundy-300 */
 }
 
 @theme inline {
@@ -118,4 +127,34 @@
 	body {
 		@apply bg-background text-foreground;
 	}
+}
+
+/* Showcase Header Styles (for global use) */
+.showcase-header {
+	background-color: var(--luxe-bg-secondary);
+	border-bottom-color: var(--luxe-border-default);
+}
+
+.showcase-heading {
+	font-family: 'Cormorant Garamond', serif;
+	color: var(--luxe-primary);
+	font-weight: 400;
+}
+
+.showcase-header-link {
+	font-size: 0.75rem;
+	letter-spacing: 0.08em;
+	font-weight: 500;
+	text-transform: uppercase;
+	padding: 0.5rem 0.75rem;
+	transition: color 0.2s;
+}
+
+.showcase-btn {
+	display: inline-flex;
+	align-items: center;
+	padding: 0.5rem 1.5rem;
+	font-size: 0.875rem;
+	transition: all 0.2s;
+	border-radius: 0.25rem;
 }

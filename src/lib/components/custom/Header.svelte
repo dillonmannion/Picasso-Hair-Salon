@@ -98,19 +98,6 @@
 							Contact
 						</NavigationMenuLink>
 					</NavigationMenuItem>
-					<NavigationMenuItem>
-						<NavigationMenuLink
-							href="/showcase"
-							data-sveltekit-preload-data="off"
-							data-sveltekit-preload-code="off"
-							class="group bg-background hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground data-[active]:bg-accent/50 data-[state=open]:bg-accent/50 inline-flex h-9 w-max items-center justify-center rounded-md px-4 py-2 text-sm font-medium transition-colors focus:outline-none disabled:pointer-events-none disabled:opacity-50"
-						>
-							<span
-								class="inline-block whitespace-nowrap bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text font-semibold text-transparent"
-								>Style Preview</span
-							>
-						</NavigationMenuLink>
-					</NavigationMenuItem>
 				</NavigationMenuList>
 			</NavigationMenuRoot>
 		</div>
@@ -238,18 +225,6 @@
 				onclick={closeMenu}
 			>
 				Contact
-			</a>
-			<a
-				href="/showcase"
-				data-sveltekit-preload-data="off"
-				data-sveltekit-preload-code="off"
-				class="hover:bg-accent hover:text-accent-foreground flex items-center rounded-md px-3 py-2 text-sm font-medium"
-				onclick={closeMenu}
-			>
-				<span
-					class="bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text font-semibold text-transparent"
-					>Style Preview</span
-				>
 			</a>
 
 			<div class="my-4 border-t pt-4">

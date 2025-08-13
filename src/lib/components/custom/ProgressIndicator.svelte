@@ -44,9 +44,9 @@
 <div class="w-full px-4 py-8">
 	<div class="relative flex items-center justify-between">
 		<!-- Progress line -->
-		<div class="absolute top-1/2 left-0 h-0.5 w-full -translate-y-1/2 bg-gray-200">
+		<div class="bg-luxe-cream-300 absolute top-1/2 left-0 h-0.5 w-full -translate-y-1/2">
 			<div
-				class="bg-primary h-full transition-all duration-300"
+				class="bg-luxe-burgundy-700 h-full transition-all duration-300"
 				style="width: {currentStepIndex === -1
 					? 0
 					: (currentStepIndex / (steps.length - 1)) * 100}%"
@@ -59,12 +59,17 @@
 				type="button"
 				disabled={!canNavigateToStep(index)}
 				class={cn(
-					'relative z-10 flex h-10 w-10 items-center justify-center rounded-full border-2 bg-white transition-all duration-200',
-					isStepComplete(index) && 'border-primary bg-primary text-white',
-					isStepActive(index) && 'border-primary ring-primary/20 ring-4',
-					!isStepComplete(index) && !isStepActive(index) && 'border-gray-300 text-gray-400',
-					canNavigateToStep(index) && 'cursor-pointer hover:scale-110',
-					!canNavigateToStep(index) && 'cursor-not-allowed'
+					'bg-luxe-cream-50 relative z-10 flex h-12 w-12 items-center justify-center rounded-full border-2 shadow-[0_2px_4px_rgba(94,28,28,0.08)] transition-all duration-200',
+					isStepComplete(index) &&
+						'border-luxe-burgundy-700 bg-luxe-burgundy-700 text-luxe-cream-50',
+					isStepActive(index) &&
+						'border-luxe-burgundy-700 bg-luxe-cream-50 text-luxe-burgundy-700 ring-luxe-burgundy-200 ring-4',
+					!isStepComplete(index) &&
+						!isStepActive(index) &&
+						'border-luxe-cream-400 text-luxe-black-400',
+					canNavigateToStep(index) &&
+						'cursor-pointer hover:scale-110 hover:shadow-[0_4px_8px_rgba(94,28,28,0.12)]',
+					!canNavigateToStep(index) && 'cursor-not-allowed opacity-50'
 				)}
 				aria-label="{step.title} - Step {index + 1} of {steps.length}"
 			>
@@ -77,7 +82,7 @@
 						/>
 					</svg>
 				{:else}
-					<span class="text-sm font-semibold">{index + 1}</span>
+					<span class="font-['Cormorant_Garamond'] text-base font-semibold">{index + 1}</span>
 				{/if}
 			</button>
 
@@ -90,7 +95,9 @@
 					)}
 					style="left: {(index / (steps.length - 1)) * 100}%"
 				>
-					<p class="text-xs font-medium whitespace-nowrap text-gray-600">
+					<p
+						class="text-luxe-black-600 text-xs font-medium tracking-wider whitespace-nowrap uppercase"
+					>
 						{step.title}
 					</p>
 				</div>

@@ -1,52 +1,5 @@
 @import 'tailwindcss';
 
-@theme inline {
-	/* Atelier Color Palette - Original */
-	--color-atelier-paper-50: #fbfbfa;
-	--color-atelier-paper-100: #f3f3f1;
-	--color-atelier-ink-900: #141414;
-	--color-atelier-ink-700: #2a2a2a;
-	--color-atelier-ink-500: #5a5a5a;
-	--color-atelier-line: #e6e6e4;
-	--color-atelier-accent-400: #b9a891;
-
-	/* Luxe Color Palette - Cream/Burgundy/Black */
-	--color-luxe-cream-50: #fdfcfa;
-	--color-luxe-cream-100: #f9f6f0;
-	--color-luxe-cream-200: #f3ede2;
-	--color-luxe-cream-300: #e8dcc9;
-	--color-luxe-cream-400: #dcc8a8;
-	--color-luxe-cream-500: #c9b08a;
-
-	--color-luxe-burgundy-50: #fdf6f6;
-	--color-luxe-burgundy-100: #f9e8e8;
-	--color-luxe-burgundy-200: #f0c9c9;
-	--color-luxe-burgundy-300: #e5a1a1;
-	--color-luxe-burgundy-400: #d16969;
-	--color-luxe-burgundy-500: #b94545;
-	--color-luxe-burgundy-600: #9c2f2f;
-	--color-luxe-burgundy-700: #7d2525;
-	--color-luxe-burgundy-800: #5e1c1c;
-	--color-luxe-burgundy-900: #3f1212;
-	--color-luxe-burgundy-950: #2a0b0b;
-
-	--color-luxe-black-50: #f8f8f8;
-	--color-luxe-black-100: #e8e8e8;
-	--color-luxe-black-200: #d1d1d1;
-	--color-luxe-black-300: #a8a8a8;
-	--color-luxe-black-400: #787878;
-	--color-luxe-black-500: #525252;
-	--color-luxe-black-600: #3a3a3a;
-	--color-luxe-black-700: #2a2a2a;
-	--color-luxe-black-800: #1a1a1a;
-	--color-luxe-black-900: #0d0d0d;
-	--color-luxe-black-950: #000000;
-
-	/* Atelier Shadows */
-	--shadow-polaroid: 0 10px 18px rgba(0, 0, 0, 0.08);
-	--shadow-luxe: 0 12px 24px rgba(0, 0, 0, 0.12);
-}
-
 @layer base {
 	.atelier-showcase {
 		@apply bg-atelier-paper-50 text-atelier-ink-900 antialiased;

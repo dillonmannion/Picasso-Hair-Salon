@@ -32,19 +32,30 @@
 	<div class="relative">
 		<div class="container py-12 lg:py-20">
 			<h1 class="mb-6">
-				<span class="block text-[36px] md:text-[44px] {theme === 'luxe' ? 'text-[#5e1c1c]' : ''}">PICASSO</span>
-				<span class="-mt-2 block text-[22px] md:text-[26px] {theme === 'luxe' ? 'text-[#5e1c1c]' : ''}">Hair Salon</span>
+				<span class="block text-[36px] md:text-[44px] {theme === 'luxe' ? 'text-[#5e1c1c]' : ''}"
+					>PICASSO</span
+				>
+				<span
+					class="-mt-2 block text-[22px] md:text-[26px] {theme === 'luxe' ? 'text-[#5e1c1c]' : ''}"
+					>Hair Salon</span
+				>
 			</h1>
 
 			<div class="grid items-start gap-8 md:grid-cols-[1fr_auto]">
 				<div class="space-y-4">
-					<h3 class="tracking-widerish text-[13px] font-semibold uppercase {theme === 'luxe' ? 'text-black' : ''}">Relax and Recharge</h3>
-					<p class="{theme === 'luxe' ? 'text-black' : ''}">
+					<h3
+						class="tracking-widerish text-[13px] font-semibold uppercase {theme === 'luxe'
+							? 'text-black'
+							: ''}"
+					>
+						Relax and Recharge
+					</h3>
+					<p class={theme === 'luxe' ? 'text-black' : ''}>
 						Picasso Hair Salon offers professional services tailored to your every need. Our
 						talented team combines extensive knowledge of hair care with boundless creativity to
 						deliver exceptional results every time.
 					</p>
-					<p class="{theme === 'luxe' ? 'text-black' : ''}">
+					<p class={theme === 'luxe' ? 'text-black' : ''}>
 						Whether you're looking to refresh your look or indulge in a full transformation, you can
 						trust us to provide a top‑notch experience that leaves you feeling relaxed and
 						recharged.
@@ -52,11 +63,27 @@
 					<div class="mt-4">
 						<div class="showcase-kicker {theme === 'luxe' ? '!text-[#b94545]' : ''}">Follow</div>
 						<div class="mt-2 flex gap-3">
-							<a class="showcase-nav-link {theme === 'luxe' ? '!text-[#7d2525]' : ''}" href="https://instagram.com" aria-label="Instagram">IG</a>
-							<a class="showcase-nav-link {theme === 'luxe' ? '!text-[#7d2525]' : ''}" href="https://facebook.com" aria-label="Facebook">FB</a>
-							<a class="showcase-nav-link {theme === 'luxe' ? '!text-[#7d2525]' : ''}" href="https://tiktok.com" aria-label="TikTok">TT</a>
+							<a
+								class="showcase-nav-link {theme === 'luxe' ? '!text-[#7d2525]' : ''}"
+								href="https://instagram.com"
+								aria-label="Instagram">IG</a
+							>
+							<a
+								class="showcase-nav-link {theme === 'luxe' ? '!text-[#7d2525]' : ''}"
+								href="https://facebook.com"
+								aria-label="Facebook">FB</a
+							>
+							<a
+								class="showcase-nav-link {theme === 'luxe' ? '!text-[#7d2525]' : ''}"
+								href="https://tiktok.com"
+								aria-label="TikTok">TT</a
+							>
 						</div>
-						<a href="/booking/service" class="showcase-btn mt-6 {theme === 'luxe' ? '!bg-[#7d2525]' : ''}">Book Appointment</a>
+						<a
+							href="/booking/service"
+							class="showcase-btn mt-6 {theme === 'luxe' ? '!bg-[#7d2525]' : ''}"
+							>Book Appointment</a
+						>
 					</div>
 				</div>
 

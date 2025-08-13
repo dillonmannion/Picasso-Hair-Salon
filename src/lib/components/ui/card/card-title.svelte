@@ -7,14 +7,14 @@
 		class: className,
 		children,
 		...restProps
-	}: WithElementRef<HTMLAttributes<HTMLDivElement>> = $props();
+	}: WithElementRef<HTMLAttributes<HTMLHeadingElement>> = $props();
 </script>
 
-<div
+<h3
 	bind:this={ref}
 	data-slot="card-title"
-	class={cn('leading-none font-semibold', className)}
+	class={cn('text-2xl font-light leading-tight font-["Cormorant_Garamond",serif] text-luxe-black-800', className)}
 	{...restProps}
 >
 	{@render children?.()}
-</div>
+</h3>

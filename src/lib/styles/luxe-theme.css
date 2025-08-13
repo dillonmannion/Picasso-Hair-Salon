@@ -1,0 +1,406 @@
+@import 'tailwindcss';
+
+/* CSS Custom Properties for theming - Light/Luxe Mode (Default) */
+:root {
+	/* Primary Colors */
+	--luxe-primary: #7d2525;
+	--luxe-primary-rgb: 125, 37, 37;
+	--luxe-secondary: #f3ede2;
+	--luxe-secondary-rgb: 243, 237, 226;
+	--luxe-accent: #dcc8a8;
+	--luxe-accent-rgb: 220, 200, 168;
+
+	/* Background Colors */
+	--luxe-bg-primary: #fdfcfa;
+	--luxe-bg-secondary: #f3ede2;
+	--luxe-bg-tertiary: #e8dcc9;
+	--luxe-bg-card: #f9f6f0;
+	--luxe-bg-overlay: rgba(125, 37, 37, 0.08);
+
+	/* Text Colors */
+	--luxe-text-primary: #1a1a1a;
+	--luxe-text-secondary: #525252;
+	--luxe-text-muted: #787878;
+	--luxe-text-on-primary: #fdfcfa;
+	--luxe-text-on-secondary: #1a1a1a;
+
+	/* Border Colors */
+	--luxe-border-light: #e8dcc9;
+	--luxe-border-default: #dcc8a8;
+	--luxe-border-dark: #c9b08a;
+
+	/* Interactive States */
+	--luxe-hover: #9c2f2f;
+	--luxe-active: #5e1c1c;
+	--luxe-focus: rgba(125, 37, 37, 0.2);
+	--luxe-disabled: #a8a8a8;
+
+	/* Status Colors */
+	--luxe-success: #527a52;
+	--luxe-warning: #b37e30;
+	--luxe-error: #b94545;
+	--luxe-info: #526b8a;
+
+	/* Shadows */
+	--luxe-shadow-sm: 0 2px 4px rgba(94, 28, 28, 0.08);
+	--luxe-shadow: 0 12px 24px rgba(94, 28, 28, 0.15);
+	--luxe-shadow-lg: 0 20px 40px rgba(94, 28, 28, 0.2);
+
+	/* Spacing (in rem) */
+	--luxe-space-xs: 0.25rem;
+	--luxe-space-sm: 0.5rem;
+	--luxe-space-md: 1rem;
+	--luxe-space-lg: 1.5rem;
+	--luxe-space-xl: 2rem;
+	--luxe-space-2xl: 3rem;
+	--luxe-space-3xl: 4rem;
+
+	/* Typography */
+	--luxe-font-serif: 'Cormorant Garamond', serif;
+	--luxe-font-sans: system-ui, -apple-system, 'Segoe UI', sans-serif;
+	--luxe-font-mono: 'SF Mono', 'Monaco', 'Inconsolata', monospace;
+
+	/* Border Radius */
+	--luxe-radius-sm: 0.25rem;
+	--luxe-radius: 0.5rem;
+	--luxe-radius-lg: 0.75rem;
+	--luxe-radius-xl: 1rem;
+	--luxe-radius-full: 9999px;
+
+	/* Transitions */
+	--luxe-transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+	--luxe-transition: 300ms cubic-bezier(0.4, 0, 0.2, 1);
+	--luxe-transition-slow: 500ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Dark Mode Variant (Optional - Luxe Dark) */
+.luxe-dark {
+	--luxe-primary: #e5a1a1;
+	--luxe-secondary: #3f1212;
+	--luxe-accent: #5e1c1c;
+
+	--luxe-bg-primary: #0d0d0d;
+	--luxe-bg-secondary: #1a1a1a;
+	--luxe-bg-tertiary: #2a2a2a;
+	--luxe-bg-card: #1a1a1a;
+	--luxe-bg-overlay: rgba(243, 237, 226, 0.08);
+
+	--luxe-text-primary: #fdfcfa;
+	--luxe-text-secondary: #dcc8a8;
+	--luxe-text-muted: #a8a8a8;
+	--luxe-text-on-primary: #0d0d0d;
+	--luxe-text-on-secondary: #fdfcfa;
+
+	--luxe-border-light: #2a2a2a;
+	--luxe-border-default: #3a3a3a;
+	--luxe-border-dark: #525252;
+
+	--luxe-hover: #f0c9c9;
+	--luxe-active: #f9e8e8;
+	--luxe-focus: rgba(243, 237, 226, 0.2);
+}
+
+/* Component Classes using @utility directive for Tailwind v4 */
+
+/* Luxe Button Variants */
+@utility luxe-btn {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	border-radius: var(--luxe-radius);
+	padding-inline: 1.5rem;
+	padding-block: 0.75rem;
+	font-size: 0.875rem;
+	font-weight: 500;
+	transition: all var(--luxe-transition);
+	box-shadow: var(--luxe-shadow-sm);
+}
+
+@utility luxe-btn-primary {
+	background-color: var(--color-luxe-burgundy-700);
+	color: var(--color-luxe-cream-50);
+}
+
+@utility luxe-btn-secondary {
+	background-color: var(--color-luxe-cream-200);
+	color: var(--color-luxe-burgundy-700);
+}
+
+@utility luxe-btn-outline {
+	border: 2px solid var(--color-luxe-burgundy-700);
+	background-color: transparent;
+	color: var(--color-luxe-burgundy-700);
+}
+
+@utility luxe-btn-ghost {
+	background-color: transparent;
+	color: var(--color-luxe-burgundy-700);
+	box-shadow: none;
+}
+
+/* Luxe Card */
+@utility luxe-card {
+	border-radius: var(--luxe-radius-lg);
+	background-color: var(--color-luxe-cream-50);
+	padding: 1.5rem;
+	box-shadow: var(--luxe-shadow);
+	border: 1px solid var(--luxe-border-light);
+}
+
+@utility luxe-card-hover {
+	transition: all var(--luxe-transition);
+}
+
+/* Luxe Polaroid Frame */
+@utility luxe-polaroid {
+	background-color: white;
+	padding: 0.5rem;
+	box-shadow: var(--luxe-shadow-polaroid);
+	border: 1px solid var(--luxe-border-light);
+	transform: rotate(-1deg);
+	transition: all var(--luxe-transition);
+}
+
+/* Luxe Form Elements */
+@utility luxe-input {
+	width: 100%;
+	border-radius: var(--luxe-radius);
+	border: 1px solid var(--color-luxe-cream-400);
+	background-color: var(--color-luxe-cream-50);
+	padding-inline: 1rem;
+	padding-block: 0.5rem;
+	color: var(--color-luxe-black-800);
+	transition: all var(--luxe-transition);
+}
+
+@utility luxe-select {
+	width: 100%;
+	border-radius: var(--luxe-radius);
+	border: 1px solid var(--color-luxe-cream-400);
+	background-color: var(--color-luxe-cream-50);
+	padding-inline: 1rem;
+	padding-block: 0.5rem;
+	padding-right: 2.5rem;
+	color: var(--color-luxe-black-800);
+	transition: all var(--luxe-transition);
+	appearance: none;
+	background-image: url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTIiIGhlaWdodD0iOCIgdmlld0JveD0iMCAwIDEyIDgiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxwYXRoIGQ9Ik0xIDJMNiA2TDExIDIiIHN0cm9rZT0iIzdkMjUyNSIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz4KPC9zdmc+');
+	background-size: 12px;
+	background-position: right 1rem center;
+	background-repeat: no-repeat;
+}
+
+@utility luxe-textarea {
+	width: 100%;
+	border-radius: var(--luxe-radius);
+	border: 1px solid var(--color-luxe-cream-400);
+	background-color: var(--color-luxe-cream-50);
+	padding-inline: 1rem;
+	padding-block: 0.5rem;
+	color: var(--color-luxe-black-800);
+	transition: all var(--luxe-transition);
+	min-height: 100px;
+	resize: vertical;
+}
+
+@utility luxe-checkbox {
+	height: 1.25rem;
+	width: 1.25rem;
+	border-radius: var(--luxe-radius-sm);
+	border-color: var(--color-luxe-cream-400);
+	background-color: var(--color-luxe-cream-50);
+	color: var(--color-luxe-burgundy-700);
+}
+
+@utility luxe-radio {
+	height: 1.25rem;
+	width: 1.25rem;
+	border-color: var(--color-luxe-cream-400);
+	background-color: var(--color-luxe-cream-50);
+	color: var(--color-luxe-burgundy-700);
+}
+
+/* Luxe Typography */
+@utility luxe-heading {
+	font-family: var(--luxe-font-serif);
+	color: var(--color-luxe-black-800);
+}
+
+@utility luxe-h1 {
+	font-family: var(--luxe-font-serif);
+	color: var(--color-luxe-black-800);
+	font-size: 2.25rem;
+	font-weight: 300;
+	line-height: 1.2;
+}
+
+@utility luxe-h2 {
+	font-family: var(--luxe-font-serif);
+	color: var(--color-luxe-black-800);
+	font-size: 1.875rem;
+	font-weight: 300;
+	line-height: 1.375;
+}
+
+@utility luxe-h3 {
+	font-family: var(--luxe-font-serif);
+	color: var(--color-luxe-black-800);
+	font-size: 1.5rem;
+	font-weight: 400;
+	line-height: 1.375;
+}
+
+@utility luxe-h4 {
+	font-family: var(--luxe-font-serif);
+	color: var(--color-luxe-black-800);
+	font-size: 1.25rem;
+	font-weight: 400;
+}
+
+@utility luxe-text {
+	color: var(--color-luxe-black-700);
+	line-height: 1.625;
+}
+
+@utility luxe-text-muted {
+	color: var(--color-luxe-black-500);
+}
+
+@utility luxe-link {
+	color: var(--color-luxe-burgundy-700);
+	text-underline-offset: 2px;
+	transition: color var(--luxe-transition);
+}
+
+/* Luxe Badge */
+@utility luxe-badge {
+	display: inline-flex;
+	align-items: center;
+	border-radius: 9999px;
+	padding-inline: 0.625rem;
+	padding-block: 0.125rem;
+	font-size: 0.75rem;
+	font-weight: 500;
+}
+
+@utility luxe-badge-primary {
+	background-color: var(--color-luxe-burgundy-100);
+	color: var(--color-luxe-burgundy-700);
+}
+
+@utility luxe-badge-secondary {
+	background-color: var(--color-luxe-cream-200);
+	color: var(--color-luxe-black-700);
+}
+
+/* Luxe Divider */
+@utility luxe-divider {
+	margin-block: 2rem;
+	height: 1px;
+	background: linear-gradient(to right, transparent, var(--color-luxe-cream-400), transparent);
+}
+
+/* Luxe Navigation */
+@utility luxe-nav-link {
+	color: var(--color-luxe-black-700);
+	transition: color var(--luxe-transition);
+}
+
+@utility luxe-nav-link-active {
+	color: var(--color-luxe-burgundy-700);
+	font-weight: 500;
+}
+
+/* Luxe Overlay */
+@utility luxe-overlay {
+	position: fixed;
+	inset: 0;
+	background-color: rgba(13, 13, 13, 0.5);
+	backdrop-filter: blur(4px);
+}
+
+/* Luxe Modal */
+@utility luxe-modal {
+	position: fixed;
+	left: 50%;
+	top: 50%;
+	z-index: 50;
+	width: 100%;
+	max-width: 32rem;
+	transform: translate(-50%, -50%);
+	border-radius: var(--luxe-radius-lg);
+	background-color: var(--color-luxe-cream-50);
+	padding: 1.5rem;
+	box-shadow: var(--luxe-shadow);
+	border: 1px solid var(--luxe-border-light);
+}
+
+/* Luxe Toast/Alert */
+@utility luxe-alert {
+	display: flex;
+	align-items: flex-start;
+	gap: 0.75rem;
+	padding: 1rem;
+	border-radius: var(--luxe-radius-lg);
+	background-color: var(--color-luxe-cream-50);
+	box-shadow: var(--luxe-shadow);
+	border: 1px solid var(--luxe-border-light);
+}
+
+@utility luxe-alert-success {
+	border-left: 4px solid #16a34a;
+	background-color: #f0fdf4;
+}
+
+@utility luxe-alert-error {
+	border-left: 4px solid var(--color-luxe-burgundy-600);
+	background-color: var(--color-luxe-burgundy-50);
+}
+
+@utility luxe-alert-warning {
+	border-left: 4px solid #d97706;
+	background-color: #fffbeb;
+}
+
+@utility luxe-alert-info {
+	border-left: 4px solid #2563eb;
+	background-color: #eff6ff;
+}
+
+/* Additional Utility Classes */
+
+/* Luxe Background Patterns */
+@utility luxe-pattern-dots {
+	background-image: radial-gradient(circle, var(--luxe-border-light) 1px, transparent 1px);
+	background-size: 20px 20px;
+}
+
+@utility luxe-pattern-lines {
+	background-image: repeating-linear-gradient(
+		45deg,
+		transparent,
+		transparent 10px,
+		var(--luxe-border-light) 10px,
+		var(--luxe-border-light) 11px
+	);
+}
+
+@utility luxe-pattern-grid {
+	background-image:
+		linear-gradient(var(--luxe-border-light) 1px, transparent 1px),
+		linear-gradient(90deg, var(--luxe-border-light) 1px, transparent 1px);
+	background-size: 20px 20px;
+}
+
+/* Luxe Gradients */
+@utility luxe-gradient-primary {
+	background: linear-gradient(135deg, var(--luxe-primary), var(--luxe-hover));
+}
+
+@utility luxe-gradient-cream {
+	background: linear-gradient(135deg, var(--luxe-bg-primary), var(--luxe-bg-secondary));
+}
+
+@utility luxe-gradient-subtle {
+	background: linear-gradient(180deg, var(--luxe-bg-primary), var(--luxe-bg-card));
+}

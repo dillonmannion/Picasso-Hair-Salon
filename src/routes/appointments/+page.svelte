@@ -37,15 +37,15 @@
 	function getStatusColor(status: string) {
 		switch (status) {
 			case 'confirmed':
-				return 'text-green-600 bg-green-50 border-green-200';
+				return 'text-green-700 bg-green-50 border-green-200';
 			case 'pending':
-				return 'text-yellow-600 bg-yellow-50 border-yellow-200';
+				return 'text-amber-700 bg-amber-50 border-amber-200';
 			case 'cancelled':
-				return 'text-red-600 bg-red-50 border-red-200';
+				return 'text-luxe-burgundy-700 bg-luxe-burgundy-50 border-luxe-burgundy-200';
 			case 'completed':
-				return 'text-blue-600 bg-blue-50 border-blue-200';
+				return 'text-luxe-black-700 bg-luxe-cream-200 border-luxe-cream-400';
 			default:
-				return 'text-gray-600 bg-gray-50 border-gray-200';
+				return 'text-luxe-black-600 bg-luxe-cream-100 border-luxe-cream-300';
 		}
 	}
 

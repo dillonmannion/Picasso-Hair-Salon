@@ -1,13 +1,21 @@
 <script lang="ts">
-	import { Toaster } from '$lib/components/ui/sonner';
 	import { invalidate } from '$app/navigation';
-	import Header from '$lib/components/custom/Header.svelte';
+	import { page } from '$app/state';
+	import LuxeHeader from '$lib/components/custom/LuxeHeader.svelte';
+	import { Toaster } from '$lib/components/ui/sonner';
+	import { theme } from '$lib/stores/theme.svelte';
+	import type { Snippet } from 'svelte';
 	import '../app.css';
 	import type { LayoutData } from './$types';
-	import type { Snippet } from 'svelte';
 
 	let { children, data }: { children: Snippet; data: LayoutData } = $props();
 	let { supabase, user, adminStatus } = $derived(data);
+
+	// Check if we're on the homepage to avoid duplicate header
+	const isHomepage = $derived(page.url.pathname === '/');
+
+	// Initialize theme on mount (theme store handles this automatically)
+	// The theme store will apply the correct theme class to the document
 
 	$effect(() => {
 		const { data: authData } = supabase.auth.onAuthStateChange(async (event, session) => {
@@ -69,8 +77,10 @@
 	});
 </script>
 
-<div class="relative flex min-h-screen flex-col">
-	<Header {user} {supabase} {adminStatus} />
+<div
+	class="bg-background text-foreground relative flex min-h-screen flex-col transition-colors duration-300"
+>
+	<LuxeHeader {user} {supabase} {isHomepage} />
 	<main class="flex-1">
 		{@render children?.()}
 	</main>

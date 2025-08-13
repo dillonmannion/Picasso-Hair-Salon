@@ -28,7 +28,9 @@
 		<div class="absolute top-2 right-2">
 			<span
 				class="inline-flex rounded-full px-2 py-1 text-xs font-medium
-				{service.is_active ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}"
+				{service.is_active
+					? 'bg-luxe-cream-200 text-luxe-burgundy-700'
+					: 'bg-luxe-burgundy-100 text-luxe-burgundy-800'}"
 			>
 				{service.is_active ? 'Active' : 'Inactive'}
 			</span>
