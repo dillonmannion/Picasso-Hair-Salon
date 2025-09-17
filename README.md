@@ -1,3 +1,5 @@
+# -------- REPO IS NOT UPDATE TO DATE WITH LOCAL CHANGES (DIR CLEAN UP + REFACTORING) --------
+
 # Picasso Hair Salon - SvelteKit Application
 
 A modern hair salon booking application built with SvelteKit, TypeScript, and modern web technologies.
